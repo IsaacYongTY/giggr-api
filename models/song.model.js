@@ -1,13 +1,27 @@
-const mongoose = require('mongoose')
-const Schema = require('mongoose').Schema
+const { DataTypes } = require('sequelize')
+const sequelize = require('../lib/sequelize.config')
 
-const songSchema = new Schema({
-    title: { type: String, required: true },
-    artist: { type: String, required: true },
-    key: { type: String, required: true },
-    bpm: { type: Number, required: true },
-    durationMs: { type: String, required: true},
-    timeSignature: { type: String, required: true }
+const Song = sequelize.define('song', {
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    artist: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    key: {
+        type: DataTypes.STRING,
+    },
+    bpm: {
+        type: DataTypes.INTEGER,
+    },
+    durationMs: {
+        type: DataTypes.INTEGER,
+    },
+    timeSignature: {
+        type: DataTypes.STRING
+    }
 })
 
-module.exports = mongoose.model('Song', songSchema)
+module.exports = Song
