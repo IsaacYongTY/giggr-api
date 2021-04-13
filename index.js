@@ -1,9 +1,13 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const { DataTypes } = require('sequelize')
-const sequelize = require('./lib/sequelize.config.js')
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const { DataTypes } = require('sequelize');
+const sequelize = require('./lib/sequelize.config.js');
 const User = require('./models/user')(sequelize, DataTypes);
+const session = require('express-session');
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
+
 
 sequelize.authenticate()
     .then(() => {
@@ -13,9 +17,22 @@ sequelize.authenticate()
         console.error("Unable to connect to the database:", error)
     })
 
-app.use(express.json())
-app.use(cors())
 
+
+
+app.use(express.json())
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3000'
+}))
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(cookieParser())
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
 
