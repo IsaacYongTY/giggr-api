@@ -1,21 +1,12 @@
 'use strict';
 const bcrypt = require('bcrypt')
 
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  };
-  User.init({
+const { DataTypes } = require('sequelize')
+const sequelize = require('../lib/sequelize.config')
+
+
+const User = sequelize.define('User', {
+
     firstName: {
       type: DataTypes.STRING
     },
@@ -31,21 +22,29 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    status: {
-      type: DataTypes.STRING,
-      defaultValue: 'user'
-    }
+    tierId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+        references: {
+            models: "Tiers",
+            foreignKey: "tierId"
+        }
+    },
   }, {
-    sequelize,
-    modelName: 'User',
-  });
 
-  User.beforeCreate(async(user, options) => {
-    const hashedPassword = await bcrypt.hash(user.password, 10)
-    user.password = hashedPassword
-  })
+})
 
+User.associate = models => {
+    console.log(models)
+    User.hasMany(models.Song)
+    User.hasOne(models.Tier)
+    User.hasMany(models.Gig)
+    User.belongsToMany(models.Song, { as: 'Song', through: 'songs_users', foreignKey: 'songId',})
+}
 
+User.beforeCreate(async(user, options) => {
+  const hashedPassword = await bcrypt.hash(user.password, 10)
+  user.password = hashedPassword
+})
 
-  return User;
-};
+module.exports = User

@@ -1,37 +1,24 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('gigs', {
+    await queryInterface.createTable('Artists', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
+      name: {
         type: Sequelize.STRING
       },
-      description: {
-        type: Sequelize.TEXT
-      },
-      time: {
+      romName: {
         type: Sequelize.STRING
       },
-      date: {
+      enName: {
         type: Sequelize.STRING
       },
-      venue: {
+      role: {
         type: Sequelize.STRING
-      },
-      pay: {
-        type: Sequelize.FLOAT
-      },
-      repeat: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      frequency: {
-        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -44,6 +31,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('gigs');
+    await queryInterface.dropTable('Artists');
   }
 };

@@ -1,25 +1,17 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class gig extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  };
-  gig.init({
+const { DataTypes } = require('sequelize')
+const sequelize = require('../lib/sequelize.config')
+
+const Gig = sequelize.define('Gig', {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     description: DataTypes.TEXT,
-    time: DataTypes.STRING,
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     date: DataTypes.STRING,
     venue: DataTypes.STRING,
     pay: DataTypes.FLOAT,
@@ -28,12 +20,17 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     frequency: {
-      type: DataTypes.Integer
+      type: DataTypes.INTEGER
     }
 
+
   }, {
-    sequelize,
-    modelName: 'gig',
-  });
-  return gig;
-};
+
+  }
+)
+
+Gig.associate(models => {
+  Gig.belongsTo(models.User)
+
+})
+module.exports = Gig

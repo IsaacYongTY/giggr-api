@@ -1,7 +1,5 @@
 const router = require('express').Router();
-const { DataTypes } = require('sequelize');
-const sequelize = require('../lib/sequelize.config');
-const User = require('../models/user')(sequelize, DataTypes);
+const User = require('../models/user');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
@@ -17,6 +15,7 @@ router.post('/signup', async (req, res) => {
         let payload = {
             user: {
                 firstName: user.firstName,
+                lastName: user.lastName,
                 id: user.id
             }
         }
@@ -60,8 +59,6 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
             expiresIn: 100000000
         }, (err, token) => {
             res.cookie('auth_token', token)
-            console.log(res)
-            console.log(token)
             res.status(200).send(
                 {
                     message: "successfully logged in",

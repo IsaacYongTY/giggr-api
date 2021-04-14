@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { DataTypes } = require('sequelize');
 const sequelize = require('./lib/sequelize.config.js');
-const User = require('./models/user')(sequelize, DataTypes);
+const User = require('./models/user');
 const session = require('express-session');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');

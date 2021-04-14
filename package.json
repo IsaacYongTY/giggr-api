@@ -23,12 +23,14 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "flash": "^1.1.0",
+    "hyphen": "^1.6.4",
     "jsonwebtoken": "^8.5.1",
     "jwt-sign": "^0.1.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
+    "prompt-sync": "^4.2.0",
     "sequelize": "^6.6.2"
   },
   "devDependencies": {

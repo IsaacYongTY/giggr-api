@@ -1,26 +1,19 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class song extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  };
-  song.init({
+
+
+const { DataTypes } = require('sequelize')
+const sequelize = require('../lib/sequelize.config')
+
+
+const Song = sequelize.define('Song', {
+
     title: {
       type: DataTypes.STRING,
       allowNull: false
     },
 
     artist: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     romTitle: {
@@ -30,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     key: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
     },
     myKey: {
       type: DataTypes.STRING
@@ -51,9 +44,6 @@ module.exports = (sequelize, DataTypes) => {
     verified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
-    },
-    genre: {
-      type: DataTypes.STRING
     },
 
     mood: {
@@ -105,8 +95,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     }
   }, {
-    sequelize,
-    modelName: 'song',
-  });
-  return song;
-};
+
+})
+
+Song.associate = models => {
+    // Song.belongsTo(models.User)
+    // Song.belongsTo(models.Artist)
+    Song.belongsToMany(models.Genre, { as: 'Genres', through: 'songs_genres', foreignKey: 'songId',})
+    Song.belongsToMany(models.User, { as: 'Song', through: 'songs_users', foreignKey: 'userId',})
+    Song.hasOne(models.Key)
+}
+
+module.exports = Song
