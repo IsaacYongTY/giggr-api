@@ -26,15 +26,11 @@ router.get('/', async(req, res) => {
 
         return song
     })
-    res.json({result: songs.slice(0,20)})
+    res.json({result: songs})
 })
 
 router.post('/add', async (req, res) => {
-    console.log('in')
-
     try {
-
-
         const artist = await models.musician.findOne({
             where: {
                 enName: req.body.artist
@@ -43,32 +39,35 @@ router.post('/add', async (req, res) => {
         })
 
         console.log(artist)
-        if (!artist) {
-            console.log('artist not found, create new one')
 
-        }
 
         let saveData = {
             // title: req.body.title,
             // artistId: artist.id,
             // key: req.body.key,
             // myKey: req.body.myKey,
-
-
         }
+
+
 
         let keyMode = convertKeyToKeyModeInt(req.body.key)
         let myKeyMode = convertKeyToKeyModeInt(req.body.myKey)
 
-        let lastId = await Song.findAll({})
-        console.log(lastId)
-        console.log(keyMode)
+
         for (const key in req.body) {
 
 
             switch (key) {
                 case 'artist':
-                    saveData['artistId'] = parseInt(artist.id);
+                    if (!artist) {
+                        console.log('artist not found, create new one')
+                        const newArtist = await models.musician.create({ enName: req.body.artist})
+                        saveData['artistId'] = newArtist.id
+                    }   else {
+                        console.log(saveData['artistId'])
+                        saveData['artistId'] = parseInt(artist.id);
+                    }
+
                     break;
                 case "duration":
                     saveData['durationMs'] = convertDurationMinSecToMs(req.body.duration);
@@ -104,11 +103,55 @@ router.post('/add', async (req, res) => {
 })
 
 router.post('/addauto', async (req, res) => {
-    console.log(req.body.trackId)
-    const trackInfo = await getAudioFeatures(req.body.trackId)
+    try {
 
-    console.log(trackInfo)
-    res.status(200).json({result: trackInfo})
+        const trackInfo = await getAudioFeatures(req.body.trackId)
+
+        const artist = await models.musician.findOne({
+            where: {
+                enName: trackInfo.artist
+            }
+
+        })
+
+        console.log(artist)
+        let saveData = {}
+
+        for (const keyValue in trackInfo) {
+            console.log(keyValue)
+            switch (keyValue) {
+                case 'artist':
+                    console.log(artist)
+                    if (!artist) {
+                        console.log('artist not found, create new one')
+                        const newArtist = await models.musician.create({ enName: trackInfo.artist})
+                        saveData['artistId'] = newArtist.id
+                    }   else {
+                        console.log(saveData['artistId'])
+                        saveData['artistId'] = parseInt(artist.id);
+                    }
+
+                    break;
+
+                default:
+                    saveData[keyValue] = trackInfo[keyValue]
+                    console.log(saveData)
+                    break;
+            }
+
+        }
+
+
+
+
+        console.log(trackInfo)
+
+        await models.song.create(saveData)
+        res.status(200).json({result: trackInfo})
+
+    } catch (err) {
+        res.status(400).json({err})
+    }
 
 })
 module.exports = router
