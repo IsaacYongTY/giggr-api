@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Tiers',{
+    await queryInterface.createTable('tiers',{
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,7 +13,7 @@ module.exports = {
       },
     })
 
-    await queryInterface.createTable('Keys',{
+    await queryInterface.createTable('keys',{
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -25,17 +25,17 @@ module.exports = {
       },
     })
 
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('users', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      firstName: {
+      first_name: {
         type: Sequelize.STRING
       },
-      lastName: {
+      last_name: {
         type: Sequelize.STRING
       },
       email: {
@@ -47,27 +47,27 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      tierId: {
+      tier_id: {
         type: Sequelize.INTEGER,
-        defaultValue: 0,
-        references: {
-          model: "Tiers",
-          foreignKey: "tierId"
-        }
+        defaultValue: 1,
+        // references: {
+        //   model: "tiers",
+        //   foreignKey: "tier_id"
+        // }
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.TIMESTAMP
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.TIMESTAMP
       }
     });
 
 
 
-    await queryInterface.createTable('Gigs', {
+    await queryInterface.createTable('gigs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -83,12 +83,12 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id'
         }
       },
       date: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       venue: {
         type: Sequelize.STRING
@@ -113,7 +113,7 @@ module.exports = {
       }
     });
 
-    await queryInterface.createTable('Genres',{
+    await queryInterface.createTable('genres',{
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -125,18 +125,48 @@ module.exports = {
       },
     })
 
+    await queryInterface.createTable('musicians', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING
+      },
+      rom_name: {
+        type: Sequelize.STRING
+      },
+      en_name: {
+        type: Sequelize.STRING
+      },
+      role: {
+        type: Sequelize.STRING
+      },
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    });
 
 
 
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Genres');
-    await queryInterface.dropTable('Gigs');
+    await queryInterface.dropTable('musicians');
+    await queryInterface.dropTable('genres');
 
-    await queryInterface.dropTable('Users');
-    await queryInterface.dropTable('Keys');
-    await queryInterface.dropTable('Tiers');
+    await queryInterface.dropTable('gigs');
+
+    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('keys');
+    await queryInterface.dropTable('tiers');
 
 
   }

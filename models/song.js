@@ -5,28 +5,29 @@ const { DataTypes } = require('sequelize')
 const sequelize = require('../lib/sequelize.config')
 
 
-const Song = sequelize.define('Song', {
+const Song = sequelize.define('song', {
 
     title: {
       type: DataTypes.STRING,
       allowNull: false
     },
 
-    artist: {
+    artistId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
     romTitle: {
       type: DataTypes.STRING
     },
-    romArtist: {
-      type: DataTypes.STRING,
-    },
     key: {
       type: DataTypes.INTEGER,
     },
+
     myKey: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER
+    },
+    mode: {
+        type:DataTypes.INTEGER
     },
     bpm: {
       type: DataTypes.INTEGER,
@@ -34,9 +35,9 @@ const Song = sequelize.define('Song', {
     durationMs: {
       type: DataTypes.INTEGER,
     },
-    durationMinSec: {
-      type: DataTypes.INTEGER,
-    },
+    // durationMinSec: {
+    //   type: DataTypes.INTEGER,
+    // },
     timeSignature: {
       type: DataTypes.STRING,
       defaultValue: '4/4'
@@ -73,20 +74,14 @@ const Song = sequelize.define('Song', {
     acousticness: {
       type: DataTypes.FLOAT
     },
-    authors: {
-      type: DataTypes.STRING
+    instrumentalness: {
+        type: DataTypes.FLOAT
     },
-    composers: {
+    // tags: {
+    //   type: DataTypes.STRING
+    // },
+    dateReleased: {
       type: DataTypes.STRING
-    },
-    arrangers: {
-      type: DataTypes.STRING
-    },
-    tags: {
-      type: DataTypes.STRING
-    },
-    yearReleased: {
-      type: DataTypes.INTEGER
     },
     status: {
       type: DataTypes.STRING
@@ -95,15 +90,20 @@ const Song = sequelize.define('Song', {
       type: DataTypes.STRING
     }
   }, {
+    underscored: true
 
-})
+}
+
+)
 
 Song.associate = models => {
     // Song.belongsTo(models.User)
     // Song.belongsTo(models.Artist)
-    Song.belongsToMany(models.Genre, { as: 'Genres', through: 'songs_genres', foreignKey: 'songId',})
-    Song.belongsToMany(models.User, { as: 'Song', through: 'songs_users', foreignKey: 'userId',})
-    Song.hasOne(models.Key)
+    // Song.belongsToMany(models.genre, { through: 'songs_genres', foreignKey: 'songId',})
+    // Song.belongsToMany(models.user, { as: 'song', through: 'songs_users', foreignKey: 'user_id',})
+    // Song.hasOne(models.key)
+    Song.belongsTo(models.musician, {as: "artist"})
+
 }
 
 module.exports = Song

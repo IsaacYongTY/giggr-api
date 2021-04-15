@@ -34,6 +34,8 @@ app.use(passport.session())
 app.use(cookieParser())
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
+app.use('/api/v1/songs', require('./routes/songs.route'))
+app.use('/api/v1/user', require('./routes/user.route'))
 
 // app.use('*', (req, res) => {
 //     res.sendFile(path.join(__dirname, 'client/build/index.html'))

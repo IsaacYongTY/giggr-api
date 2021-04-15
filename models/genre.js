@@ -3,7 +3,7 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../lib/sequelize.config')
 
-const Genre = sequelize.define('Genre', {
+const Genre = sequelize.define('genre', {
 
   title: {
     type: DataTypes.STRING,
@@ -11,11 +11,12 @@ const Genre = sequelize.define('Genre', {
   },
 
 }, {
-  timestamps: false
+  timestamps: false,
+  underscored: true
 })
 
 Genre.associate = models => {
-  Genre.belongsToMany(models.Songs, { as: "Songs", through: "songs_genres", foreignKey: "genreId"})
+  // Genre.belongsToMany(models.song, { as: "songs", through: "songs_genres", foreignKey: "genreId"})
 }
 
 

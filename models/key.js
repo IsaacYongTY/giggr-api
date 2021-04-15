@@ -3,7 +3,7 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../lib/sequelize.config')
 
-const Key = sequelize.define('Key', {
+const Key = sequelize.define('key', {
 
     title: {
         type: DataTypes.STRING,
@@ -11,12 +11,13 @@ const Key = sequelize.define('Key', {
     },
 
 }, {
-    timestamps: false
+    timestamps: false,
+    underscored: true
 })
 
-Key.associate(models => {
-    Key.hasMany(models.Song)
-})
+Key.associate = models => {
+    // Key.hasMany(models.song)
+}
 
 
 module.exports = Key

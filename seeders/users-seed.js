@@ -5,7 +5,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     let tempHashedPassword = await bcrypt.hash('iiiii', 10)
-    await queryInterface.bulkInsert('Users', [{
+    await queryInterface.bulkInsert('users', [{
       firstName: "Irene",
       lastName: "Yu",
       email: "irene@gmail.com",

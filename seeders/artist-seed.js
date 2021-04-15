@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-      await queryInterface.bulkInsert('Artists', [
+      await queryInterface.bulkInsert('artists', [
           {
             name: "李荣浩",
             romName: "li rong hao",

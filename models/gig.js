@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../lib/sequelize.config')
 
-const Gig = sequelize.define('Gig', {
+const Gig = sequelize.define('gig', {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -12,7 +12,7 @@ const Gig = sequelize.define('Gig', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    date: DataTypes.STRING,
+    date: DataTypes.DATE,
     venue: DataTypes.STRING,
     pay: DataTypes.FLOAT,
     repeat: {
@@ -25,12 +25,12 @@ const Gig = sequelize.define('Gig', {
 
 
   }, {
-
+    underscored: true
   }
 )
 
-Gig.associate(models => {
-  Gig.belongsTo(models.User)
+Gig.associate = models => {
+  Gig.belongsTo(models.user)
 
-})
+}
 module.exports = Gig

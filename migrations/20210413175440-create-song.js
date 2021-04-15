@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Songs', {
+    await queryInterface.createTable('songs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,39 +12,28 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      artistId: {
+      artist_id: {
         type: Sequelize.INTEGER,
       },
-      romTitle: {
-        type: Sequelize.STRING
-      },
-      romArtist: {
+      rom_title: {
         type: Sequelize.STRING
       },
       key: {
         type: Sequelize.INTEGER,
-        references: {
-          model: "Keys",
-          foreignKey: "keyId"
-        }
       },
-      myKey: {
+      my_key: {
         type: Sequelize.INTEGER,
-        references: {
-          model: "Keys",
-          foreignKey: "keyId"
-        }
+      },
+      mode: {
+        type: Sequelize.INTEGER,
       },
       bpm: {
         type: Sequelize.INTEGER,
       },
-      durationMs: {
+      duration_ms: {
         type: Sequelize.INTEGER,
       },
-      durationMinSec: {
-        type: Sequelize.INTEGER,
-      },
-      timeSignature: {
+      time_signature: {
         type: Sequelize.STRING,
         defaultValue: '4/4'
       },
@@ -52,9 +41,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
-      genre: {
-        type: Sequelize.STRING
-      },
+      // genre: {
+      //   type: Sequelize.STRING
+      // },
 
       mood: {
         type: Sequelize.STRING
@@ -65,10 +54,10 @@ module.exports = {
       initialism: {
         type: Sequelize.STRING
       },
-      spotifyLink: {
+      spotify_link: {
         type: Sequelize.STRING
       },
-      youtubeLink: {
+      youtube_link: {
         type: Sequelize.STRING
       },
       energy: {
@@ -83,32 +72,26 @@ module.exports = {
       acousticness: {
         type: Sequelize.FLOAT
       },
-      authors: {
-        type: Sequelize.STRING
-      },
-      composers: {
-        type: Sequelize.STRING
-      },
-      arrangers: {
-        type: Sequelize.STRING
+      instrumentalness: {
+        type: Sequelize.FLOAT
       },
       tags: {
         type: Sequelize.STRING
       },
-      yearReleased: {
-        type: Sequelize.INTEGER
+      date_released: {
+        type: Sequelize.STRING
       },
       status: {
         type: Sequelize.STRING
       },
-      performStatus: {
+      perform_status: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
@@ -116,6 +99,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Songs');
+    await queryInterface.dropTable('songs');
   }
 };

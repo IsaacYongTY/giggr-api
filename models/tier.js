@@ -3,7 +3,7 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../lib/sequelize.config')
 
-const Tier = sequelize.define('Tier', {
+const Tier = sequelize.define('tier', {
 
     title: {
         type: DataTypes.STRING,
@@ -11,11 +11,12 @@ const Tier = sequelize.define('Tier', {
     },
 
     }, {
-    timestamps: false
+    timestamps: false,
+    underscored: true
 })
 
 Tier.associate = models => {
-    Tier.hasMany(models.User)
+    // Tier.hasMany(models.user)
 }
 
 
