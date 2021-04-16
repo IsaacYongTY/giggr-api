@@ -22,7 +22,7 @@ sequelize.authenticate()
 app.use(express.json())
 app.use(cors({
     credentials: true,
-    origin: '*'
+    origin: 'https://giggr.vercel.app'
 }))
 app.use(session({
     secret: process.env.SESSION_SECRET,
