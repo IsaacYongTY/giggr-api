@@ -74,24 +74,27 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
-        type: Sequelize.STRING
-      },
-      description: {
-        type: Sequelize.TEXT
-      },
       userId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'users',
           key: 'id'
         }
       },
+      title: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      description: {
+        type: Sequelize.TEXT
+      },
       date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       venue: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100)
       },
       pay: {
         type: Sequelize.FLOAT
@@ -141,9 +144,7 @@ module.exports = {
       en_name: {
         type: Sequelize.STRING
       },
-      role: {
-        type: Sequelize.STRING
-      },
+
       created_at: {
         allowNull: false,
         type: Sequelize.DATE
