@@ -77,10 +77,10 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'users',
-          key: 'id'
-        }
+        // references: {
+        //   model: 'users',
+        //   key: 'id'
+        // }
       },
       title: {
         type: Sequelize.STRING,
@@ -93,18 +93,21 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false
       },
+      time: {
+        type: Sequelize.DATE,
+      },
       venue: {
         type: Sequelize.STRING(100)
       },
       pay: {
         type: Sequelize.FLOAT
       },
-      repeat: {
+      isRepeat: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
       frequency: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

@@ -6,27 +6,31 @@ const { convertDurationMinSecToMs, convertKeyToKeyModeInt, getAudioFeatures, con
 
 router.get('/', async(req, res) => {
 
+
+    let { number } = req.query
+
     const songs = await models.song.findAll({
         include: [{
             model: models.musician,
             as: "artist"
-        }]
+        }],
+        limit: number
         // {
         //     model: models.genre,
         // }]
     })
-    console.log(songs[0])
+
 
     songs.map(song => {
         song.key = convertIntToKey(song.key,'forward')
-        console.log(song.key)
-        if (song.mode == 1) {
+
+        if (song.mode === 1) {
             song.key += 'm'
         }
 
         return song
     })
-    res.json({result: songs})
+    res.json({ songs})
 })
 
 router.post('/add', async (req, res) => {
@@ -37,9 +41,6 @@ router.post('/add', async (req, res) => {
             }
 
         })
-
-        console.log(artist)
-
 
         let saveData = {
             // title: req.body.title,

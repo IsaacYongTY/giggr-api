@@ -12,15 +12,16 @@ const Gig = sequelize.define('gig', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    date: DataTypes.DATE,
+    date: DataTypes.DATEONLY,
+    time: DataTypes.TIME,
     venue: DataTypes.STRING,
     pay: DataTypes.FLOAT,
-    repeat: {
+    isRepeat: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
     frequency: {
-      type: DataTypes.INTEGER
+      type: DataTypes.STRING
     }
 
 
