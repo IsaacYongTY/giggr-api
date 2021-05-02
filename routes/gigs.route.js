@@ -1,16 +1,24 @@
 const models = require('../models')
 const router = require('express').Router()
 const jwt = require('jsonwebtoken')
+const authChecker = require("../middlewares/authChecker")
 
-router.get('/', async (req, res) => {
+router.get('/', authChecker, async (req, res) => {
+
+    const options = {
+        where: {},
+        order: [
+            ['date', 'DESC']
+        ]
+    }
+
+    if(req.user.id) {
+        options.where.userId = req.user.id
+    }
+
     try {
-        console.log('gett')
-        const gigs = await models.gig.findAll({
-            order: [
-                ['date', 'DESC']
-            ]
-        })
 
+        const gigs = await models.gig.findAll(options)
 
         res.status(200).json({gigs})
     } catch (error) {
@@ -25,17 +33,10 @@ router.post('/', async (req, res) => {
 
         const decoded = jwt.verify(req.cookies.auth_token, process.env.SESSION_SECRET)
         console.log(decoded)
-
-        // let saveData = {...req.body, userId: decoded.user.id}
-
-
+        
         let cleanedDate = req.body.date.split('T')[0]
         let cleanedTime = req.body.time.split('T')[1]
         let saveData = {...req.body, userId: decoded.user.id, date: cleanedDate, time: cleanedTime}
-        console.log(saveData)
-
-
-
 
         let response = await models.gig.create(saveData)
 

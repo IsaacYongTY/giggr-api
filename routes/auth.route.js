@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
         jwt.sign(payload, process.env.SESSION_SECRET, {
             expiresIn: 100000000
         }, (err, token) => {
-            res.cookie('auth_token', token)
+            res.cookie('x-auth-token', token)
             res.status(201).send(
                 {
                     message: "successfully signed up",
@@ -46,25 +46,24 @@ router.post('/signup', async (req, res) => {
 })
 
 router.post('/login', passport.authenticate('local'),(req,res) => {
-    console.log('in')
-    console.log(req.message)
-        let payload = {
-            user: {
-                firstName: req.user.firstName,
-                id: req.user.id
-            }
-        }
 
-        jwt.sign(payload, process.env.SESSION_SECRET, {
-            expiresIn: 100000000
-        }, (err, token) => {
-            res.cookie('auth_token', token)
-            res.status(200).send(
-                {
-                    message: "successfully logged in",
-                    token
-                })
-        })
+    let payload = {
+        user: {
+            firstName: req.user.firstName,
+            id: req.user.id
+        }
+    }
+
+    jwt.sign(payload, process.env.SESSION_SECRET, {
+        expiresIn: 100000000
+    }, (err, token) => {
+        res.cookie('x-auth-token', `Bearer ${token}`)
+        res.status(200).send(
+            {
+                message: "successfully logged in",
+                token
+            })
+    })
 })
 
 
