@@ -1,23 +1,25 @@
 'use strict';
 
-const { DataTypes } = require('sequelize')
-const sequelize = require('../lib/sequelize.config')
+module.exports = (sequelize, DataTypes) => {
 
-const Musician = sequelize.define('musician', {
+  const Musician = sequelize.define('musician', {
 
-  name: DataTypes.STRING,
-  romName: DataTypes.STRING,
-  enName: DataTypes.STRING,
-  role: DataTypes.STRING
+    name: DataTypes.STRING,
+    romName: DataTypes.STRING,
+    enName: DataTypes.STRING,
+    role: DataTypes.STRING
 
-}, {
-  timestamps: false,
-  underscored: true
-})
+  }, {
+    timestamps: false,
+    underscored: true
+  })
 
-Musician.associate = models => {
-  Musician.hasMany(models.song, { foreignKey: "artistId"})
+  Musician.associate = models => {
+    Musician.hasMany(models.song, {foreignKey: "artistId"})
+    Musician.belongsToMany(models.song, { through: "songwriters_songs", foreignKey: "songwriterId", timestamps: false})
+    Musician.belongsToMany(models.song, { through: "composers_songs", foreignKey: "composerId", timestamps: false})
+    Musician.belongsToMany(models.song, { through: "arrangers_songs", foreignKey: "arrangerId", timestamps: false})
+  }
+
+  return Musician
 }
-
-
-module.exports = Musician

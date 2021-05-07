@@ -1,23 +1,22 @@
 'use strict';
 
-const { DataTypes } = require('sequelize')
-const sequelize = require('../lib/sequelize.config')
+module.exports = (sequelize, DataTypes) => {
 
-const Genre = sequelize.define('genre', {
 
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
+  const Genre = sequelize.define('genre', {
 
-}, {
-  timestamps: false,
-  underscored: true
-})
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
 
-Genre.associate = models => {
-  // Genre.belongsToMany(models.song, { as: "songs", through: "songs_genres", foreignKey: "genreId"})
+  }, {
+    timestamps: false,
+    underscored: true
+  })
+
+  Genre.associate = models => {
+    // Genre.belongsToMany(models.song, { as: "songs", through: "songs_genres", foreignKey: "genreId"})
+  }
+  return Genre
 }
-
-
-module.exports = Genre

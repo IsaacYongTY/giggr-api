@@ -3,9 +3,10 @@ const jwt = require('jsonwebtoken')
 const authChecker = async (req, res, next) => {
 
     try {
+
         const tokenString = req.header("x-auth-token")
         const token = tokenString.split(" ")[1]
-
+        console.log(token)
         const decoded = jwt.verify(token, process.env.SESSION_SECRET)
 
         req.user = decoded.user

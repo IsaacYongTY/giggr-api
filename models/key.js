@@ -1,23 +1,21 @@
 'use strict';
 
-const { DataTypes } = require('sequelize')
-const sequelize = require('../lib/sequelize.config')
+module.exports = (sequelize, DataTypes) => {
 
-const Key = sequelize.define('key', {
+    const Key = sequelize.define('key', {
 
-    title: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
 
-}, {
-    timestamps: false,
-    underscored: true
-})
+    }, {
+        timestamps: false,
+        underscored: true
+    })
 
-Key.associate = models => {
-    // Key.hasMany(models.song)
+    Key.associate = models => {
+        // Key.hasMany(models.song)
+    }
+    return Key
 }
-
-
-module.exports = Key

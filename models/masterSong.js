@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         key: {
           type: DataTypes.INTEGER,
         },
-
-        myKey: {
-          type: DataTypes.INTEGER
-        },
         mode: {
             type:DataTypes.INTEGER
         },
@@ -32,9 +28,6 @@ module.exports = (sequelize, DataTypes) => {
         durationMs: {
           type: DataTypes.INTEGER,
         },
-        // durationMinSec: {
-        //   type: DataTypes.INTEGER,
-        // },
         timeSignature: {
           type: DataTypes.STRING,
           defaultValue: '4/4'

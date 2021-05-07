@@ -27,7 +27,7 @@ module.exports = {
       mode: {
         type: Sequelize.INTEGER,
       },
-      bpm: {
+      tempo: {
         type: Sequelize.INTEGER,
       },
       duration_ms: {
