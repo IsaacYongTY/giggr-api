@@ -1,7 +1,5 @@
 'use strict';
 
-const { DataTypes } = require('sequelize')
-const sequelize = require('../lib/sequelize.config')
 
 module.exports = (sequelize, DataTypes) => {
     const Mode = sequelize.define('mode', {

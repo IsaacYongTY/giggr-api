@@ -8,6 +8,7 @@ router.get('/', async(req, res) => {
 
     let { number, category, order } = req.query
 
+    console.log(models)
     const songs = await models.song.findAll({
         include: [{
             model: models.musician,

@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
 
-    const Song = sequelize.define('song', {
+    const MasterSong = sequelize.define('masterSong', {
 
         title: {
           type: DataTypes.STRING,
@@ -86,36 +86,36 @@ module.exports = (sequelize, DataTypes) => {
 
     )
 
-    Song.associate = models => {
-        // Song.belongsTo(models.User)
-        // Song.belongsTo(models.Artist)
-        // Song.belongsToMany(models.genre, { through: 'songs_genres', foreignKey: 'songId',})
-        // Song.belongsToMany(models.user, { as: 'song', through: 'songs_users', foreignKey: 'user_id',})
-        // Song.hasOne(models.key)
-        Song.belongsTo(models.musician, {as: "artist"})
-        Song.belongsToMany(models.setlist, { through: "setlists_songs", foreignKey: "songId", timestamps: false})
-        Song.belongsToMany(models.musician, {
-            as: "songwriters",
-            through: "songwriters_songs",
-            foreignKey: "songId",
-            otherKey: "songwriterId",
-            timestamps: false
-        })
-        Song.belongsToMany(models.musician, {
-            as: "composers",
-            through: "composers_songs",
-            foreignKey: "songId",
-            otherKey: "composerId",
-            timestamps: false
-        })
-        Song.belongsToMany(models.musician, {
-            as: "arrangers",
-            through: "arrangers_songs",
-            foreignKey: "songId",
-            otherKey: "arrangerId",
-            timestamps: false
-        })
+    // Song.associate = models => {
+    //     // Song.belongsTo(models.User)
+    //     // Song.belongsTo(models.Artist)
+    //     // Song.belongsToMany(models.genre, { through: 'songs_genres', foreignKey: 'songId',})
+    //     // Song.belongsToMany(models.user, { as: 'song', through: 'songs_users', foreignKey: 'user_id',})
+    //     // Song.hasOne(models.key)
+    //     Song.belongsTo(models.musician, {as: "artist"})
+    //     Song.belongsToMany(models.setlist, { through: "setlists_songs", foreignKey: "songId", timestamps: false})
+    //     Song.belongsToMany(models.musician, {
+    //         as: "songwriters",
+    //         through: "songwriters_songs",
+    //         foreignKey: "songId",
+    //         otherKey: "songwriterId",
+    //         timestamps: false
+    //     })
+    //     Song.belongsToMany(models.musician, {
+    //         as: "composers",
+    //         through: "composers_songs",
+    //         foreignKey: "songId",
+    //         otherKey: "composerId",
+    //         timestamps: false
+    //     })
+    //     Song.belongsToMany(models.musician, {
+    //         as: "arrangers",
+    //         through: "arrangers_songs",
+    //         foreignKey: "songId",
+    //         otherKey: "arrangerId",
+    //         timestamps: false
+    //     })
 
-    }
-    return Song
+    // }
+    return MasterSong
 }
