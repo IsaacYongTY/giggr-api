@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         key: {
           type: DataTypes.INTEGER,
         },
-
-        myKey: {
-          type: DataTypes.INTEGER
-        },
         mode: {
             type:DataTypes.INTEGER
         },
@@ -32,23 +28,15 @@ module.exports = (sequelize, DataTypes) => {
         durationMs: {
           type: DataTypes.INTEGER,
         },
-        // durationMinSec: {
-        //   type: DataTypes.INTEGER,
-        // },
         timeSignature: {
           type: DataTypes.STRING,
           defaultValue: '4/4'
         },
-        verified: {
-          type: DataTypes.BOOLEAN,
-          defaultValue: false
-        },
-
         mood: {
           type: DataTypes.STRING
         },
-        languageId: {
-          type: DataTypes.INTEGER
+        language: {
+          type: DataTypes.STRING
         },
         initialism: {
           type: DataTypes.STRING
@@ -80,12 +68,10 @@ module.exports = (sequelize, DataTypes) => {
         dateReleased: {
           type: DataTypes.STRING
         },
-        status: {
-          type: DataTypes.STRING
+        verified: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         },
-        performStatus: {
-          type: DataTypes.STRING
-        }
       }, {
         underscored: true
 
@@ -95,14 +81,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Song.associate = models => {
 
-        // Song.belongsTo(models.User)
-        // Song.belongsTo(models.Artist)
-        // Song.belongsToMany(models.genre, { through: 'songs_genres', foreignKey: 'songId',})
-        // Song.belongsToMany(models.user, { as: 'song', through: 'songs_users', foreignKey: 'user_id',})
-        // Song.hasOne(models.key)
-        Song.belongsTo(models.language)
         Song.belongsTo(models.musician, {as: "artist"})
-        Song.belongsToMany(models.setlist, { through: "setlists_songs", foreignKey: "songId", timestamps: false})
         Song.belongsToMany(models.musician, {
             as: "songwriters",
             through: "songwriters_songs",

@@ -1,4 +1,4 @@
-const models = require('../models')
+const models = require('../models').database1.models
 const router = require('express').Router()
 const jwt = require('jsonwebtoken')
 const authChecker = require("../middlewares/authChecker")

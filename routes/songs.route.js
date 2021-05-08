@@ -1,43 +1,65 @@
 const router = require('express').Router()
+const csv = require('csv-parser')
+const fs = require('fs')
+const path = require('path')
+const models = require('../models').database1.models
 
-const models = require('../models')
 
 const { convertDurationMinSecToMs, convertKeyToKeyModeInt, getAudioFeatures, convertIntToKey} = require('../lib/library')
 
 router.get('/', async(req, res) => {
 
-    let { number, category, order } = req.query
+    try {
+        let {number, category, order} = req.query
 
-    console.log(models)
-    const songs = await models.song.findAll({
-        include: [{
-            model: models.musician,
-            as: "artist"
-        }, {
-            model: models.musician,
-            as: "composers",
-            attributes: ["id", "enName"]
-        }],
-        limit: number,
-        order: [
-            [category, order]
-        ]
-        // {
-        //     model: models.genre,
-        // }]
-    })
-
-
-    songs.map(song => {
-        song.key = convertIntToKey(song.key,'forward')
-
-        if (song.mode === 1) {
-            song.key += 'm'
+        let options = {
+            include: [{
+                model: models.musician,
+                as: "artist"
+            }, {
+                model: models.musician,
+                as: "composers",
+                attributes: ["id", "enName"]
+            }, {
+                model: models.language,
+                attributes: ["id","name"]
+            }],
+            // limit: number,
+            // order: [
+            //     [category, order]
+            // ]
+            // {
+            //     model: models.genre,
+            // }]
         }
 
-        return song
-    })
-    res.json({ songs})
+        if(number) {
+            options.limit = number
+        }
+
+        if(category && order) {
+            options.order = [
+                [category, order]
+            ]
+        }
+
+        const songs = await models.song.findAll(options)
+
+
+        songs.map(song => {
+            song.key = convertIntToKey(song.key, 'forward')
+
+            if (song.mode === 1) {
+                song.key += 'm'
+            }
+
+            return song
+        })
+        console.log(songs[songs.length - 1])
+        res.json({songs})
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 router.post('/add', async (req, res) => {
@@ -209,6 +231,102 @@ router.delete('/:id', async(req, res) => {
         await song.destroy()
 
         res.status(200).json({message: `Song ${song.title} is deleted from database`})
+    } catch (error) {
+        res.status(400).json({error})
+    }
+})
+
+router.post('/csv', async (req, res) => {
+
+    try {
+
+        let data = []
+        await fs.createReadStream(path.join(__dirname, '../csv/test_repertoire_seed.csv'))
+            .pipe(csv())
+            .on('data', async (row) => {
+
+                data.push(row)
+
+
+            })
+            .on('end', () => {
+                console.log("CSV parsed successfully")
+
+                const func = async () => {
+                    for (const row of data) {
+
+                        let {
+                            title,
+                            artist,
+                            key,
+                            myKey,
+                            tempo,
+                            durationMinSec,
+                            timeSignature,
+                            language,
+                            spotifyLink,
+                            youtubeLink,
+                            otherLink,
+                        } = row || {}
+
+                        let artistId;
+                        let newArtist;
+
+                        const musician = await models.musician.findOne({where: { name: artist}})
+                        const dbLanguage = await models.language.findOne({where: { name: language}})
+
+                        let languageId;
+                        let newLanguage;
+                        //
+                        // console.log(language)
+                        // console.log(dbLanguage)
+                        // console.log("---before check---")
+                        if(dbLanguage) {
+                            languageId = dbLanguage.dataValues.id
+                            console.log('in')
+                        } else {
+                            newLanguage = await models.language.create({
+                                name: language,
+                            })
+
+                            languageId = newLanguage.id
+                        }
+
+
+                        if(musician) {
+                            artistId = musician.dataValues.id
+                        } else {
+                            newArtist = await models.musician.create({
+                                name: artist,
+                            })
+
+                            artistId = newArtist.id
+                        }
+
+
+                        const song = await models.song.create({
+                            title,
+                            artistId,
+                            languageId,
+                            tempo,
+                            durationMinSec
+                        })
+
+                    }
+
+                }
+
+                func()
+
+                res.status(200).json({message: "success"})
+            })
+
+
+
+        console.log(data)
+
+
+
     } catch (error) {
         res.status(400).json({error})
     }

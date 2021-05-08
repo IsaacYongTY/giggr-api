@@ -48,8 +48,8 @@ module.exports = {
       mood: {
         type: Sequelize.STRING
       },
-      language: {
-        type: Sequelize.STRING
+      language_id: {
+        type: Sequelize.INTEGER
       },
       initialism: {
         type: Sequelize.STRING

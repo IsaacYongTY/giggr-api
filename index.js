@@ -1,12 +1,11 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const sequelize = require('./lib/sequelize.config.js');
-const User = require('./models/database1/user');
 const session = require('express-session');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 
+const sequelize = require('./lib/sequelize.config.js');
 
 sequelize.authenticate()
     .then(() => {
@@ -48,36 +47,7 @@ app.get('/test', (req, res) => {
     res.send({message: "You accessed this route successfully"})
 })
 
-app.post('/test', async (req, res) => {
-    try {
 
-        console.log(User)
-
-        const isaac = await User.create(req.body)
-
-        // console.log(User(sequelize, DataTypes))
-        //
-        // const isaac = await User(sequelize, DataTypes).create(req.body)
-        console.log(isaac)
-
-        res.send( {user: isaac} )
-    } catch (error) {
-        console.log(error)
-        res.send({error})
-    }
-})
-
-app.delete('/test', async (req, res) => {
-    try {
-        const isaac = await user.findByPk(1)
-
-        res.send( {user: isaac} )
-    } catch (error) {
-        res.send({error})
-    }
-})
-
-console.log(process.env.PORT)
 app.use((req, res) => {
     res.status(400).send({ message: "Not Found"})
 })
