@@ -5,19 +5,6 @@ const session = require('express-session');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 
-const sequelize = require('./lib/sequelize.config.js');
-
-sequelize.authenticate()
-    .then(() => {
-        console.log('Connection has been established successfully.');
-    })
-    .catch((error) => {
-        console.error("Unable to connect to the database:", error)
-    })
-
-
-
-
 app.use(express.json())
 app.use(cors({
     credentials: true,
@@ -42,6 +29,7 @@ app.use('/api/v1/setlists', require('./routes/setlists.route'))
 //     res.sendFile(path.join(__dirname, 'client/build/index.html'))
 // })
 //
+
 app.get('/test', (req, res) => {
     console.log('got this route')
     res.send({message: "You accessed this route successfully"})

@@ -201,12 +201,12 @@ router.post('/csv', upload.single('file'), async (req, res) => {
 
 
             })
-            .on('end', async () => {
+            .on('end', () => {
                 console.log("CSV parsed successfully")
 
                 const saveCsvToDatabase = async (data) => {
+                    for (const row of data) {
 
-                    return data.map((row) => {
                         let {
                             title,
                             artist,
@@ -220,11 +220,22 @@ router.post('/csv', upload.single('file'), async (req, res) => {
                             youtubeLink,
                             otherLink,
                         } = row || {}
+                        
+                        const artistId = getArtistId(artist)
 
-                        return {
+                        const languageId = getLanguageId(language)
+
+                        // let durationMs;
+                        //
+                        // if(durationMinSec) {
+                        //     durationMs = convertMinSecToMs(durationMinSec)
+                        // }
+
+
+                        let songData = {
                             title,
-                            artistId: getArtistId(artist),
-                            languageId: getLanguageId(language),
+                            artistId,
+                            languageId,
                             tempo,
                             timeSignature,
                             durationMs: durationMinSec ? convertMinSecToMs(durationMinSec) : null,
@@ -235,12 +246,14 @@ router.post('/csv', upload.single('file'), async (req, res) => {
                             myKey: myKey ? convertKeyToKeyModeInt(key)[0] : null,
                             mode: key ?convertKeyToKeyModeInt(key)[1] : null
                         }
-                    })
+
+                        const song = await models.song.create(songData)
+
+                    }
+
                 }
 
                 saveCsvToDatabase(data)
-
-                const songs = await models.song.bulkCreate(songData)
 
                 fs.unlink(req.file.path, (err) => {
                     if(err) console.log(err)

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const User = require('../models/database1/user');
+const models = require('../models').database1.models;
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
@@ -8,8 +8,8 @@ initializePassport(passport);
 
 router.post('/signup', async (req, res) => {
     try {
-        console.log(User)
-        const user = await User.create(req.body)
+
+        const user = await models.user.create(req.body)
 
 
         let payload = {
