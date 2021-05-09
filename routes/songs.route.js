@@ -3,7 +3,9 @@ const csv = require('csv-parser')
 const fs = require('fs')
 const path = require('path')
 const models = require('../models').database1.models
-
+const multer = require('multer')
+const upload = multer({dest: "uploads/"})
+const { convertKeyToKeyMode } = require("../lib/library")
 
 const { convertDurationMinSecToMs, convertKeyToKeyModeInt, getAudioFeatures, convertIntToKey} = require('../lib/library')
 
@@ -236,12 +238,12 @@ router.delete('/:id', async(req, res) => {
     }
 })
 
-router.post('/csv', async (req, res) => {
+router.post('/csv', upload.single('file'), async (req, res) => {
 
     try {
 
         let data = []
-        await fs.createReadStream(path.join(__dirname, '../csv/test_repertoire_seed.csv'))
+        await fs.createReadStream(req.file.path)
             .pipe(csv())
             .on('data', async (row) => {
 
@@ -273,20 +275,17 @@ router.post('/csv', async (req, res) => {
                         let newArtist;
 
                         const musician = await models.musician.findOne({where: { name: artist}})
-                        const dbLanguage = await models.language.findOne({where: { name: language}})
+                        const dbLanguage = await models.language.findOne({where: { name: language.toLowerCase()}})
 
                         let languageId;
                         let newLanguage;
-                        //
-                        // console.log(language)
-                        // console.log(dbLanguage)
-                        // console.log("---before check---")
+
                         if(dbLanguage) {
                             languageId = dbLanguage.dataValues.id
                             console.log('in')
                         } else {
                             newLanguage = await models.language.create({
-                                name: language,
+                                name: language.toLowerCase(),
                             })
 
                             languageId = newLanguage.id
@@ -303,14 +302,34 @@ router.post('/csv', async (req, res) => {
                             artistId = newArtist.id
                         }
 
+                        let durationMs;
+                        if(durationMinSec) {
+                            durationMs = (parseInt(durationMinSec.split(':')[0]) * 60 + parseInt(durationMinSec.split(':')[1])) * 1000
+                        }
 
-                        const song = await models.song.create({
+
+                        let songData = {
                             title,
                             artistId,
                             languageId,
                             tempo,
-                            durationMinSec
-                        })
+                            timeSignature,
+                            durationMs,
+                            spotifyLink,
+                            youtubeLink,
+                            otherLink,
+                        }
+
+                        if(key) {
+                            songData.key = convertKeyToKeyModeInt(key)[0]
+                            songData.mode = convertKeyToKeyModeInt(key)[1]
+                        }
+
+                        if(myKey) {
+                            songData.myKey = convertKeyToKeyModeInt(myKey)[0]
+                        }
+
+                        const song = await models.song.create(songData)
 
                     }
 
@@ -318,17 +337,48 @@ router.post('/csv', async (req, res) => {
 
                 func()
 
-                res.status(200).json({message: "success"})
+                fs.unlink(req.file.path, (err) => {
+                    if(err) console.log(err)
+                    else {
+                        console.log(`${req.file.path} is deleted`)
+                        res.status(200).json({message: "success"})
+                    }
+                })
+
+
             })
-
-
-
-        console.log(data)
 
 
 
     } catch (error) {
         res.status(400).json({error})
     }
+})
+
+router.post('/csvtest', upload.single("file"), async(req, res) => {
+
+    let data =[]
+    await fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', async (row) => {
+            data.push(row)
+
+
+        })
+        .on('end', () => {
+            console.log("CSV parsed successfully")
+            console.log(data)
+            fs.unlink(req.file.path, (err) => {
+                if(err) console.log(err)
+                else {
+                    console.log(`${req.file.path} is deleted`)
+                    res.status(200).json({result: req.body })
+                }
+            })
+
+
+        })
+
+
 })
 module.exports = router
