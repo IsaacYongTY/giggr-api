@@ -1,4 +1,5 @@
 const { addGenresToDatabase, convertKeyToKeyModeInt } = require('../lib/library')
+const { getOrCreateArtist } = require('../lib/database-functions')
 
 describe("addGenresToDatabase", () => {
     it("should be working",() => {
