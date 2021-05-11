@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const initializePassport = require('../lib/passport.config');
 initializePassport(passport);
 
+
 router.post('/signup', async (req, res) => {
     try {
 
@@ -50,6 +51,7 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
     let payload = {
         user: {
             firstName: req.user.firstName,
+            lastName: req.user.lastName,
             id: req.user.id
         }
     }
