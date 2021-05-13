@@ -4,7 +4,7 @@ const fs = require('fs')
 const models = require('../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
-
+const authChecker = require('../middlewares/authChecker')
 const { getSongs, getOrCreateArtist, getLanguageId, csvUserInputToSongCols, userInputToSongCols } = require("../lib/database-functions")
 const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertIntToKey } = require('../lib/library')
 
@@ -15,6 +15,7 @@ router.get('/', async(req, res) => {
 
         const songs = await getSongs(number, category, order)
 
+        console.log(songs[0])
         res.status(200).json({songs})
 
     } catch (error) {
@@ -124,7 +125,7 @@ router.patch('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', authChecker, async(req, res) => {
     try {
         const song = await models.song.findByPk(req.params.id)
 
