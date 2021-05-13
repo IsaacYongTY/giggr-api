@@ -6,7 +6,7 @@ const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 
 const { getSongs, getArtistId, getLanguageId, csvUserInputToSongCols, userInputToSongCols } = require("../lib/database-functions")
-const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertIntToKey } = require('../lib/library')
+const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertKeyModeIntToKey } = require('../lib/library')
 
 router.get('/', async(req, res) => {
 
@@ -76,7 +76,7 @@ router.post('/spotify', async (req, res) => {
 
 
         // const artistId = await getArtistId(artist)
-        const userKey = convertIntToKey(key, mode)
+        const userKey = convertKeyModeIntToKey(key, mode)
 
         const result = {
             title,
