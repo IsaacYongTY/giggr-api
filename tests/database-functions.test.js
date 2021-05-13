@@ -1,7 +1,8 @@
-const { getSongs, getArtistId, getLanguageId, userInputToSongCols, csvUserInputToSongCols} =  require('../lib/database-functions')
+const { getSongs, getOrCreateArtist, getOrCreateLanguage, userInputToSongCols, csvUserInputToSongCols} =  require('../lib/database-functions')
+
 
 describe('getArtistId', () => {
     it('should create new artist if artist is not in database', () => {
-        expect(getArtistId).toBe(true)
+        expect(getOrCreateArtist()).toBe(true)
     })
 })

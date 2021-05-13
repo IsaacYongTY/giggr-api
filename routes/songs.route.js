@@ -5,8 +5,8 @@ const models = require('../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 
-const { getSongs, getArtistId, getLanguageId, csvUserInputToSongCols, userInputToSongCols } = require("../lib/database-functions")
-const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertKeyModeIntToKey } = require('../lib/library')
+const { getSongs, getOrCreateArtist, getLanguageId, csvUserInputToSongCols, userInputToSongCols } = require("../lib/database-functions")
+const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertIntToKey } = require('../lib/library')
 
 router.get('/', async(req, res) => {
 
@@ -25,12 +25,6 @@ router.get('/', async(req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const artist = await models.musician.findOne({
-            where: {
-                enName: req.body.artist
-            }
-        })
-
 
         let saveData = await userInputToSongCols(req.body)
 
@@ -38,7 +32,7 @@ router.post('/', async (req, res) => {
 
         let response = await models.song.create(saveData)
 
-        res.status(200).json({result: saveData})
+        res.status(200).json({result: response})
     } catch (error) {
         console.log(error)
         res.status(400).json({error})
