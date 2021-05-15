@@ -1,12 +1,12 @@
 const router = require('express').Router()
-const csv = require('csv-parser')
+
 const fs = require('fs')
 const models = require('../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 const authChecker = require('../middlewares/authChecker')
-const { getSongs, getOrCreateArtist, getLanguageId, csvUserInputToSongCols, userInputToSongCols } = require("../lib/database-functions")
-const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertIntToKey } = require('../lib/library')
+const { getSongs, getOrCreateArtist, getOrCreateLanguage, csvDataToSongCols, userInputToSongCols } = require("../lib/database-functions")
+const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertKeyModeIntToKey, csvToData } = require('../lib/library')
 
 router.get('/', async(req, res) => {
 
@@ -15,7 +15,6 @@ router.get('/', async(req, res) => {
 
         const songs = await getSongs(number, category, order)
 
-        console.log(songs[0])
         res.status(200).json({songs})
 
     } catch (error) {
@@ -29,8 +28,6 @@ router.post('/', async (req, res) => {
 
         let saveData = await userInputToSongCols(req.body)
 
-        console.log(saveData)
-
         let response = await models.song.create(saveData)
 
         res.status(200).json({result: response})
@@ -42,7 +39,6 @@ router.post('/', async (req, res) => {
 
 router.post('/spotify', async (req, res) => {
     try {
-
 
         const trackInfo = await getAudioFeatures(req.body.trackId)
 
@@ -64,11 +60,9 @@ router.post('/spotify', async (req, res) => {
             dateReleased,
             romTitle,
             language,
-            firstAlphabet
+            initialism
 
         } = trackInfo || {}
-        let saveData = {}
-
 
         // const artistId = await getArtistId(artist)
         const userKey = convertKeyModeIntToKey(key, mode)
@@ -90,7 +84,7 @@ router.post('/spotify', async (req, res) => {
             dateReleased,
             romTitle,
             language,
-            firstAlphabet
+            initialism
         }
 
         // await models.song.create(saveData)
@@ -105,19 +99,42 @@ router.patch('/:id', async (req, res) => {
 
     try {
 
+        let { title, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
         let musician = await models.musician.findByPk(song.artistId)
 
-        if(musician.enName !== req.body.artist) {
-            musician.enName = req.body.artist
+        if(musician.enName !== artist) {
+            musician.enName = artist
             await musician.save()
         }
 
-        for(const key in req.body) {
-            song.dataValues[key] = req.body[key]
+        if(durationMinSec) {
+            song.durationMs = convertMinSecToMs(durationMinSec)
         }
 
+        if(key) {
+            let keyMode = convertKeyToKeyModeInt(key)
+            console.log(keyMode)
+            song.key = keyMode[0]
+            song.mode = keyMode[1]
+        }
+
+        if(language) {
+            let { id: languageId } = await getOrCreateLanguage(language)
+            song.languageId = languageId
+        }
+
+        let otherData = {
+            title, tempo, timeSignature
+        }
+
+        for(const props in req.body) {
+            song[props] = otherData[props]
+        }
+
+        console.log(song)
         await song.save()
+
 
         res.status(200).json({message: "Edit successful", song: song})
     } catch (error) {
@@ -137,10 +154,9 @@ router.delete('/:id', authChecker, async(req, res) => {
     }
 })
 
-router.post('/fill', async (req, res) => {
+router.post('/spotify', async (req, res) => {
     try {
-
-        const trackInfo = await getAudioFeatures(req.body.trackId)
+        const trackInfo = await getAudioFeatures(req.query.trackId)
         console.log(trackInfo)
         res.status(200).json({result: trackInfo})
 
@@ -173,26 +189,18 @@ router.post('/composer/:id', async (req, res) => {
 router.post('/csv', upload.single('file'), async (req, res) => {
 
     try {
-        let data = []
-        fs.createReadStream(req.file.path)
-            .pipe(csv())
-            .on('data', async (row) => {
-                data.push(row)
-            })
-            .on('end', async () => {
-                console.log("CSV parsed successfully")
+        let data = await csvToData(req.file.path)
 
-                const songData = await Promise.all( await csvUserInputToSongCols(data))
-                const response = await models.song.bulkCreate(songData)
+        const songData = await Promise.all( await csvDataToSongCols(data))
+        const response = await models.song.bulkCreate(songData)
 
-                fs.unlink(req.file.path, (err) => {
-                    if(err) console.log(err)
-                    else {
-                        console.log(`${req.file.path} is deleted`)
-                        res.status(200).json({message: "success"})
-                    }
-                })
-            })
+        fs.unlink(req.file.path, (err) => {
+            if(err) console.log(err)
+            else {
+                console.log(`${req.file.path} is deleted`)
+                res.status(200).json({message: "success"})
+            }
+        })
 
     } catch (error) {
         res.status(400).json({error})

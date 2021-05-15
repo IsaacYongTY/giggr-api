@@ -7,9 +7,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index",
     "dev": "nodemon -r dotenv/config index",
+    "test": "yarn jest --watch",
     "db:migrate": "cross-env NODE_ENV=development sequelize-cli db:create",
     "db:reset": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed --seed ./seeders/init-db",
     "sequelize:database1:migration:generate": "sequelize --options-path ./.sequelize-database1 --env database1 migration:generate",
