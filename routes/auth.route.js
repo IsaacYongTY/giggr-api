@@ -17,7 +17,8 @@ router.post('/signup', async (req, res) => {
             user: {
                 firstName: user.firstName,
                 lastName: user.lastName,
-                id: user.id
+                id: user.id,
+                tierId: user.tierId
             }
         }
 
@@ -52,7 +53,8 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
         user: {
             firstName: req.user.firstName,
             lastName: req.user.lastName,
-            id: req.user.id
+            id: req.user.id,
+            tierId: req.user.tierId
         }
     }
 

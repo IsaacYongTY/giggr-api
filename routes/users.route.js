@@ -1,4 +1,4 @@
-const models = require('../models')
+const models = require('../models').database1.models
 const router = require('express').Router()
 
 router.get('/', async (req, res) => {
