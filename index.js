@@ -10,6 +10,8 @@ app.use(cors({
     credentials: true,
     origin: ['https://giggr.vercel.app', 'http://localhost:3000', 'https://www.getgiggr.com', 'https://getgiggr.com']
 }))
+
+app.set("trust proxy", 1)
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -18,7 +20,7 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(cookieParser())
-app.set("trust proxy", 1)
+
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
 app.use('/api/v1/songs', require('./routes/songs.route'))
