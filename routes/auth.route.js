@@ -64,7 +64,8 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
         // res.cookie('x-auth-token', `Bearer ${token}`)
 
         res.setHeader('Set-Cookie', serialize('x-auth-token', `Bearer ${token}`, {
-            path: '/'
+            path: '/',
+            domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'getgiggr.com'
         }))
         // cookies.set('x-auth-token', `Bearer ${token}`, {
         //     path: '/',
