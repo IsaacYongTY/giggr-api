@@ -18,6 +18,7 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(cookieParser())
+app.set("trust proxy", 1)
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
 app.use('/api/v1/songs', require('./routes/songs.route'))
