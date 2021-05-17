@@ -2,6 +2,7 @@ const router = require('express').Router();
 const models = require('../models').database1.models;
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const cookies = require('cookies');
 
 const initializePassport = require('../lib/passport.config');
 initializePassport(passport);
@@ -11,7 +12,6 @@ router.post('/signup', async (req, res) => {
     try {
 
         const user = await models.user.create(req.body)
-
 
         let payload = {
             user: {
@@ -62,6 +62,12 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
         expiresIn: 100000000
     }, (err, token) => {
         res.cookie('x-auth-token', `Bearer ${token}`)
+
+        // cookies.set('x-auth-token', `Bearer ${token}`, {
+        //     path: '/',
+        //     domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'getgiggr.com'
+        // })
+
         res.status(200).send(
             {
                 message: "successfully logged in",
