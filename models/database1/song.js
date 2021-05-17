@@ -32,9 +32,6 @@ module.exports = (sequelize, DataTypes) => {
         durationMs: {
           type: DataTypes.INTEGER,
         },
-        // durationMinSec: {
-        //   type: DataTypes.INTEGER,
-        // },
         timeSignature: {
           type: DataTypes.STRING,
           defaultValue: '4/4'
@@ -44,9 +41,6 @@ module.exports = (sequelize, DataTypes) => {
           defaultValue: false
         },
 
-        mood: {
-          type: DataTypes.STRING
-        },
         languageId: {
           type: DataTypes.INTEGER
         },

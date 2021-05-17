@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.STRING,
           allowNull: false
         },
-
         artistId: {
           type: DataTypes.INTEGER,
           allowNull: false
@@ -32,11 +31,8 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.STRING,
           defaultValue: '4/4'
         },
-        mood: {
-          type: DataTypes.STRING
-        },
-        language: {
-          type: DataTypes.STRING
+        languageId: {
+          type: DataTypes.INTEGER
         },
         initialism: {
           type: DataTypes.STRING
@@ -46,6 +42,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         youtubeLink: {
           type: DataTypes.STRING
+        },
+        otherLink: {
+            type: DataTypes.INTEGER
         },
         energy: {
           type: DataTypes.FLOAT,
@@ -62,9 +61,6 @@ module.exports = (sequelize, DataTypes) => {
         instrumentalness: {
             type: DataTypes.FLOAT
         },
-        // tags: {
-        //   type: DataTypes.STRING
-        // },
         dateReleased: {
           type: DataTypes.STRING
         },
@@ -74,13 +70,10 @@ module.exports = (sequelize, DataTypes) => {
         },
       }, {
         underscored: true
-
-    }
-
-    )
+    })
 
     Song.associate = models => {
-
+        Song.belongsTo(models.language)
         Song.belongsTo(models.musician, {as: "artist"})
         Song.belongsToMany(models.musician, {
             as: "songwriters",

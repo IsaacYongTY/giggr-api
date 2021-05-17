@@ -12,10 +12,15 @@ describe("addGenresToDatabase", () => {
 
 describe("convertKeyToKeyModeInt", () => {
     it("should convert key to key and mode", () => {
-        expect(convertKeyToKeyModeInt('C')).toStrictEqual([0,0])
-        expect(convertKeyToKeyModeInt('Am')).toStrictEqual([9,1])
+        expect(convertKeyToKeyModeInt('C')).toStrictEqual([0,1])
+        expect(convertKeyToKeyModeInt('Am')).toStrictEqual([9,0])
     })
 
+    it("should convert key to the correct enharmonic", () => {
+        expect(convertKeyToKeyModeInt('C#m')).toStrictEqual([1,0])
+        expect(convertKeyToKeyModeInt('F#m')).toStrictEqual([6,0])
+        expect(convertKeyToKeyModeInt('G#m')).toStrictEqual([8,0])
+    })
     it("should return error if the input is invalid",() => {
         expect(convertKeyToKeyModeInt('')).toStrictEqual(undefined)
         expect(convertKeyToKeyModeInt('Cmaj7')).toStrictEqual(undefined)
@@ -25,8 +30,9 @@ describe("convertKeyToKeyModeInt", () => {
 
 describe("convertKeyModeIntToKey", () => {
     it("should return the key", () => {
-        expect(convertKeyModeIntToKey(0)).toBe('C')
-        expect(convertKeyModeIntToKey(2,1)).toBe('Dm')
+        expect(convertKeyModeIntToKey(0, 1)).toBe('C')
+        expect(convertKeyModeIntToKey(2,0)).toBe('Dm')
+        expect(convertKeyModeIntToKey(5)).toBe('F')
     })
 
     it("should return undefined if no input is provided", () => {
@@ -39,8 +45,8 @@ describe("convertKeyModeIntToKey", () => {
     })
 
     it("should return the correct enharmonic key", () => {
-        expect(convertKeyModeIntToKey(6,1)).toBe('F#m')
-        expect(convertKeyModeIntToKey(8,1)).toBe('G#m')
-        expect(convertKeyModeIntToKey(1,1)).toBe('C#m')
+        expect(convertKeyModeIntToKey(6,0)).toBe('F#m')
+        expect(convertKeyModeIntToKey(8,0)).toBe('G#m')
+        expect(convertKeyModeIntToKey(1,0)).toBe('C#m')
     })
 })

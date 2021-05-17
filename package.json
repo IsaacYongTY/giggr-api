@@ -8,20 +8,21 @@
   },
   "scripts": {
     "start": "node index",
-    "dev": "nodemon -r dotenv/config index",
+    "dev": "export NODE_ENV=development && nodemon -r dotenv/config index",
     "test": "yarn jest --watch",
     "db:migrate": "cross-env NODE_ENV=development sequelize-cli db:create",
     "db:reset": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed --seed ./seeders/init-db",
     "sequelize:database1:migration:generate": "sequelize --options-path ./.sequelize-database1 --env database1 migration:generate",
     "sequelize:database1:migrate": "sequelize --options-path ./.sequelize-database1 --env database1 db:migrate",
-    "sequelize:database1:migrate:undo": "sequelize --options-path ./.sequelize-database1 --env database1 db:migrate:undo",
+    "sequelize:database1:migrate:undo": "NODE_ENV=development sequelize --options-path ./.sequelize-database1 --env database1 db:migrate:undo",
     "sequelize:database1:seed:all": "sequelize --options-path ./.sequelize-database1 --env database1 db:seed:all",
     "sequelize:database1:seed": "sequelize --options-path ./.sequelize-database1 --env database1 db:seed",
     "sequelize:master:migration:generate": "sequelize --options-path ./.sequelize-master --env master migration:generate",
     "sequelize:master:migrate": "sequelize --options-path ./.sequelize-master --env master db:migrate",
     "sequelize:master:migrate:undo": "sequelize --options-path ./.sequelize-master --env master db:migrate:undo",
     "sequelize:master:seed:all": "sequelize --options-path ./.sequelize-master --env master db:seed:all",
-    "sequelize:master:seed:undo": "sequelize --options-path ./.sequelize-master --env master db:seed:undo"
+    "sequelize:master:seed:undo": "sequelize --options-path ./.sequelize-master --env master db:seed:undo",
+    "sequelize:master:seed": "sequelize --options-path ./.sequelize-master --env master db:seed"
   },
   "keywords": [],
   "author": "",
@@ -50,6 +51,7 @@
     "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "jest": "^26.6.3",
     "nodemon": "^2.0.7",
     "sequelize-cli": "^6.2.0"

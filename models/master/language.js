@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Language.associate = models => {
-    // Genre.belongsToMany(models.song, { as: "songs", through: "songs_genres", foreignKey: "genreId"})
+    Language.hasMany(models.song)
   }
   return Language
 }

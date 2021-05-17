@@ -13,7 +13,7 @@ router.get('/', async(req, res) => {
     try {
         let {number, category, order} = req.query
 
-        const songs = await getSongs(number, category, order)
+        const songs = await getSongs('database1', number, category, order)
 
         res.status(200).json({songs})
 
@@ -26,10 +26,10 @@ router.get('/', async(req, res) => {
 router.post('/', async (req, res) => {
     try {
 
-        let saveData = await userInputToSongCols(req.body)
+        let saveData = await userInputToSongCols('database1', req.body)
 
         let response = await models.song.create(saveData)
-
+        console.log("success")
         res.status(200).json({result: response})
     } catch (error) {
         console.log(error)
@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
 router.post('/spotify', async (req, res) => {
     try {
 
-        const trackInfo = await getAudioFeatures(req.body.trackId)
+        const trackInfo = await getAudioFeatures(req.query.trackId)
 
         let {
             title,
@@ -50,7 +50,7 @@ router.post('/spotify', async (req, res) => {
             tempo,
             spotifyLink,
             durationMs,
-            time,
+            timeSignature,
             energy,
             danceability,
             valence,
@@ -63,7 +63,7 @@ router.post('/spotify', async (req, res) => {
             initialism
 
         } = trackInfo || {}
-
+        console.log(trackInfo)
         // const artistId = await getArtistId(artist)
         const userKey = convertKeyModeIntToKey(key, mode)
 
@@ -74,7 +74,7 @@ router.post('/spotify', async (req, res) => {
             tempo,
             spotifyLink,
             durationMinSec: convertDurationToMinSec(durationMs),
-            time,
+            timeSignature,
             energy,
             danceability,
             valence,
@@ -114,7 +114,6 @@ router.patch('/:id', async (req, res) => {
 
         if(key) {
             let keyMode = convertKeyToKeyModeInt(key)
-            console.log(keyMode)
             song.key = keyMode[0]
             song.mode = keyMode[1]
         }
@@ -132,7 +131,6 @@ router.patch('/:id', async (req, res) => {
             song[props] = otherData[props]
         }
 
-        console.log(song)
         await song.save()
 
 
@@ -189,11 +187,13 @@ router.post('/composer/:id', async (req, res) => {
 router.post('/csv', upload.single('file'), async (req, res) => {
 
     try {
+        console.log('in')
         let data = await csvToData(req.file.path)
-
-        const songData = await Promise.all( await csvDataToSongCols(data))
+        console.log('still working?')
+        const songData = await Promise.all( await csvDataToSongCols('database1', data))
         const response = await models.song.bulkCreate(songData)
 
+        console.log(songData[0])
         fs.unlink(req.file.path, (err) => {
             if(err) console.log(err)
             else {
@@ -201,6 +201,8 @@ router.post('/csv', upload.single('file'), async (req, res) => {
                 res.status(200).json({message: "success"})
             }
         })
+
+
 
     } catch (error) {
         res.status(400).json({error})
