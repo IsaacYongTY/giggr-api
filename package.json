@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "node index",
+    "start": "yarn sequelize:database1:migrate && yarn sequelize:master:migrate && yarn sequelize:database1:seed:all && yarn sequelize:master:seed:all && node index",
     "dev": "export NODE_ENV=development && nodemon -r dotenv/config index",
     "test": "yarn jest --watch",
     "db:migrate": "cross-env NODE_ENV=development sequelize-cli db:create",

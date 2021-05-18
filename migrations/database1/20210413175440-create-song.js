@@ -41,13 +41,6 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
-      // genre: {
-      //   type: Sequelize.STRING
-      // },
-
-      mood: {
-        type: Sequelize.STRING
-      },
       language_id: {
         type: Sequelize.INTEGER
       },
@@ -58,6 +51,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       youtube_link: {
+        type: Sequelize.STRING
+      },
+      other_link: {
         type: Sequelize.STRING
       },
       energy: {
@@ -74,9 +70,6 @@ module.exports = {
       },
       instrumentalness: {
         type: Sequelize.FLOAT
-      },
-      tags: {
-        type: Sequelize.STRING
       },
       date_released: {
         type: Sequelize.STRING

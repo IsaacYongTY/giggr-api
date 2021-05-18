@@ -74,7 +74,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         // references: {
@@ -102,18 +102,18 @@ module.exports = {
       pay: {
         type: Sequelize.FLOAT
       },
-      isRepeat: {
+      is_repeat: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
       frequency: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

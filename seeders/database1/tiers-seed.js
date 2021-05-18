@@ -7,7 +7,9 @@ module.exports = {
             {title: "pro"},
             {title: "admin"},
             {title: "beta"},
-            ], {});
+            ], {
+
+        });
 
     },
 
