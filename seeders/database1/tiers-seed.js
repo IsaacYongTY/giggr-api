@@ -2,11 +2,11 @@ module.exports = {
     up: async (queryInterface, Sequelize) => {
 
         await queryInterface.bulkInsert('tiers', [
-            {title: "free"},
-            {title: "plus"},
-            {title: "pro"},
-            {title: "admin"},
-            {title: "beta"},
+            {name: "free"},
+            {name: "plus"},
+            {name: "pro"},
+            {name: "admin"},
+            {name: "beta"},
             ], {
 
         });
