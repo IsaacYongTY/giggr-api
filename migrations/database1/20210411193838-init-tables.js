@@ -57,11 +57,11 @@ module.exports = {
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.TIMESTAMP
+        type: Sequelize.DATE
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.TIMESTAMP
+        type: Sequelize.DATE
       }
     });
 
