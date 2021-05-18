@@ -33,7 +33,7 @@ app.use('/api/v1/admin', require('./routes/admin.route'))
 //     res.sendFile(path.join(__dirname, 'client/build/index.html'))
 // })
 //
-console.log('new')
+console.log('new test migrate behaviour')
 app.get('/test', (req, res) => {
     console.log('got this route')
     res.send({message: "You accessed this route successfully"})
