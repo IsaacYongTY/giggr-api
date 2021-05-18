@@ -8,22 +8,22 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
+      name: {
         type: Sequelize.STRING
       },
     })
 
-    await queryInterface.createTable('keys',{
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      title: {
-        type: Sequelize.STRING
-      },
-    })
+    // await queryInterface.createTable('keys',{
+    //   id: {
+    //     allowNull: false,
+    //     autoIncrement: true,
+    //     primaryKey: true,
+    //     type: Sequelize.INTEGER
+    //   },
+    //   title: {
+    //     type: Sequelize.STRING
+    //   },
+    // })
 
     await queryInterface.createTable('users', {
       id: {
@@ -74,16 +74,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
       title: {
         type: Sequelize.STRING,
         allowNull: false
       },
       description: {
         type: Sequelize.TEXT
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       date: {
         type: Sequelize.DATE,

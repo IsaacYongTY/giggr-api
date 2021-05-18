@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
 
     const Tier = sequelize.define('tier', {
 
-        title: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false
         },

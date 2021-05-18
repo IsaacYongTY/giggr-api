@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 
   const Genre = sequelize.define('genre', {
 
-    title: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },
