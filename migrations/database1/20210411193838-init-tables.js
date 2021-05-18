@@ -115,44 +115,44 @@ module.exports = {
       }
     });
 
-    await queryInterface.createTable('genres',{
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING
-      },
-    })
+    // await queryInterface.createTable('genres',{
+    //   id: {
+    //     allowNull: false,
+    //     autoIncrement: true,
+    //     primaryKey: true,
+    //     type: Sequelize.INTEGER
+    //   },
+    //   name: {
+    //     type: Sequelize.STRING
+    //   },
+    // })
 
-    await queryInterface.createTable('musicians', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING
-      },
-      rom_name: {
-        type: Sequelize.STRING
-      },
-      en_name: {
-        type: Sequelize.STRING
-      },
-
-      created_at: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updated_at: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
-    });
+    // await queryInterface.createTable('musicians', {
+    //   id: {
+    //     allowNull: false,
+    //     autoIncrement: true,
+    //     primaryKey: true,
+    //     type: Sequelize.INTEGER
+    //   },
+    //   name: {
+    //     type: Sequelize.STRING
+    //   },
+    //   rom_name: {
+    //     type: Sequelize.STRING
+    //   },
+    //   en_name: {
+    //     type: Sequelize.STRING
+    //   },
+    //
+    //   created_at: {
+    //     allowNull: false,
+    //     type: Sequelize.DATE
+    //   },
+    //   updated_at: {
+    //     allowNull: false,
+    //     type: Sequelize.DATE
+    //   }
+    // });
 
 
 
@@ -165,7 +165,6 @@ module.exports = {
     await queryInterface.dropTable('gigs');
 
     await queryInterface.dropTable('users');
-    await queryInterface.dropTable('keys');
     await queryInterface.dropTable('tiers');
 
 
