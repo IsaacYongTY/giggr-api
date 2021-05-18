@@ -66,93 +66,93 @@ module.exports = {
     });
 
 
-    //
-    // await queryInterface.createTable('gigs', {
-    //   id: {
-    //     allowNull: false,
-    //     autoIncrement: true,
-    //     primaryKey: true,
-    //     type: Sequelize.INTEGER
-    //   },
-    //   title: {
-    //     type: Sequelize.STRING,
-    //     allowNull: false
-    //   },
-    //   description: {
-    //     type: Sequelize.TEXT
-    //   },
-    //   user_id: {
-    //     type: Sequelize.INTEGER,
-    //     allowNull: false,
-    //   },
-    //   date: {
-    //     type: Sequelize.DATE,
-    //     allowNull: false
-    //   },
-    //   time: {
-    //     type: Sequelize.DATE,
-    //   },
-    //   venue: {
-    //     type: Sequelize.STRING(100)
-    //   },
-    //   pay: {
-    //     type: Sequelize.FLOAT
-    //   },
-    //   is_repeat: {
-    //     type: Sequelize.BOOLEAN,
-    //     defaultValue: false
-    //   },
-    //   frequency: {
-    //     type: Sequelize.STRING
-    //   },
-    //   created_at: {
-    //     allowNull: false,
-    //     type: Sequelize.DATE
-    //   },
-    //   updated_at: {
-    //     allowNull: false,
-    //     type: Sequelize.DATE
-    //   }
-    // });
 
-    // await queryInterface.createTable('genres',{
-    //   id: {
-    //     allowNull: false,
-    //     autoIncrement: true,
-    //     primaryKey: true,
-    //     type: Sequelize.INTEGER
-    //   },
-    //   name: {
-    //     type: Sequelize.STRING
-    //   },
-    // })
+    await queryInterface.createTable('gigs', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      title: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      description: {
+        type: Sequelize.TEXT
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      date: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      time: {
+        type: Sequelize.DATE,
+      },
+      venue: {
+        type: Sequelize.STRING(100)
+      },
+      pay: {
+        type: Sequelize.FLOAT
+      },
+      is_repeat: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      frequency: {
+        type: Sequelize.STRING
+      },
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    });
 
-    // await queryInterface.createTable('musicians', {
-    //   id: {
-    //     allowNull: false,
-    //     autoIncrement: true,
-    //     primaryKey: true,
-    //     type: Sequelize.INTEGER
-    //   },
-    //   name: {
-    //     type: Sequelize.STRING
-    //   },
-    //   rom_name: {
-    //     type: Sequelize.STRING
-    //   },
-    //   en_name: {
-    //     type: Sequelize.STRING
-    //   },
-    //
-    //   created_at: {
-    //     allowNull: false,
-    //     type: Sequelize.DATE
-    //   },
-    //   updated_at: {
-    //     allowNull: false,
-    //     type: Sequelize.DATE
-    //   }
-    // });
+    await queryInterface.createTable('genres',{
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING
+      },
+    })
+
+    await queryInterface.createTable('musicians', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING
+      },
+      rom_name: {
+        type: Sequelize.STRING
+      },
+      en_name: {
+        type: Sequelize.STRING
+      },
+
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    });
 
 
 
