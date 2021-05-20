@@ -120,7 +120,7 @@ router.patch('/songs/:id', async (req, res) => {
 
     try {
         console.log(req.body)
-        let { title, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
+        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
 
         let musician = await models.musician.findByPk(song.artistId)
@@ -148,11 +148,14 @@ router.patch('/songs/:id', async (req, res) => {
         }
 
         let otherData = {
-            title, tempo, timeSignature
+            title, romTitle, tempo, timeSignature
         }
 
-        for(const props in req.body) {
-            song[props] = otherData[props]
+        for(const props in otherData) {
+            if(otherData[props]) {
+                song[props] = otherData[props]
+            }
+
         }
 
         console.log(song)

@@ -99,12 +99,12 @@ router.patch('/:id', async (req, res) => {
 
     try {
 
-        let { title, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
+        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
         let musician = await models.musician.findByPk(song.artistId)
 
-        if(musician.enName !== artist) {
-            musician.enName = artist
+        if(musician.name !== artist) {
+            musician.name = artist
             await musician.save()
         }
 
@@ -118,19 +118,23 @@ router.patch('/:id', async (req, res) => {
             song.mode = keyMode[1]
         }
 
+
         if(language) {
-            let { id: languageId } = await getOrCreateLanguage(language)
+            let { id: languageId } = await getOrCreateLanguage('database1', language)
             song.languageId = languageId
         }
 
+        console.log(req.body)
         let otherData = {
-            title, tempo, timeSignature
+            title, romTitle, tempo, timeSignature
         }
 
-        for(const props in req.body) {
-            song[props] = otherData[props]
+        for(const props in otherData) {
+            if(otherData[props]) {
+                song[props] = otherData[props]
+            }
         }
-
+        console.log(song)
         await song.save()
 
 
