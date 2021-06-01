@@ -44,12 +44,19 @@ router.post('/songs', async (req, res) => {
         let saveData = await userInputToSongCols('master', req.body)
         console.log('here')
         console.log(saveData)
-        let response = await models.song.findOrCreate({
-            where: {
-                spotifyLink: saveData.spotifyLink
-            },
+
+        let response;
+        let option = {
             defaults: saveData
-        })
+        }
+
+        if(saveData.spotifyLink) {
+            option.where = {
+                spotifyLink: saveData.spotifyLink
+            }
+        }
+
+        response = await models.song.findOrCreate(option)
 
         res.status(200).json({result: response})
     } catch (error) {
