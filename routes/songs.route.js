@@ -13,6 +13,7 @@ router.get('/', async(req, res) => {
     try {
         let {number, category, order} = req.query
 
+        console.log(req.query)
         const songs = await getSongs('database1', number, category, order)
 
         res.status(200).json({songs})

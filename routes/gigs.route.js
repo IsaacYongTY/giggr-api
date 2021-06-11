@@ -1,4 +1,5 @@
 const models = require('../models').database1.models
+const db = require('../models')
 const router = require('express').Router()
 const authChecker = require("../middlewares/authChecker")
 
@@ -16,7 +17,10 @@ router.get('/', authChecker, async (req, res) => {
     }
 
     try {
-        const gigs = await models.gig.findAll(options)
+        console.log(req.user.id)
+        console.log(db)
+        const gigs = await models.gig.findAll()
+
         res.status(200).json({gigs})
     } catch (error) {
         res.status(400).json({error})
