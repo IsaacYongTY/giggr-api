@@ -98,7 +98,7 @@ router.post('/spotify', async (req, res) => {
 router.patch('/:id', async (req, res) => {
 
     try {
-
+        console.log('in')
         let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
         let musician = await models.musician.findByPk(song.artistId)
@@ -112,11 +112,11 @@ router.patch('/:id', async (req, res) => {
             song.durationMs = convertMinSecToMs(durationMinSec)
         }
 
-        if(key) {
-            let keyMode = convertKeyToKeyModeInt(key)
-            song.key = keyMode[0]
-            song.mode = keyMode[1]
-        }
+        // if(key) {
+        //     let keyMode = convertKeyToKeyModeInt(key)
+        //     song.key = keyMode[0]
+        //     song.mode = keyMode[1]
+        // }
 
 
         if(language) {
