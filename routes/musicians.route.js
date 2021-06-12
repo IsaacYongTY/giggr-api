@@ -11,7 +11,8 @@ const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, conve
 router.get('/', async(req, res) => {
 
     try {
-        let {number, category, order} = req.query
+        console.log('in')
+        let {number, category, order} = req.query || {}
 
         console.log(req.query)
         const musicians = await getMusicians('database1', number, category, order)
