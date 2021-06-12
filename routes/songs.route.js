@@ -74,7 +74,7 @@ router.post('/spotify', async (req, res) => {
             key: userKey,
             tempo,
             spotifyLink,
-            durationMinSec: convertDurationToMinSec(durationMs),
+            durationMs,
             timeSignature,
             energy,
             danceability,
@@ -99,7 +99,7 @@ router.post('/spotify', async (req, res) => {
 router.patch('/:id', async (req, res) => {
 
     try {
-
+        console.log('in')
         let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
         let musician = await models.musician.findByPk(song.artistId)
@@ -113,11 +113,11 @@ router.patch('/:id', async (req, res) => {
             song.durationMs = convertMinSecToMs(durationMinSec)
         }
 
-        if(key) {
-            let keyMode = convertKeyToKeyModeInt(key)
-            song.key = keyMode[0]
-            song.mode = keyMode[1]
-        }
+        // if(key) {
+        //     let keyMode = convertKeyToKeyModeInt(key)
+        //     song.key = keyMode[0]
+        //     song.mode = keyMode[1]
+        // }
 
 
         if(language) {
@@ -192,13 +192,10 @@ router.post('/composer/:id', async (req, res) => {
 router.post('/csv', upload.single('file'), async (req, res) => {
 
     try {
-        console.log('in')
         let data = await csvToData(req.file.path)
-        console.log('still working?')
         const songData = await Promise.all( await csvDataToSongCols('database1', data))
         const response = await models.song.bulkCreate(songData)
 
-        console.log(songData[0])
         fs.unlink(req.file.path, (err) => {
             if(err) console.log(err)
             else {
