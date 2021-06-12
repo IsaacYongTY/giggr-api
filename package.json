@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "yarn run sequelize:database1:migrate && yarn run sequelize:master:migrate && node index",
-    "dev": "export NODE_ENV=development && nodemon -r dotenv/config index",
+    "dev": "cross-env NODEE_ENV=development && nodemon -r dotenv/config index",
     "test": "yarn jest --watch",
     "db:migrate": "cross-env NODE_ENV=development sequelize-cli db:create",
     "db:reset:dangerous": "yarn run sequelize:database1:migrate:undo:all && yarn run sequelize:master:migrate:undo:all",
