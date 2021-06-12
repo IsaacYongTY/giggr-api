@@ -67,9 +67,10 @@ router.post('/songs', async (req, res) => {
 
 router.post('/songs/spotify', async (req, res) => {
     try {
-
+        console.log(req.query.trackId)
         const trackInfo = await getAudioFeatures(req.query.trackId)
 
+        console.log(trackInfo)
         let {
             title,
             artist,
@@ -93,15 +94,15 @@ router.post('/songs/spotify', async (req, res) => {
         } = trackInfo || {}
 
         // const artistId = await getArtistId(artist)
-        const userKey = convertKeyModeIntToKey(key, mode)
 
         const result = {
             title,
             artist,
-            key: userKey,
+            key,
+            mode,
             tempo,
             spotifyLink,
-            durationMinSec: convertDurationToMinSec(durationMs),
+            durationMs,
             timeSignature,
             energy,
             danceability,
