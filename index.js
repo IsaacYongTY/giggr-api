@@ -24,6 +24,7 @@ app.use(cookieParser())
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
 app.use('/api/v1/songs', require('./routes/songs.route'))
+app.use('/api/v1/musicians', require('./routes/musicians.route'))
 app.use('/api/v1/users', require('./routes/users.route'))
 app.use('/api/v1/gigs', require('./routes/gigs.route'))
 app.use('/api/v1/setlists', require('./routes/setlists.route'))
