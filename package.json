@@ -14,7 +14,7 @@
     "db:reset:dangerous": "yarn run sequelize:database1:migrate:undo:all && yarn run sequelize:master:migrate:undo:all",
     "sequelize:database1:migration:generate": "sequelize --options-path ./.sequelize-database1 --env database1 migration:generate",
     "sequelize:database1:migrate": "sequelize --options-path ./.sequelize-database1 --env database1 db:migrate",
-    "sequelize:database1:migrate:undo": "NODE_ENV=development sequelize --options-path ./.sequelize-database1 --env database1 db:migrate:undo",
+    "sequelize:database1:migrate:undo": "sequelize --options-path ./.sequelize-database1 --env database1 db:migrate:undo",
     "sequelize:database1:migrate:undo:all": "NODE_ENV=development sequelize --options-path ./.sequelize-database1 --env database1 db:migrate:undo:all",
     "sequelize:database1:seed:all": "sequelize --options-path ./.sequelize-database1 --env database1 db:seed:all",
     "sequelize:database1:seed": "sequelize --options-path ./.sequelize-database1 --env database1 db:seed",

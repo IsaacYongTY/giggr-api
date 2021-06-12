@@ -45,17 +45,7 @@ module.exports = {
       },
     })
 
-    await queryInterface.createTable('roles',{
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING(20)
-      },
-    })
+
 
     await queryInterface.createTable("moods_songs", {
       mood_id: {
@@ -102,7 +92,7 @@ module.exports = {
     await queryInterface.dropTable('tags_songs')
     await queryInterface.dropTable('genres_songs')
     await queryInterface.dropTable('moods_songs')
-    await queryInterface.dropTable('roles')
+
     await queryInterface.dropTable('languages')
     await queryInterface.dropTable('tags')
     await queryInterface.dropTable('moods')
