@@ -41,8 +41,6 @@ router.post('/songs', async (req, res) => {
     try {
 
         let saveData = await userInputToSongCols('master', req.body)
-        console.log('here')
-        console.log(saveData)
 
         let response;
         let option = {

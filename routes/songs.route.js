@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
         let saveData = await userInputToSongCols('database1', req.body)
 
         let response = await models.song.create(saveData)
-        console.log("success")
+
         res.status(200).json({result: response})
     } catch (error) {
         console.log(error)
