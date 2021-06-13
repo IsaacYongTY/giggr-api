@@ -6,7 +6,9 @@ const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 const authChecker = require('../middlewares/authChecker')
 const { getSongs, getOrCreateArtist, getOrCreateLanguage, csvDataToSongCols, userInputToSongCols } = require("../lib/database-functions")
-const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertKeyModeIntToKey, csvToData } = require('../lib/library')
+const { getAudioFeatures, csvToData } = require('../lib/library')
+const convertKeyToKeyModeInt = require('../lib/convert-key-to-key-mode-int')
+const convertDurationMinSecToMs = require('../lib/convert-duration-min-sec-to-ms')
 
 router.get('/', async(req, res) => {
 
