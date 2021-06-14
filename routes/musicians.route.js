@@ -1,12 +1,8 @@
 const router = require('express').Router()
-
-const fs = require('fs')
 const models = require('../models').database1.models
-const multer = require('multer')
-const upload = multer({dest: "uploads/"})
-const authChecker = require('../middlewares/authChecker')
+
 const { getSongs, getMusicians, getOrCreateArtist, getOrCreateLanguage, csvDataToSongCols, userInputToSongCols } = require("../lib/database-functions")
-const { convertKeyToKeyModeInt, getAudioFeatures, convertDurationToMinSec, convertMinSecToMs, convertKeyModeIntToKey, csvToData } = require('../lib/library')
+
 
 router.get('/', async(req, res) => {
 
