@@ -62,7 +62,7 @@ router.get('/:id', async(req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-
+        console.log(req.body)
         let saveData = await userInputToSongCols('database1', req.body)
 
         let options = {
