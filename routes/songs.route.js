@@ -134,8 +134,8 @@ router.patch('/:id', async (req, res) => {
         song.durationMs = convertMinSecToMs(durationMinSec)
 
         let options = {
-            defaults: language,
-            where: { name: language }
+            defaults: language.toLowerCase(),
+            where: { name: language.toLowerCase() }
         }
 
         const [dbLanguage, created] = await models.language.findOrCreate(options)

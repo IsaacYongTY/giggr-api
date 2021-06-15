@@ -37,6 +37,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("setlists_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       setlist_id: {
         allowNull: false,
         type: Sequelize.INTEGER

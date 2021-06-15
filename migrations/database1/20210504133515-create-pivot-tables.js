@@ -9,6 +9,12 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     await queryInterface.createTable("songwriters_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       songwriter_id: {
         allowNull: false,
         type: Sequelize.INTEGER
@@ -20,6 +26,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("composers_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       composer_id: {
         allowNull: false,
         type: Sequelize.INTEGER
@@ -31,6 +43,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("arrangers_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       arranger_id: {
         allowNull: false,
         type: Sequelize.INTEGER
