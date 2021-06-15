@@ -1,14 +1,4 @@
-const { addGenresToDatabase, convertKeyToKeyModeInt, convertEnharmonic } = require('../lib/library')
-
-describe("addGenresToDatabase", () => {
-    it("should be working",() => {
-        expect(addGenresToDatabase('pop, metal, funk')).toStrictEqual(['pop', 'metal', 'funk'])
-        expect(addGenresToDatabase('pop')).toStrictEqual(['pop'])
-        expect(addGenresToDatabase('')).toStrictEqual([''])
-        expect(addGenresToDatabase('pop-metal-funk'))
-    })
-    it.todo("")
-})
+const convertKeyToKeyModeInt = require('../../lib/convert-key-to-key-mode-int')
 
 describe("convertKeyToKeyModeInt", () => {
     it("should convert key to key and mode", () => {
@@ -27,5 +17,3 @@ describe("convertKeyToKeyModeInt", () => {
         expect(convertKeyToKeyModeInt('Cmaj7m')).toStrictEqual(undefined)
     })
 })
-
-

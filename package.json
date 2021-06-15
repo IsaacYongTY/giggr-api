@@ -24,7 +24,8 @@
     "sequelize:master:migrate:undo:all": "sequelize --options-path ./.sequelize-master --env master db:migrate:undo:all",
     "sequelize:master:seed:all": "sequelize --options-path ./.sequelize-master --env master db:seed:all",
     "sequelize:master:seed:undo": "sequelize --options-path ./.sequelize-master --env master db:seed:undo",
-    "sequelize:master:seed": "sequelize --options-path ./.sequelize-master --env master db:seed"
+    "sequelize:master:seed": "sequelize --options-path ./.sequelize-master --env master db:seed",
+    "coverage": "jest --collect-coverage"
   },
   "keywords": [],
   "author": "",
