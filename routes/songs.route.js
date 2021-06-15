@@ -6,10 +6,10 @@ const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 const authChecker = require('../middlewares/authChecker')
 
-const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians } = require("../lib/database-functions")
+const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians } = require("../lib/utils/database-functions")
 const { getAudioFeatures, csvToData } = require('../lib/library')
-const convertKeyToKeyModeInt = require('../lib/convert-key-to-key-mode-int')
-const convertDurationMinSecToMs = require('../lib/convert-duration-min-sec-to-ms')
+const convertKeyToKeyModeInt = require('../lib/utils/convert-key-to-key-mode-int')
+const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
 
 
 
@@ -119,28 +119,32 @@ router.patch('/:id', async (req, res) => {
 
     try {
 
-        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language, composers, songwriters, arrangers } = req.body || {}
+        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language, composers, initialism, songwriters, arrangers } = req.body || {}
 
         let song = await models.song.findByPk(req.params.id)
 
-        let musician = await models.musician.findByPk(song.artistId)
-
-        if(musician.name !== artist) {
-            musician.name = artist
-            await musician.save()
+        console.log(artist.toLowerCase())
+        let musicianOptions = {
+            defaults: artist,
+            where: { name: artist }
         }
 
+        let [ dbMusician ] = await models.musician.findOrCreate(musicianOptions)
 
-        song.durationMs = convertMinSecToMs(durationMinSec)
+        song.artistId = dbMusician.id
+        song.durationMs = convertDurationMinSecToMs(durationMinSec)
 
-        let options = {
-            defaults: language.toLowerCase(),
-            where: { name: language.toLowerCase() }
+
+        if(language) {
+            let options = {
+                defaults: language.toLowerCase(),
+                where: { name: language.toLowerCase() }
+            }
+            const [dbLanguage, created] = await models.language.findOrCreate(options)
+
+            song.languageId = dbLanguage.id
         }
 
-        const [dbLanguage, created] = await models.language.findOrCreate(options)
-
-        song.languageId = dbLanguage.id
 
         const dbComposers = await bulkFindOrCreateMusicians('database1', composers)
         const dbSongwriters = await bulkFindOrCreateMusicians('database1', songwriters)
@@ -156,7 +160,7 @@ router.patch('/:id', async (req, res) => {
 
 
         let otherData = {
-            title, romTitle, tempo, timeSignature
+            title, romTitle, tempo, timeSignature, initialism
         }
 
         for(const props in otherData) {

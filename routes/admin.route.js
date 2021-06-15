@@ -1,14 +1,15 @@
 const router = require('express').Router()
 const { csvToData } = require('../lib/library')
-const { csvDataToSongCols, getOrBulkCreateDbItems } = require('../lib/database-functions')
+const { csvDataToSongCols, getOrBulkCreateDbItems } = require('../lib/utils/database-functions')
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 const db = require('../models')
 const models = db.master.models
 const fs = require('fs')
 const authChecker = require('../middlewares/authChecker')
-const { getSongs, getLanguages, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/database-functions')
-const { getAudioFeatures, convertKeyToKeyModeInt, convertKeyModeIntToKey, convertMinSecToMs } = require('../lib/library')
+const { getSongs, getLanguages, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/utils/database-functions')
+const { getAudioFeatures, convertKeyToKeyModeInt, convertKeyModeIntToKey,  } = require('../lib/library')
+const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
 
 router.get('/songs', async(req, res) => {
     console.log(Object.keys(db))
@@ -135,7 +136,7 @@ router.patch('/songs/:id', async (req, res) => {
         }
 
 
-        song.durationMs = convertMinSecToMs(durationMinSec)
+        song.durationMs = convertDurationMinSecToMs(durationMinSec)
 
 
         const options = {

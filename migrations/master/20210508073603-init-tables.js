@@ -169,6 +169,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("moods_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       mood_id: {
         type: Sequelize.INTEGER,
         allowNull: false
@@ -180,6 +186,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("genres_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       genre_id: {
         type: Sequelize.INTEGER,
         allowNull: false
@@ -191,6 +203,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("tags_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       tag_id: {
         type: Sequelize.INTEGER,
         allowNull: false
@@ -202,6 +220,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("songwriters_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       songwriter_id: {
         allowNull: false,
         type: Sequelize.INTEGER
@@ -213,6 +237,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("composers_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       composer_id: {
         allowNull: false,
         type: Sequelize.INTEGER
@@ -224,6 +254,12 @@ module.exports = {
     })
 
     await queryInterface.createTable("arrangers_songs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       arranger_id: {
         allowNull: false,
         type: Sequelize.INTEGER
