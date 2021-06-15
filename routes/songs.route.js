@@ -5,8 +5,13 @@ const models = require('../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 const authChecker = require('../middlewares/authChecker')
+
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians } = require("../lib/database-functions")
-const { getAudioFeatures, convertMinSecToMs, csvToData } = require('../lib/library')
+const { getAudioFeatures, csvToData } = require('../lib/library')
+const convertKeyToKeyModeInt = require('../lib/convert-key-to-key-mode-int')
+const convertDurationMinSecToMs = require('../lib/convert-duration-min-sec-to-ms')
+
+
 
 router.get('/', async(req, res) => {
 
@@ -209,7 +214,6 @@ router.post('/composer/:id', async (req, res) => {
         console.log(error)
         res.status(400).json({error})
     }
-
 })
 
 
@@ -228,8 +232,6 @@ router.post('/csv', upload.single('file'), async (req, res) => {
                 res.status(200).json({message: "success"})
             }
         })
-
-
 
     } catch (error) {
         res.status(400).json({error})
