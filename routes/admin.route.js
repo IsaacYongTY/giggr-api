@@ -7,8 +7,8 @@ const db = require('../models')
 const models = db.master.models
 const fs = require('fs')
 const authChecker = require('../middlewares/authChecker')
-const { getSongs, userInputToSongCols, getOrCreateLanguage } = require('../lib/database-functions')
-const { getAudioFeatures, convertKeyToKeyModeInt, convertKeyModeIntToKey, convertDurationToMinSec, convertMinSecToMs } = require('../lib/library')
+const { getSongs, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/database-functions')
+const { getAudioFeatures, convertKeyToKeyModeInt, convertKeyModeIntToKey, convertMinSecToMs } = require('../lib/library')
 
 router.get('/songs', async(req, res) => {
     console.log(Object.keys(db))
@@ -21,6 +21,23 @@ router.get('/songs', async(req, res) => {
         res.status(200).json({songs})
 
     } catch (error) {
+        res.status(400).json({error})
+    }
+})
+
+router.get('/musicians', async(req, res) => {
+
+    try {
+        console.log('in')
+        let {number, category, order} = req.query || {}
+
+        console.log(req.query)
+        const musicians = await getMusicians('database1', number, category, order)
+
+        res.status(200).json({musicians})
+
+    } catch (error) {
+        console.log(error)
         res.status(400).json({error})
     }
 })
@@ -41,23 +58,34 @@ router.post('/songs', async (req, res) => {
     try {
 
         let saveData = await userInputToSongCols('master', req.body)
-        console.log('here')
-        console.log(saveData)
 
-        let response;
-        let option = {
+        let options = {
             defaults: saveData
         }
 
         if(saveData.spotifyLink) {
-            option.where = {
+            options.where = {
                 spotifyLink: saveData.spotifyLink
             }
         }
 
-        response = await models.song.findOrCreate(option)
+        let [ song ] = await models.song.findOrCreate(options)
 
-        res.status(200).json({result: response})
+        const dbComposers = await bulkFindOrCreateMusicians('master', req.body.composers)
+        const dbSongwriters = await bulkFindOrCreateMusicians('master', req.body.songwriters)
+        const dbArrangers = await bulkFindOrCreateMusicians('master', req.body.arrangers)
+
+        const dbComposersIdArray = dbComposers.map(element => element[0].id)
+        const dbSongwritersIdArray = dbSongwriters.map(element => element[0].id)
+        const dbArrangersIdArray = dbArrangers.map(element => element[0].id)
+
+
+        await song.setComposers(dbComposersIdArray)
+        await song.setSongwriters(dbSongwritersIdArray)
+        await song.setArrangers(dbArrangersIdArray)
+
+
+        res.status(200).json({result: song})
     } catch (error) {
         console.log(error)
         res.status(400).json({error})
@@ -66,57 +94,10 @@ router.post('/songs', async (req, res) => {
 
 router.post('/songs/spotify', async (req, res) => {
     try {
-        console.log(req.query.trackId)
         const trackInfo = await getAudioFeatures(req.query.trackId)
 
-        console.log(trackInfo)
-        let {
-            title,
-            artist,
-            key,
-            mode,
-            tempo,
-            spotifyLink,
-            durationMs,
-            timeSignature,
-            energy,
-            danceability,
-            valence,
-            acousticness,
-            instrumentalness,
-            verified,
-            dateReleased,
-            romTitle,
-            language,
-            initialism
-
-        } = trackInfo || {}
-
-        // const artistId = await getArtistId(artist)
-
-        const result = {
-            title,
-            artist,
-            key,
-            mode,
-            tempo,
-            spotifyLink,
-            durationMs,
-            timeSignature,
-            energy,
-            danceability,
-            valence,
-            acousticness,
-            instrumentalness,
-            verified,
-            dateReleased,
-            romTitle,
-            language,
-            initialism
-        }
-        console.log(result)
         // await models.song.create(saveData)
-        res.status(200).json({result})
+        res.status(200).json({result: trackInfo})
 
     } catch (err) {
         res.status(400).json({err})
@@ -127,7 +108,7 @@ router.patch('/songs/:id', async (req, res) => {
 
     try {
         console.log(req.body)
-        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language } = req.body || {}
+        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language, composers, songwriters, arrangers } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
 
         let musician = await models.musician.findByPk(song.artistId)
@@ -137,22 +118,32 @@ router.patch('/songs/:id', async (req, res) => {
             await musician.save()
         }
 
-        if(durationMinSec) {
-            song.durationMs = convertMinSecToMs(durationMinSec)
+
+        song.durationMs = convertMinSecToMs(durationMinSec)
+
+
+        const options = {
+            where: { name: language},
+            defaults: language
         }
 
-        if(key) {
-            let keyMode = convertKeyToKeyModeInt(key)
-            console.log(keyMode)
-            song.key = keyMode[0]
-            song.mode = keyMode[1]
-        }
+        let [ dbLanguage, created] = await models.language.findOrCreate(options)
+        console.log(dbLanguage)
+        song.languageId = dbLanguage.id
 
-        if(language) {
-            let { id: languageId } = await getOrCreateLanguage('master',language)
-            console.log(languageId)
-            song.languageId = languageId
-        }
+
+        const dbComposers = await bulkFindOrCreateMusicians('master', composers)
+        const dbSongwriters = await bulkFindOrCreateMusicians('master', songwriters)
+        const dbArrangers = await bulkFindOrCreateMusicians('master', arrangers)
+
+        const dbComposersIdArray = dbComposers.map(element => element[0].id)
+        const dbSongwritersIdArray = dbSongwriters.map(element => element[0].id)
+        const dbArrangersIdArray = dbArrangers.map(element => element[0].id)
+
+
+        await song.setComposers(dbComposersIdArray)
+        await song.setSongwriters(dbSongwritersIdArray)
+        await song.setArrangers(dbArrangersIdArray)
 
         let otherData = {
             title, romTitle, tempo, timeSignature
@@ -178,11 +169,18 @@ router.patch('/songs/:id', async (req, res) => {
 
 router.post('/songs/csv', upload.single('file'), async(req, res) => {
     let data = await csvToData(req.file.path)
-    const artistsNameArray = Array.from(new Set(data.map(song => song.artist)))
-    const languagesNameArray = Array.from(new Set(data.map(song => song.language)))
+    const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
+    const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
+    const composersNameArray = Array.from(new Set(data.map(song => song.composers).filter(composer => Boolean(composer))))
+    const songwritersNameArray = Array.from(new Set(data.map(song => song.songwriters).filter(songwriter => Boolean(songwriter))))
+    const arrangersNameArray = Array.from(new Set(data.map(song => song.arrangers).filter(arranger => Boolean(arranger))))
 
     const allDbArtists = await getOrBulkCreateDbItems('master', 'musician', artistsNameArray)
+    const allDbComposers = await bulkFindOrCreateMusiciansFromString('master', composersNameArray)
+    const allDbSongwriters = await bulkFindOrCreateMusiciansFromString('master', songwritersNameArray)
+    const allDbArrangers = await bulkFindOrCreateMusiciansFromString('master', arrangersNameArray)
     const allDbLanguages = await getOrBulkCreateDbItems('master', 'language', languagesNameArray)
+
 
     data = data.map(song => (
         {
@@ -194,7 +192,32 @@ router.post('/songs/csv', upload.single('file'), async(req, res) => {
 
     const saveData = await Promise.all( await csvDataToSongCols('master', data))
 
-    await models.song.bulkCreate(saveData)
+    let songs = await models.song.bulkCreate(saveData)
+
+
+    const promiseArray = saveData.map(async (element, index) => {
+
+        if(element.songwriters) {
+            const songwritersIdArray = element.songwriters.split(',').map(songwriter => allDbSongwriters.find(dbSongwriter => dbSongwriter[0].name === songwriter.trim())[0].id)
+            await songs[index].setSongwriters(songwritersIdArray)
+        }
+
+
+        if(element.composers) {
+            const composersIdArray = element.composers.split(',').map(composer => allDbComposers.find(dbComposer => dbComposer[0].name === composer.trim())[0].id)
+            await songs[index].setComposers(composersIdArray)
+
+        }
+
+        if(element.arrangers) {
+            const arrangersIdArray = element.arrangers.split(',').map(arranger => allDbArrangers.find(dbArranger => dbArranger[0].name === arranger.trim())[0].id)
+            await songs[index].setArrangers(arrangersIdArray)
+        }
+
+    })
+
+
+   await Promise.all(promiseArray)
 
     fs.unlink(req.file.path, (err) => {
         if(err) console.log(err)

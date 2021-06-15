@@ -44,6 +44,7 @@
     "express-session": "^1.17.1",
     "flash": "^1.1.0",
     "hyphen": "^1.6.4",
+    "iconv": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-sign": "^0.1.0",
     "multer": "^1.4.2",

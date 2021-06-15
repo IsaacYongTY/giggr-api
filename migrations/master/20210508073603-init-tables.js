@@ -116,7 +116,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       time_signature: {
-        type: Sequelize.STRING(5),
+        type: Sequelize.STRING(10),
         defaultValue: '4/4'
       },
       language_id: {
