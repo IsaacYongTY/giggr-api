@@ -7,7 +7,7 @@ const db = require('../models')
 const models = db.master.models
 const fs = require('fs')
 const authChecker = require('../middlewares/authChecker')
-const { getSongs, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/database-functions')
+const { getSongs, getLanguages, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/database-functions')
 const { getAudioFeatures, convertKeyToKeyModeInt, convertKeyModeIntToKey, convertMinSecToMs } = require('../lib/library')
 
 router.get('/songs', async(req, res) => {
@@ -32,7 +32,7 @@ router.get('/musicians', async(req, res) => {
         let {number, category, order} = req.query || {}
 
         console.log(req.query)
-        const musicians = await getMusicians('database1', number, category, order)
+        const musicians = await getMusicians('master', number, category, order)
 
         res.status(200).json({musicians})
 
@@ -42,6 +42,22 @@ router.get('/musicians', async(req, res) => {
     }
 })
 
+router.get('/languages', async(req, res) => {
+
+    try {
+        console.log('languages in')
+        let {number, category, order} = req.query || {}
+
+        console.log(req.query)
+        const musicians = await getLanguages('master', number, category, order)
+
+        res.status(200).json({musicians})
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({error})
+    }
+})
 router.delete('/songs/:id', authChecker, async(req, res) => {
     try {
         const song = await models.song.findByPk(req.params.id)
