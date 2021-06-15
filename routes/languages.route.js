@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const models = require('../models').database1.models
 
-const { getLanguages } = require("../lib/database-functions")
+const { getLanguages } = require("../lib/utils/database-functions")
 
 
 router.get('/', async(req, res) => {

@@ -1,4 +1,4 @@
-const convertDurationMinSecToMs = require('../../lib/convert-duration-min-sec-to-ms');
+const convertDurationMinSecToMs = require('../../lib/utils/convert-duration-min-sec-to-ms');
 
 describe("convertMinSecToMs", () => {
     it("should convert mm:ss format to ms", () => {

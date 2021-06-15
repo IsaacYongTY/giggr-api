@@ -1,4 +1,4 @@
-const convertKeyToKeyModeInt = require('../../lib/convert-key-to-key-mode-int')
+const convertKeyToKeyModeInt = require('../../lib/utils/convert-key-to-key-mode-int')
 
 describe("convertKeyToKeyModeInt", () => {
     it("should convert key to key and mode", () => {
