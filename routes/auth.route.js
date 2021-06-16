@@ -61,12 +61,12 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
     jwt.sign(payload, process.env.SESSION_SECRET, {
         expiresIn: 100000000
     }, (err, token) => {
-        // res.cookie('x-auth-token', `Bearer ${token}`)
+        res.cookie('x-auth-token', `Bearer ${token}`)
 
-        res.setHeader('Set-Cookie', serialize('x-auth-token', `Bearer ${token}`, {
-            path: '/',
-            domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'getgiggr.com'
-        }))
+        // res.setHeader('Set-Cookie', serialize('x-auth-token', `Bearer ${token}`, {
+        //     path: '/',
+        //     domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'getgiggr.com'
+        // }))
         // cookies.set('x-auth-token', `Bearer ${token}`, {
         //     path: '/',
         //     domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'getgiggr.com'
