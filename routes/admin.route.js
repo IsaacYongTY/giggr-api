@@ -8,7 +8,7 @@ const models = db.master.models
 const fs = require('fs')
 const authChecker = require('../middlewares/authChecker')
 const { getSongs, getLanguages, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/utils/database-functions')
-const { getAudioFeatures, convertKeyToKeyModeInt, convertKeyModeIntToKey,  } = require('../lib/library')
+const { getAudioFeatures } = require('../lib/library')
 const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
 
 router.get('/songs', async(req, res) => {
@@ -125,7 +125,7 @@ router.patch('/songs/:id', async (req, res) => {
 
     try {
         console.log(req.body)
-        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language, composers, songwriters, arrangers } = req.body || {}
+        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers, songwriters, arrangers } = req.body || {}
         let song = await models.song.findByPk(req.params.id)
 
         let musician = await models.musician.findByPk(song.artistId)
@@ -145,7 +145,7 @@ router.patch('/songs/:id', async (req, res) => {
         }
 
         let [ dbLanguage, created] = await models.language.findOrCreate(options)
-        console.log(dbLanguage)
+
         song.languageId = dbLanguage.id
 
 
@@ -163,17 +163,16 @@ router.patch('/songs/:id', async (req, res) => {
         await song.setArrangers(dbArrangersIdArray)
 
         let otherData = {
-            title, romTitle, tempo, timeSignature
+            title, romTitle, tempo, timeSignature, key, mode
         }
 
         for(const props in otherData) {
-            if(otherData[props]) {
+            if(otherData[props] !== undefined) {
                 song[props] = otherData[props]
             }
 
         }
 
-        console.log(song)
         await song.save()
 
 

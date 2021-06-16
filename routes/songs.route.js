@@ -8,7 +8,6 @@ const authChecker = require('../middlewares/authChecker')
 
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians } = require("../lib/utils/database-functions")
 const { getAudioFeatures, csvToData } = require('../lib/library')
-const convertKeyToKeyModeInt = require('../lib/utils/convert-key-to-key-mode-int')
 const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
 
 
@@ -118,8 +117,9 @@ router.post('/spotify', async (req, res) => {
 router.patch('/:id', async (req, res) => {
 
     try {
+        console.log(req.body)
 
-        let { title, romTitle, artist, key, durationMinSec, tempo, timeSignature, language, composers, initialism, songwriters, arrangers } = req.body || {}
+        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers, initialism, songwriters, arrangers } = req.body || {}
 
         let song = await models.song.findByPk(req.params.id)
 
@@ -158,17 +158,18 @@ router.patch('/:id', async (req, res) => {
         await song.setSongwriters(dbSongwritersIdArray)
         await song.setArrangers(dbArrangersIdArray)
 
-
         let otherData = {
-            title, romTitle, tempo, timeSignature, initialism
+            title, romTitle, tempo, timeSignature, initialism, key, mode
         }
 
         for(const props in otherData) {
-            if(otherData[props]) {
+            if(otherData[props] !== undefined) {
                 song[props] = otherData[props]
+
             }
         }
-
+        console.log('after save')
+        console.log(song)
         await song.save()
 
         res.status(200).json({message: "Edit successful", song: song})
