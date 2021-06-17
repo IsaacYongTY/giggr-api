@@ -8,8 +8,9 @@ const cookieParser = require('cookie-parser');
 app.use(express.json())
 app.use(cors({
     credentials: true,
-    origin: ['https://giggr.vercel.app', 'http://localhost:3000', 'https://www.getgiggr.com', 'https://getgiggr.com']
+    origin: ['https://giggr.vercel.app', 'https://*.getgiggr.com', 'https://getgiggr.com', 'http://localhost:3000']
 }))
+
 
 app.set("trust proxy", 1)
 app.use(session({
