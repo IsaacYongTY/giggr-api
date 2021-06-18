@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
         jwt.sign(payload, process.env.SESSION_SECRET, {
             expiresIn: 100000000
         }, (err, token) => {
-            res.cookie('x-auth-token', token)
+            res.cookie('x-auth-token', `Bearer ${token}`)
             res.status(201).send(
                 {
                     message: "successfully signed up",
@@ -38,7 +38,7 @@ router.post('/signup', async (req, res) => {
         // res.statusMessage = "Email has already been taken"
         console.log(err)
         if(err.parent.code === '23505') {
-            res.status(400).json({message: "Email has already been takenzz"})
+            res.status(400).json({message: "User already exists. Please try again."})
             return
         }
         console.log(err.parent)
@@ -62,20 +62,7 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
         expiresIn: 100000000
     }, (err, token) => {
 
-        console.log(process.env.NODE_ENV)
-        // if(process.env.NODE_ENV === 'development') {
-            res.cookie('x-auth-token', `Bearer ${token}`)
-        // } else {
-        //     res.setHeader('Set-Cookie', serialize('x-auth-token', `Bearer ${token}`, {
-        //         path: '/',
-        //         domain: 'getgiggr.com'
-        //     }))
-        // }
-
-        // cookies.set('x-auth-token', `Bearer ${token}`, {
-        //     path: '/',
-        //     domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'getgiggr.com'
-        // })
+        res.cookie('x-auth-token', `Bearer ${token}`)
 
         res.status(200).send(
             {
