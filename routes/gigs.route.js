@@ -17,8 +17,6 @@ router.get('/', authChecker, async (req, res) => {
     }
 
     try {
-        console.log(req.user.id)
-        console.log(db)
         const gigs = await models.gig.findAll()
 
         res.status(200).json({gigs})
