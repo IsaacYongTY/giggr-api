@@ -10,6 +10,7 @@ const authChecker = require('../middlewares/authChecker')
 const { getSongs, getLanguages, userInputToSongCols, bulkFindOrCreateMusicians, bulkFindOrCreateMusiciansFromString, getMusicians } = require('../lib/utils/database-functions')
 const { getAudioFeatures } = require('../lib/library')
 const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
+const {Op} = require("sequelize");
 
 router.get('/songs', async(req, res) => {
     console.log(Object.keys(db))
@@ -187,22 +188,23 @@ router.post('/songs/csv', upload.single('file'), async(req, res) => {
     let data = await csvToData(req.file.path)
     const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
     const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
-    const composersNameArray = Array.from(new Set(data.map(song => song.composers).filter(composer => Boolean(composer))))
-    const songwritersNameArray = Array.from(new Set(data.map(song => song.songwriters).filter(songwriter => Boolean(songwriter))))
-    const arrangersNameArray = Array.from(new Set(data.map(song => song.arrangers).filter(arranger => Boolean(arranger))))
 
     const allDbArtists = await getOrBulkCreateDbItems('master', 'musician', artistsNameArray)
-    const allDbComposers = await bulkFindOrCreateMusiciansFromString('master', composersNameArray)
-    const allDbSongwriters = await bulkFindOrCreateMusiciansFromString('master', songwritersNameArray)
-    const allDbArrangers = await bulkFindOrCreateMusiciansFromString('master', arrangersNameArray)
     const allDbLanguages = await getOrBulkCreateDbItems('master', 'language', languagesNameArray)
-
 
     data = data.map(song => (
         {
             ...song,
-            artistId: allDbArtists.find(dbArtist => dbArtist.name === song.artist).id,
-            languageId: allDbLanguages.find(dbLanguage => dbLanguage.name === song.language).id
+            artistId: allDbArtists.findIndex(dbArtist => dbArtist.name === song.artist) > -1
+                ?
+                allDbArtists.find(dbArtist => dbArtist.name === song.artist).id
+                :
+                null,
+            languageId: allDbLanguages.find(dbLanguage => dbLanguage.name === song.language)
+                ?
+                allDbLanguages.find(dbLanguage => dbLanguage.name === song.language).id
+                :
+                null,
         }
     ))
 
@@ -210,24 +212,30 @@ router.post('/songs/csv', upload.single('file'), async(req, res) => {
 
     let songs = await models.song.bulkCreate(saveData)
 
-
+let delimiter = /[,、]/g
     const promiseArray = saveData.map(async (element, index) => {
 
         if(element.songwriters) {
-            const songwritersIdArray = element.songwriters.split(',').map(songwriter => allDbSongwriters.find(dbSongwriter => dbSongwriter[0].name === songwriter.trim())[0].id)
-            await songs[index].setSongwriters(songwritersIdArray)
+            let options = element.songwriters.split(delimiter).map(songwriter => ({name: songwriter }))
+            let foundSongwriters = await models.musician.findAll({ where:
+                    {   [Op.or]: options}})
+            await songs[index].setSongwriters(foundSongwriters)
         }
 
 
         if(element.composers) {
-            const composersIdArray = element.composers.split(',').map(composer => allDbComposers.find(dbComposer => dbComposer[0].name === composer.trim())[0].id)
-            await songs[index].setComposers(composersIdArray)
+            const options = element.composers.split(delimiter).map(composer => ({name: composer}))
+            const foundComposers = await models.musician.findAll({ where:
+                    {   [Op.or]: options}})
+            await songs[index].setComposers(foundComposers)
 
         }
 
         if(element.arrangers) {
-            const arrangersIdArray = element.arrangers.split(',').map(arranger => allDbArrangers.find(dbArranger => dbArranger[0].name === arranger.trim())[0].id)
-            await songs[index].setArrangers(arrangersIdArray)
+            const options = element.arrangers.split(delimiter).map(arranger => ({name: arranger}))
+            let foundArrangers = await models.musician.findAll({ where:
+                    {   [Op.or]: options}})
+            await songs[index].setArrangers(foundArrangers)
         }
 
     })
