@@ -74,7 +74,7 @@ router.delete('/songs/:id', authChecker, async(req, res) => {
 
 router.post('/songs', async (req, res) => {
     try {
-
+        let { composers, songwriters, arrangers } = req.body || {}
         let saveData = await userInputToSongCols('master', req.body)
 
         let options = {
@@ -87,23 +87,30 @@ router.post('/songs', async (req, res) => {
             }
         }
 
-        let [ song ] = await models.song.findOrCreate(options)
+        let [ song, isSongCreated ] = await models.song.findOrCreate(options)
 
-        const dbComposers = await bulkFindOrCreateMusicians('master', req.body.composers)
-        const dbSongwriters = await bulkFindOrCreateMusicians('master', req.body.songwriters)
-        const dbArrangers = await bulkFindOrCreateMusicians('master', req.body.arrangers)
+        let dbComposers, dbSongwriters, dbArrangers;
+        if(composers) {
+            dbComposers = await bulkFindOrCreateMusicians('master', composers)
+            await song.setComposers(dbComposers)
+        }
 
-        const dbComposersIdArray = dbComposers.map(element => element[0].id)
-        const dbSongwritersIdArray = dbSongwriters.map(element => element[0].id)
-        const dbArrangersIdArray = dbArrangers.map(element => element[0].id)
+        if(songwriters) {
+            dbSongwriters = await bulkFindOrCreateMusicians('master', songwriters)
+            await song.setSongwriters(dbSongwriters)
+        }
 
+        if(arrangers) {
+            dbArrangers = await bulkFindOrCreateMusicians('master', arrangers)
+            await song.setArrangers(dbArrangers)
+        }
 
-        await song.setComposers(dbComposersIdArray)
-        await song.setSongwriters(dbSongwritersIdArray)
-        await song.setArrangers(dbArrangersIdArray)
+        if(isSongCreated) {
+            res.status(201).json({result: song, message: "Song created successfully"})
+        }
 
+        res.status(200).json({result: song, message: "Song already in database"})
 
-        res.status(200).json({result: song})
     } catch (error) {
         console.log(error)
         res.status(400).json({error})
