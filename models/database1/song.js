@@ -53,6 +53,9 @@ module.exports = (sequelize, DataTypes) => {
         youtubeLink: {
           type: DataTypes.STRING
         },
+        otherLink: {
+            type: DataTypes.STRING
+        },
         energy: {
           type: DataTypes.FLOAT,
         },

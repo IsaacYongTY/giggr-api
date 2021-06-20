@@ -119,7 +119,8 @@ router.patch('/:id', async (req, res) => {
     try {
         console.log(req.body)
 
-        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers, initialism, songwriters, arrangers } = req.body || {}
+        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers,
+            initialism, songwriters, arrangers, spotifyLink, youtubeLink, otherLink } = req.body || {}
 
         let song = await models.song.findByPk(req.params.id)
 
@@ -159,7 +160,7 @@ router.patch('/:id', async (req, res) => {
         await song.setArrangers(dbArrangersIdArray)
 
         let otherData = {
-            title, romTitle, tempo, timeSignature, initialism, key, mode
+            title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink
         }
 
         for(const props in otherData) {
