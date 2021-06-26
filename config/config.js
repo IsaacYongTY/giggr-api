@@ -24,13 +24,6 @@ module.exports = {
      }
   },
   "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
     "databases": {
       "database1": {
         "username": process.env.DB_USERNAME,
@@ -41,6 +34,7 @@ module.exports = {
         "dialect": "postgres",
         "logging": false
       },
+
       "master": {
         "username": process.env.MASTER_DB_USERNAME,
         "password": process.env.MASTER_DB_PASSWORD,
@@ -48,7 +42,7 @@ module.exports = {
         "host": process.env.MASTER_HOST,
         "port": 5432,
         "dialect": "postgres"
-      }
+      },
     }
   },
   "database1": {
