@@ -27,6 +27,10 @@
     "sequelize:master:seed": "sequelize --options-path ./.sequelize-master --env master db:seed",
     "coverage": "jest --collect-coverage"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "verbose": true
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -40,6 +44,7 @@
     "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
     "dotenv": "^8.2.0",
+    "env-cmd": "^10.1.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "flash": "^1.1.0",
@@ -54,7 +59,8 @@
     "prompt-sync": "^4.2.0",
     "sequelize": "^6.6.2",
     "sequelize-cli": "^6.2.0",
-    "spotify-web-api-node": "^5.0.2"
+    "spotify-web-api-node": "^5.0.2",
+    "supertest": "^6.1.3"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
