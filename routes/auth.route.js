@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
         jwt.sign(payload, process.env.SESSION_SECRET, {
             expiresIn: 100000000
         }, (err, token) => {
-            res.cookie('x-auth-token', `Bearer ${token}`)
+            // res.cookie('x-auth-token', `Bearer ${token}`)
             res.status(201).send(
                 {
                     message: "successfully signed up",
@@ -62,7 +62,7 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
         expiresIn: 100000000
     }, (err, token) => {
 
-        res.cookie('x-auth-token', `Bearer ${token}`)
+        // res.cookie('x-auth-token', `Bearer ${token}`)
 
         res.status(200).send(
             {
