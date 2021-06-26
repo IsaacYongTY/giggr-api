@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 app.use(express.json())
 app.use(cors({
+    httpOnly: true,
     credentials: true,
     origin: [/(https?:\/\/)(.+)?-isaacyongty\.vercel\.app/, /(https?:\/\/)(.+\.)?getgiggr\.com/, /(http:\/\/localhost:)\d+/]
 }))
