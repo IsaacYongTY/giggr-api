@@ -37,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.setlist)
         User.belongsTo(models.tier)
         User.hasMany(models.gig)
+        User.hasMany(models.song)
         // User.belongsToMany(models.song, { as: 'song', through: 'songs_users', foreignKey: 'song_id',})
     }
 
