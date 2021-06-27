@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.STRING,
           allowNull: false
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
 
         artistId: {
           type: DataTypes.INTEGER,
@@ -92,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Song.associate = models => {
 
-        // Song.belongsTo(models.User)
+        Song.belongsTo(models.user)
         // Song.belongsTo(models.Artist)
         // Song.belongsToMany(models.genre, { through: 'songs_genres', foreignKey: 'songId',})
         // Song.belongsToMany(models.user, { as: 'song', through: 'songs_users', foreignKey: 'user_id',})

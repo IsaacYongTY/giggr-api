@@ -12,13 +12,14 @@ const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec
 
 
 
-router.get('/', async(req, res) => {
+router.get('/', authChecker, async(req, res) => {
 
     try {
         let {number, category, order} = req.query
-
+        console.log('ininin')
         console.log(req.query)
-        const songs = await getSongs('database1', number, category, order)
+        console.log(req.user)
+        const songs = await getSongs('database1', number, category, order, req.user)
 
         res.status(200).json({songs})
 
@@ -64,10 +65,10 @@ router.get('/:id', async(req, res) => {
 })
 
 
-router.post('/', async (req, res) => {
+router.post('/', authChecker, async (req, res) => {
     try {
-        console.log(req.body)
-        let saveData = await userInputToSongCols('database1', req.body)
+
+        let saveData = await userInputToSongCols('database1', req.body, req.user)
 
         let options = {
             defaults: saveData
@@ -75,6 +76,7 @@ router.post('/', async (req, res) => {
 
         if(saveData.spotifyLink) {
             options.where = {
+                userId: req.user.id,
                 spotifyLink: saveData.spotifyLink
             }
         }
