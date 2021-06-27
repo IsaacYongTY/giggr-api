@@ -8,45 +8,57 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-
-    await queryInterface.createTable('moods', {
+    await queryInterface.createTable("genres_songs", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING(30)
+      genre_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
+      song_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      }
     })
 
-    await queryInterface.createTable('tags', {
+    await queryInterface.createTable("moods_songs", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING(50)
+      mood_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
+      song_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      }
     })
 
-    await queryInterface.createTable('languages', {
+    await queryInterface.createTable("tags_songs", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING(20)
+      tag_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
+      song_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      }
     })
-
   },
-
 
   down: async (queryInterface, Sequelize) => {
     /**
@@ -55,10 +67,8 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-
-    await queryInterface.dropTable('languages')
-    await queryInterface.dropTable('tags')
-    await queryInterface.dropTable('moods')
-
+    await queryInterface.dropTable("tags_songs");
+    await queryInterface.dropTable("moods_songs");
+    await queryInterface.dropTable("genres_songs");
   }
 };
