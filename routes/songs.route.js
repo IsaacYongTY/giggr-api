@@ -9,6 +9,7 @@ const authChecker = require('../middlewares/authChecker')
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians } = require("../lib/utils/database-functions")
 const { getAudioFeatures, csvToData } = require('../lib/library')
 const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
+const {getOrBulkCreateDbItems} = require("../lib/utils/database-functions");
 
 
 
@@ -20,8 +21,14 @@ router.get('/', authChecker, async(req, res) => {
         console.log(req.query)
         console.log(req.user)
         const songs = await getSongs('database1', number, category, order, req.user)
-
-        res.status(200).json({songs})
+        console.log('working')
+        const genres = await models.genre.findAll()
+        console.log(genres)
+        const moods = await models.mood.findAll()
+        const tags = await models.tag.findAll()
+        const languages = await models.language.findAll()
+        console.log('wo')
+        res.status(200).json({songs, languages, genres, moods, tags })
 
     } catch (error) {
         console.log(error)
@@ -53,6 +60,16 @@ router.get('/:id', async(req, res) => {
             }, {
                 model: models.language,
                 attributes: ["id", "name"]
+            }, {
+                model: models.genre,
+                attributes: ["id", "name"]
+
+            }, {
+                model: models.mood,
+                attributes: ["id", "name"]
+            }, {
+                model: models.tag,
+                attributes: ["id", "name"]
             }]
         })
 
@@ -67,7 +84,7 @@ router.get('/:id', async(req, res) => {
 
 router.post('/', authChecker, async (req, res) => {
     try {
-
+        console.log(req.body)
         let saveData = await userInputToSongCols('database1', req.body, req.user)
 
         let options = {
@@ -86,15 +103,24 @@ router.post('/', authChecker, async (req, res) => {
         const dbComposers = await bulkFindOrCreateMusicians('database1', req.body.composers)
         const dbSongwriters = await bulkFindOrCreateMusicians('database1', req.body.songwriters)
         const dbArrangers = await bulkFindOrCreateMusicians('database1', req.body.arrangers)
+        const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
+        const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
+        const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
 
-        const dbComposersIdArray = dbComposers.map(element => element[0].id)
-        const dbSongwritersIdArray = dbSongwriters.map(element => element[0].id)
-        const dbArrangersIdArray = dbArrangers.map(element => element[0].id)
+        const dbComposersIdArray = dbComposers.map(element => element[0])
+        const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
+        const dbArrangersIdArray = dbArrangers.map(element => element[0])
+        const dbGenresIdArray = dbGenres.map(element => element[0])
+        const dbMoodsIdArray = dbMoods.map(element => element[0])
+        const dbTagsIdArray = dbTags.map(element => element[0])
 
 
         await song.setComposers(dbComposersIdArray)
         await song.setSongwriters(dbSongwritersIdArray)
         await song.setArrangers(dbArrangersIdArray)
+        await song.setGenres(dbGenresIdArray)
+        await song.setMoods(dbMoodsIdArray)
+        await song.setTags(dbTagsIdArray)
 
         res.status(200).json({result: song})
     } catch (error) {
@@ -116,7 +142,7 @@ router.post('/spotify', async (req, res) => {
     }
 })
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', authChecker, async (req, res) => {
 
     try {
         console.log(req.body)
@@ -147,19 +173,40 @@ router.patch('/:id', async (req, res) => {
 
             song.languageId = dbLanguage.id
         }
-
+        console.log(req.body)
 
         const dbComposers = await bulkFindOrCreateMusicians('database1', composers)
         const dbSongwriters = await bulkFindOrCreateMusicians('database1', songwriters)
         const dbArrangers = await bulkFindOrCreateMusicians('database1', arrangers)
+        if(req.body.genres) {
+            const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
+            await song.setGenres(dbGenres.map(genre => genre.id))
+        }
 
-        const dbComposersIdArray = dbComposers.map(element => element[0].id)
-        const dbSongwritersIdArray = dbSongwriters.map(element => element[0].id)
-        const dbArrangersIdArray = dbArrangers.map(element => element[0].id)
+        if(req.body.tags) {
+            const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
+
+            await song.setTags(dbTags.map(tag => tag.id))
+        }
+
+        if(req.body.moods) {
+            const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
+            await song.setMoods(dbMoods.map(mood => mood.id))
+        }
+
+        const dbComposersIdArray = dbComposers.map(element => element[0])
+        const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
+        const dbArrangersIdArray = dbArrangers.map(element => element[0])
+
+
+
 
         await song.setComposers(dbComposersIdArray)
         await song.setSongwriters(dbSongwritersIdArray)
         await song.setArrangers(dbArrangersIdArray)
+
+
+
 
         let otherData = {
             title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink
@@ -174,7 +221,7 @@ router.patch('/:id', async (req, res) => {
         console.log('after save')
         console.log(song)
         await song.save()
-
+        console.log(song)
         res.status(200).json({message: "Edit successful", song: song})
 
     } catch (error) {
