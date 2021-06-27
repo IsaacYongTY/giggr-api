@@ -118,7 +118,7 @@ router.patch('/:id', async (req, res) => {
 
     try {
         console.log(req.body)
-
+        console.log('here')
         let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers,
             initialism, songwriters, arrangers, spotifyLink, youtubeLink, otherLink } = req.body || {}
 
