@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Mood.associate = models => {
-
+    Mood.belongsToMany(models.song, { through: "moods_songs", foreignKey: "moodId", timestamps: false})
   }
 
   return Mood
