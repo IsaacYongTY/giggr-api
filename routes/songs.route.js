@@ -152,7 +152,6 @@ router.patch('/:id', authChecker, async (req, res) => {
 
         let song = await models.song.findByPk(req.params.id)
 
-        console.log(artist.toLowerCase())
         let musicianOptions = {
             defaults: artist,
             where: { name: artist }
@@ -162,7 +161,6 @@ router.patch('/:id', authChecker, async (req, res) => {
 
         song.artistId = dbMusician.id
         song.durationMs = convertDurationMinSecToMs(durationMinSec)
-
 
         if(language) {
             let options = {
@@ -176,8 +174,18 @@ router.patch('/:id', authChecker, async (req, res) => {
         console.log(req.body)
 
         const dbComposers = await bulkFindOrCreateMusicians('database1', composers)
+        const dbComposersIdArray = dbComposers.map(element => element[0])
+        await song.setComposers(dbComposersIdArray)
+
         const dbSongwriters = await bulkFindOrCreateMusicians('database1', songwriters)
+        const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
+        await song.setSongwriters(dbSongwritersIdArray)
+
         const dbArrangers = await bulkFindOrCreateMusicians('database1', arrangers)
+        const dbArrangersIdArray = dbArrangers.map(element => element[0])
+        await song.setArrangers(dbArrangersIdArray)
+
+
         if(req.body.genres) {
             const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
             await song.setGenres(dbGenres.map(genre => genre.id))
@@ -185,7 +193,6 @@ router.patch('/:id', authChecker, async (req, res) => {
 
         if(req.body.tags) {
             const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
-
             await song.setTags(dbTags.map(tag => tag.id))
         }
 
@@ -193,20 +200,6 @@ router.patch('/:id', authChecker, async (req, res) => {
             const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
             await song.setMoods(dbMoods.map(mood => mood.id))
         }
-
-        const dbComposersIdArray = dbComposers.map(element => element[0])
-        const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
-        const dbArrangersIdArray = dbArrangers.map(element => element[0])
-
-
-
-
-        await song.setComposers(dbComposersIdArray)
-        await song.setSongwriters(dbSongwritersIdArray)
-        await song.setArrangers(dbArrangersIdArray)
-
-
-
 
         let otherData = {
             title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink
@@ -218,10 +211,9 @@ router.patch('/:id', authChecker, async (req, res) => {
 
             }
         }
-        console.log('after save')
-        console.log(song)
+
         await song.save()
-        console.log(song)
+
         res.status(200).json({message: "Edit successful", song: song})
 
     } catch (error) {
