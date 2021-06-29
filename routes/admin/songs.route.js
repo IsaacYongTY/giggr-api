@@ -1,42 +1,30 @@
 const router = require('express').Router()
-const { csvToData } = require('../lib/library')
-const { csvDataToSongCols, getOrBulkCreateDbItems } = require('../lib/utils/database-functions')
+const db = require('../../models')
+const fs = require('fs')
+const models = require('../../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
-const db = require('../models')
-const models = db.master.models
-const fs = require('fs')
-const authChecker = require('../middlewares/authChecker')
-const { getSongs, getLanguages, userInputToSongCols, bulkFindOrCreateMusicians, getMusicians } = require('../lib/utils/database-functions')
-const { getAudioFeatures } = require('../lib/library')
-const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
-const {Op} = require("sequelize");
+const authChecker = require('../../middlewares/checkAuth')
 
-router.get('/songs', async(req, res) => {
+const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/utils/database-functions")
+const { getAudioFeatures, csvToData } = require('../../lib/library')
+const convertDurationMinSecToMs = require('../../lib/utils/convert-duration-min-sec-to-ms')
+const {getOrBulkCreateDbItems } = require("../../lib/utils/database-functions");
+
+router.get('/', async(req, res) => {
     console.log(Object.keys(db))
     try {
 
         let { number, category, order } = req.query
 
-        const songs = await getSongs('master', number, category, order)
-
-        res.status(200).json({songs})
-
-    } catch (error) {
-        res.status(400).json({error})
-    }
-})
-
-router.get('/musicians', async(req, res) => {
-
-    try {
-        console.log('in')
-        let {number, category, order} = req.query || {}
-
-        console.log(req.query)
-        const musicians = await getMusicians('master', number, category, order)
-
-        res.status(200).json({musicians})
+        const songs = await getDatabaseSongs(number,category,order)
+        console.log('all work')
+        const genres = await models.genre.findAll()
+        const moods = await models.mood.findAll()
+        const tags = await models.tag.findAll()
+        const languages = await models.language.findAll()
+        console.log(songs)
+        res.status(200).json({songs, languages, genres, moods, tags })
 
     } catch (error) {
         console.log(error)
@@ -44,23 +32,7 @@ router.get('/musicians', async(req, res) => {
     }
 })
 
-router.get('/languages', async(req, res) => {
-
-    try {
-        console.log('languages in')
-        let {number, category, order} = req.query || {}
-
-        console.log(req.query)
-        const musicians = await getLanguages('master', number, category, order)
-
-        res.status(200).json({musicians})
-
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({error})
-    }
-})
-router.delete('/songs/:id', authChecker, async(req, res) => {
+router.delete('/:id', authChecker, async(req, res) => {
     try {
         const song = await models.song.findByPk(req.params.id)
 
@@ -72,10 +44,10 @@ router.delete('/songs/:id', authChecker, async(req, res) => {
     }
 })
 
-router.post('/songs', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         let { composers, songwriters, arrangers } = req.body || {}
-        let saveData = await userInputToSongCols('master', req.body)
+        let saveData = await userInputToSongCols('master', req.body, req.user)
 
         let options = {
             defaults: saveData
@@ -90,6 +62,7 @@ router.post('/songs', async (req, res) => {
         let [ song, isSongCreated ] = await models.song.findOrCreate(options)
 
         let dbComposers, dbSongwriters, dbArrangers;
+
         if(composers) {
             dbComposers = await bulkFindOrCreateMusicians('master', composers)
             await song.setComposers(dbComposers)
@@ -117,72 +90,79 @@ router.post('/songs', async (req, res) => {
     }
 })
 
-router.post('/songs/spotify', async (req, res) => {
-    try {
-        const trackInfo = await getAudioFeatures(req.query.trackId)
 
-        // await models.song.create(saveData)
-        res.status(200).json({result: trackInfo})
-
-    } catch (err) {
-        res.status(400).json({err})
-    }
-})
-
-router.patch('/songs/:id', async (req, res) => {
+router.patch('/:id', async (req, res) => {
 
     try {
-        console.log(req.body)
-        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers, songwriters, arrangers } = req.body || {}
-        let song = await models.song.findByPk(req.params.id)
 
-        let musician = await models.musician.findByPk(song.artistId)
+        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers,
+            initialism, songwriters, arrangers, spotifyLink, youtubeLink, otherLink } = req.body || {}
 
-        if(musician.name !== artist) {
-            musician.name = artist
-            await musician.save()
+        let song = await db.master.models.song.findByPk(req.params.id)
+
+        let musicianOptions = {
+            defaults: artist,
+            where: { name: artist }
         }
 
+        let [ dbMusician ] = await models.musician.findOrCreate(musicianOptions)
 
+        song.artistId = dbMusician.id
         song.durationMs = convertDurationMinSecToMs(durationMinSec)
 
 
-        const options = {
-            where: { name: language},
-            defaults: language
+        if(language) {
+            let options = {
+                defaults: language.toLowerCase(),
+                where: { name: language.toLowerCase() }
+            }
+            const [dbLanguage, created] = await models.language.findOrCreate(options)
+
+            song.languageId = dbLanguage.id
         }
-
-        let [ dbLanguage, created] = await models.language.findOrCreate(options)
-
-        song.languageId = dbLanguage.id
-
+        console.log(req.body)
 
         const dbComposers = await bulkFindOrCreateMusicians('master', composers)
-        const dbSongwriters = await bulkFindOrCreateMusicians('master', songwriters)
-        const dbArrangers = await bulkFindOrCreateMusicians('master', arrangers)
-
-        const dbComposersIdArray = dbComposers.map(element => element[0].id)
-        const dbSongwritersIdArray = dbSongwriters.map(element => element[0].id)
-        const dbArrangersIdArray = dbArrangers.map(element => element[0].id)
-
-
+        const dbComposersIdArray = dbComposers.map(element => element[0])
         await song.setComposers(dbComposersIdArray)
+
+        const dbSongwriters = await bulkFindOrCreateMusicians('master', songwriters)
+        const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
         await song.setSongwriters(dbSongwritersIdArray)
+
+        const dbArrangers = await bulkFindOrCreateMusicians('master', arrangers)
+        const dbArrangersIdArray = dbArrangers.map(element => element[0])
         await song.setArrangers(dbArrangersIdArray)
 
+        if(req.body.genres) {
+            const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
+            await song.setGenres(dbGenres.map(genre => genre.id))
+        }
+
+        if(req.body.tags) {
+            const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
+
+            await song.setTags(dbTags.map(tag => tag.id))
+        }
+
+        if(req.body.moods) {
+            const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
+            await song.setMoods(dbMoods.map(mood => mood.id))
+        }
+
         let otherData = {
-            title, romTitle, tempo, timeSignature, key, mode
+            title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink
         }
 
         for(const props in otherData) {
             if(otherData[props] !== undefined) {
                 song[props] = otherData[props]
-            }
 
+            }
         }
 
-        await song.save()
 
+        await song.save()
 
         res.status(200).json({message: "Edit successful", song: song})
     } catch (error) {
@@ -191,7 +171,7 @@ router.patch('/songs/:id', async (req, res) => {
     }
 })
 
-router.post('/songs/csv', upload.single('file'), async(req, res) => {
+router.post('/csv', upload.single('file'), async(req, res) => {
     let data = await csvToData(req.file.path)
     const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
     const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
@@ -219,7 +199,7 @@ router.post('/songs/csv', upload.single('file'), async(req, res) => {
 
     let songs = await models.song.bulkCreate(saveData)
 
-let delimiter = /[,、]/g
+    let delimiter = /[,、]/g
     const promiseArray = saveData.map(async (element, index) => {
 
         if(element.songwriters) {
@@ -248,7 +228,7 @@ let delimiter = /[,、]/g
     })
 
 
-   await Promise.all(promiseArray)
+    await Promise.all(promiseArray)
 
     fs.unlink(req.file.path, (err) => {
         if(err) console.log(err)
@@ -258,5 +238,6 @@ let delimiter = /[,、]/g
         }
     })
 })
+
 
 module.exports = router

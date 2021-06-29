@@ -75,6 +75,10 @@ module.exports = (sequelize, DataTypes) => {
     Song.associate = models => {
         Song.belongsTo(models.language)
         Song.belongsTo(models.musician, {as: "artist"})
+        Song.belongsToMany(models.genre, { through: "songs_genres", foreignKey: "songId", timestamps: false})
+        Song.belongsToMany(models.mood, { through: "songs_moods", foreignKey: "songId", timestamps: false})
+        Song.belongsToMany(models.tag, { through: "songs_tags", foreignKey: "songId", timestamps: false})
+
         Song.belongsToMany(models.musician, {
             as: "songwriters",
             through: "songwriters_songs",

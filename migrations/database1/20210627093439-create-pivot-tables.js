@@ -8,7 +8,7 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("genres_songs", {
+    await queryInterface.createTable("songs_genres", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -25,7 +25,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable("moods_songs", {
+    await queryInterface.createTable("songs_moods", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -42,7 +42,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable("tags_songs", {
+    await queryInterface.createTable("songs_tags", {
       id: {
         allowNull: false,
         autoIncrement: true,

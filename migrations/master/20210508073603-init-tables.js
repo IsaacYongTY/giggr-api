@@ -168,7 +168,7 @@ module.exports = {
       },
     })
 
-    await queryInterface.createTable("moods_songs", {
+    await queryInterface.createTable("songs_moods", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -185,7 +185,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable("genres_songs", {
+    await queryInterface.createTable("songs_genres", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -202,7 +202,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable("tags_songs", {
+    await queryInterface.createTable("songs_tags", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -281,9 +281,9 @@ module.exports = {
     await queryInterface.dropTable("arrangers_songs")
     await queryInterface.dropTable("composers_songs")
     await queryInterface.dropTable("songwriters_songs")
-    await queryInterface.dropTable("tags_songs")
-    await queryInterface.dropTable("genres_songs")
-    await queryInterface.dropTable("moods_songs")
+    await queryInterface.dropTable("songs_tags")
+    await queryInterface.dropTable("songs_genres")
+    await queryInterface.dropTable("songs_moods")
     await queryInterface.dropTable("songs")
     await queryInterface.dropTable("musicians")
     await queryInterface.dropTable("languages")
