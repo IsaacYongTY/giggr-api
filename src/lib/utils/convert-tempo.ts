@@ -1,4 +1,4 @@
-const convertTempo = (spotifyTempo, spotifyTime) => {
+export default function convertTempo(spotifyTempo : number, spotifyTime : number) {
 
   if (spotifyTime === 3) {
     spotifyTempo = spotifyTempo * 2 / spotifyTime
@@ -6,5 +6,3 @@ const convertTempo = (spotifyTempo, spotifyTime) => {
   
   return `${Math.round(spotifyTempo)}`
 }
-
-module.exports = convertTempo

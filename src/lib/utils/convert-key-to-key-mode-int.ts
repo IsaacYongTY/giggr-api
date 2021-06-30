@@ -1,7 +1,7 @@
 
 const keyIntMap = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 
-module.exports = function convertKeyToKeyModeInt(keyString) {
+export default function convertKeyToKeyModeInt(keyString : string) : [number, number] {
 
     let note;
     let mode = 1;
@@ -26,7 +26,7 @@ module.exports = function convertKeyToKeyModeInt(keyString) {
         note = 'Ab'
     }
 
-    if(!keyIntMap.includes(note)) return undefined
+    if(!keyIntMap.includes(note)) return [-1, -1]
 
     return [keyIntMap.indexOf(note), mode]
 }

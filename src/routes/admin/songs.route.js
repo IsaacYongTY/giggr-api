@@ -7,8 +7,8 @@ const upload = multer({dest: "uploads/"})
 const authChecker = require('../../middlewares/checkAuth')
 
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/utils/database-functions")
-const { getAudioFeatures, csvToData } = require('../../lib/library')
-const convertDurationMinSecToMs = require('../../lib/utils/convert-duration-min-sec-to-ms')
+import { csvToData } from '../../lib/library'
+import convertDurationMinSecToMs from '../../lib/utils/convert-duration-min-sec-to-ms'
 const {getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../../lib/utils/database-functions");
 
 router.get('/', async(req, res) => {
@@ -18,12 +18,10 @@ router.get('/', async(req, res) => {
         let { number, category, order } = req.query
 
         const songs = await getDatabaseSongs(number,category,order)
-        console.log('all work')
         const genres = await models.genre.findAll()
         const moods = await models.mood.findAll()
         const tags = await models.tag.findAll()
         const languages = await models.language.findAll()
-        console.log(songs)
         res.status(200).json({songs, languages, genres, moods, tags })
 
     } catch (error) {

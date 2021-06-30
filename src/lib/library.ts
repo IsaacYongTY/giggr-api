@@ -1,34 +1,28 @@
-const convertTempo = require('./utils/convert-tempo')
+import fs from "fs"
+import csv from 'csv-parser'
 
-const fs = require("fs")
-const csv = require('csv-parser')
-const containsChinese = require('contains-chinese')
+import convertTempo from './utils/convert-tempo'
+// @ts-ignore
+import containsChinese from 'contains-chinese'
 import getRomTitle from './utils/get-rom-title'
 
-const SpotifyWebApi = require('spotify-web-api-node')
+import SpotifyWebApi from 'spotify-web-api-node'
 import removeBrackets from './utils/remove-brackets'
 
-const getInitialism = (input) => removeBrackets(input).split(' ').reduce((acc, word) => acc + word[0].toLowerCase(), '')
+const getInitialism = (input : string) => removeBrackets(input).split(' ').reduce((acc, word) => acc + word[0].toLowerCase(), '')
 
 const keyIntMap = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 
-function convertMinSecToMs(durationMinSec) {
-    return (parseInt(durationMinSec.split(':')[0]) * 60 + parseInt(durationMinSec.split(':')[1])) * 1000
-}
-
-
-const convertTime = (spotifyTime) => `${spotifyTime}/4`
-
-
+const convertTime = (spotifyTime : string | number) => `${spotifyTime}/4`
+console.log('compile1')
 const spotifyApi = new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
 })
 
-const getAudioFeatures = async(trackId) => {
+export async function getAudioFeatures(trackId : string) {
 
     try {
-        console.log('working')
         const code = await spotifyApi.clientCredentialsGrant()
 
         await spotifyApi.setAccessToken(code.body.access_token)
@@ -66,7 +60,10 @@ const getAudioFeatures = async(trackId) => {
             acousticness,
             instrumentalness,
             verified: false,
-            dateReleased: album.release_date
+            dateReleased: album.release_date,
+            romTitle: "",
+            language: "",
+            initialism: ""
         };
 
         const isChinese = containsChinese(processedTrackData.title)
@@ -76,7 +73,6 @@ const getAudioFeatures = async(trackId) => {
             processedTrackData.language = 'mandarin'
             processedTrackData.initialism = getInitialism(processedTrackData.romTitle)
         } else {
-            processedTrackData.romTitle = ""
             processedTrackData.language = 'english'
             processedTrackData.initialism = getInitialism(processedTrackData.title)
         }
@@ -89,14 +85,14 @@ const getAudioFeatures = async(trackId) => {
     }
 }
 
-function addGenresToDatabase(genresString) {
+export function addGenresToDatabase(genresString : string) {
     return genresString.split(',').map(genre => genre.trim())
 }
 
-function csvToData(csvFile) {
+export function csvToData(csvFile : any) {
 
     return new Promise((resolve, reject) => {
-        let data = []
+        let data : any[] = []
 
         fs.createReadStream(csvFile)
             .pipe(csv({
@@ -122,10 +118,4 @@ function csvToData(csvFile) {
 
     })
 
-}
-module.exports = {
-
-    getAudioFeatures,
-    addGenresToDatabase,
-    csvToData,
 }

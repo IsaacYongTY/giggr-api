@@ -3,8 +3,8 @@ const db = require('../../models')
 const { Op } = require('sequelize')
 const Sequelize = require('sequelize')
 
-const convertKeyToKeyModeInt = require('./convert-key-to-key-mode-int');
-const convertDurationMinSecToMs = require("./convert-duration-min-sec-to-ms");
+import convertKeyToKeyModeInt from './convert-key-to-key-mode-int';
+import convertDurationMinSecToMs from "./convert-duration-min-sec-to-ms";
 
 
 async function getSongs(database, number, category, order, user) {

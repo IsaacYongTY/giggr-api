@@ -1,15 +1,11 @@
 const router = require('express').Router()
 const db = require('../../models')
-const {getLanguages} = require("../../lib/utils/database-functions");
-const {getMusicians} = require("../../lib/utils/database-functions");
-
-
-
+const { getLanguages, getMusicians } = require("../../lib/utils/database-functions");
 
 router.get('/musicians', async(req, res) => {
 
     try {
-        console.log('in')
+
         let {number, category, order} = req.query || {}
 
         console.log(req.query)
