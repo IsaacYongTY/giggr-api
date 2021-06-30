@@ -5,7 +5,7 @@ const models = require('../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 
-const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, createSongOptions, getOrBulkCreateDbItems } = require("../lib/utils/database-functions")
+const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, createSongOptions, getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../lib/utils/database-functions")
 const { getAudioFeatures, csvToData } = require('../lib/library')
 const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
 
@@ -21,6 +21,7 @@ router.get('/', async(req, res) => {
         const tags = await models.tag.findAll()
         const languages = await models.language.findAll()
         console.log('wo')
+        console.log(songs)
         res.status(200).json({songs, languages, genres, moods, tags })
 
     } catch (error) {
@@ -93,45 +94,7 @@ router.post('/', async (req, res) => {
 
         let [song] = await models.song.findOrCreate(options)
 
-        if(req.body.composers) {
-            const dbComposers = await bulkFindOrCreateMusicians('database1', req.body.composers)
-            const dbComposersIdArray = dbComposers.map(element => element[0])
-            await song.setComposers(dbComposersIdArray)
-        }
-
-        if(req.body.songwriters) {
-            const dbSongwriters = await bulkFindOrCreateMusicians('database1', req.body.songwriters)
-            const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
-            await song.setSongwriters(dbSongwritersIdArray)
-        }
-
-        if(req.body.arrangers) {
-            const dbArrangers = await bulkFindOrCreateMusicians('database1', req.body.arrangers)
-            const dbArrangersIdArray = dbArrangers.map(element => element[0])
-            await song.setArrangers(dbArrangersIdArray)
-        }
-
-        if(req.body.genres) {
-            const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
-            const dbGenresIdArray = dbGenres.map(element => element[0])
-            await song.setGenres(dbGenresIdArray)
-        }
-
-        if(req.body.moods) {
-            const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
-            const dbMoodsIdArray = dbMoods.map(element => element[0])
-            await song.setMoods(dbMoodsIdArray)
-        }
-
-        if(req.body.tags) {
-            const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
-            const dbTagsIdArray = dbTags.map(element => element[0])
-            await song.setTags(dbTagsIdArray)
-        }
-
-
-
-
+        await createItemsRelatedToSong('database1', song, req.body)
 
         res.status(200).json({result: song})
     } catch (error) {
@@ -183,38 +146,7 @@ router.patch('/:id', async (req, res) => {
         }
         console.log(req.body)
 
-        if(req.body.composers) {
-            const dbComposers = await bulkFindOrCreateMusicians('database1', composers)
-            const dbComposersIdArray = dbComposers.map(element => element[0])
-            await song.setComposers(dbComposersIdArray)
-        }
-
-        if(req.body.songwriters) {
-            const dbSongwriters = await bulkFindOrCreateMusicians('database1', songwriters)
-            const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
-            await song.setSongwriters(dbSongwritersIdArray)
-        }
-
-        if(req.body.arrangers) {
-            const dbArrangers = await bulkFindOrCreateMusicians('database1', arrangers)
-            const dbArrangersIdArray = dbArrangers.map(element => element[0])
-            await song.setArrangers(dbArrangersIdArray)
-        }
-
-        if(req.body.genres) {
-            const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
-            await song.setGenres(dbGenres.map(genre => genre.id))
-        }
-
-        if(req.body.tags) {
-            const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
-            await song.setTags(dbTags.map(tag => tag.id))
-        }
-
-        if(req.body.moods) {
-            const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
-            await song.setMoods(dbMoods.map(mood => mood.id))
-        }
+        await createItemsRelatedToSong('database1', song, req.body)
 
         let otherData = {
             title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink
@@ -245,6 +177,7 @@ router.delete('/:id', async(req, res) => {
 
         res.status(200).json({message: `Song ${song.title} is deleted from database`})
     } catch (error) {
+        console.log(error)
         res.status(400).json({error})
     }
 })

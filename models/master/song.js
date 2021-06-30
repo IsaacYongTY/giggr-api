@@ -75,30 +75,31 @@ module.exports = (sequelize, DataTypes) => {
     Song.associate = models => {
         Song.belongsTo(models.language)
         Song.belongsTo(models.musician, {as: "artist"})
-        Song.belongsToMany(models.genre, { through: "songs_genres", foreignKey: "songId", timestamps: false})
-        Song.belongsToMany(models.mood, { through: "songs_moods", foreignKey: "songId", timestamps: false})
-        Song.belongsToMany(models.tag, { through: "songs_tags", foreignKey: "songId", timestamps: false})
+        Song.belongsToMany(models.genre, { through: "songs_genres", timestamps: false})
+        Song.belongsToMany(models.mood, { through: "songs_moods", timestamps: false})
+        Song.belongsToMany(models.tag, { through: "songs_tags", timestamps: false})
 
         Song.belongsToMany(models.musician, {
+
             as: "songwriters",
-            through: "songwriters_songs",
-            foreignKey: "songId",
-            otherKey: "songwriterId",
-            timestamps: false
+            through: "songs_songwriters",
+
+            timestamps: false,
+            onDelete: "cascade"
         })
         Song.belongsToMany(models.musician, {
             as: "composers",
-            through: "composers_songs",
-            foreignKey: "songId",
-            otherKey: "composerId",
-            timestamps: false
+            through: "songs_composers",
+
+            timestamps: false,
+            onDelete: "cascade"
         })
         Song.belongsToMany(models.musician, {
             as: "arrangers",
-            through: "arrangers_songs",
-            foreignKey: "songId",
-            otherKey: "arrangerId",
-            timestamps: false
+            through: "songs_arrangers",
+
+            timestamps: false,
+            onDelete: "cascade"
         })
 
     }

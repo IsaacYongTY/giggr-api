@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     Tier.associate = models => {
-        // Tier.hasMany(models.user)
+        Tier.hasMany(models.user)
     }
     return Tier
 }

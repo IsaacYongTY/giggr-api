@@ -16,7 +16,11 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Role.associate = models => {
-    Role.hasMany(models.musician)
+    Role.belongsToMany(models.musician, {
+      through: "roles_musicians",
+      timestamps: false,
+      onDelete: "cascade"
+    })
   }
   return Role
 }
