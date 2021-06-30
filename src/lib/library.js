@@ -4,7 +4,7 @@ const convertTempo = require('./utils/convert-tempo')
 const fs = require("fs")
 const csv = require('csv-parser')
 const containsChinese = require('contains-chinese')
-const getRomTitle = require('./utils/get-rom-title')
+import getRomTitle from './utils/get-rom-title'
 
 const SpotifyWebApi = require('spotify-web-api-node')
 const removeBrackets = require('./utils/remove-brackets')
