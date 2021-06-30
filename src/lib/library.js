@@ -1,4 +1,3 @@
-const assignPitchClass = require('./utils/assign-pitch-class')
 const convertTempo = require('./utils/convert-tempo')
 
 const fs = require("fs")
@@ -7,7 +6,7 @@ const containsChinese = require('contains-chinese')
 import getRomTitle from './utils/get-rom-title'
 
 const SpotifyWebApi = require('spotify-web-api-node')
-const removeBrackets = require('./utils/remove-brackets')
+import removeBrackets from './utils/remove-brackets'
 
 const getInitialism = (input) => removeBrackets(input).split(' ').reduce((acc, word) => acc + word[0].toLowerCase(), '')
 
