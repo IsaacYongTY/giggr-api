@@ -7,8 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "yarn run sequelize:database1:migrate && yarn run sequelize:master:migrate && tsc && node build/index",
-
+    "start": "yarn run sequelize:database1:migrate && yarn run sequelize:master:migrate && npm run build && node build/index",
+    "build": "rimraf ./build && tsc",
     "dev": "concurrently --raw yarn:dev:*",
     "dev:build": "rimraf build && tsc -w",
     "dev:run": "cross-env NODE_ENV=development nodemon -r dotenv/config build/index",
