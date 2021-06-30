@@ -135,7 +135,6 @@ router.patch('/:id', async (req, res) => {
         song.artistId = dbMusician.id
         song.durationMs = convertDurationMinSecToMs(durationMinSec)
 
-
         if(language) {
             let options = {
                 defaults: language.toLowerCase(),
@@ -159,10 +158,9 @@ router.patch('/:id', async (req, res) => {
 
             }
         }
-        console.log('after save')
-        console.log(song)
+
         await song.save()
-        console.log(song)
+
         res.status(200).json({message: "Edit successful", song: song})
 
     } catch (error) {
