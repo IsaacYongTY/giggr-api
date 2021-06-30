@@ -5,7 +5,7 @@ const models = require('../models').database1.models
 const multer = require('multer')
 const upload = multer({dest: "uploads/"})
 
-const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, createSongOptions, getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../lib/utils/database-functions")
+const { getSongs, csvDataToSongCols, userInputToSongCols, createItemsRelatedToSong } = require("../lib/utils/database-functions")
 const { getAudioFeatures, csvToData } = require('../lib/library')
 const convertDurationMinSecToMs = require('../lib/utils/convert-duration-min-sec-to-ms')
 
