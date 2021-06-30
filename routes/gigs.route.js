@@ -1,7 +1,7 @@
 const models = require('../models').database1.models
 const db = require('../models')
 const router = require('express').Router()
-const authChecker = require("../middlewares/authChecker")
+const authChecker = require("../middlewares/checkAuth")
 
 router.get('/', authChecker, async (req, res) => {
 

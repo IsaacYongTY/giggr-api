@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
+const checkAuth = require("./middlewares/checkAuth");
 
 app.use(express.json())
 app.use(cors({
@@ -19,13 +20,15 @@ app.use(cookieParser())
 
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
-app.use('/api/v1/songs', require('./routes/songs.route'))
+app.use('/api/v1/songs', checkAuth, require('./routes/songs.route'))
 app.use('/api/v1/musicians', require('./routes/musicians.route'))
 app.use('/api/v1/languages', require('./routes/languages.route'))
 app.use('/api/v1/users', require('./routes/users.route'))
 app.use('/api/v1/gigs', require('./routes/gigs.route'))
 app.use('/api/v1/setlists', require('./routes/setlists.route'))
-app.use('/api/v1/admin', require('./routes/admin.route'))
+app.use('/api/v1/admin', checkAuth, require('./routes/admin/admin.route'))
+app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))
+
 
 // app.use('*', (req, res) => {
 //     res.sendFile(path.join(__dirname, 'client/build/index.html'))

@@ -10,7 +10,6 @@ const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 console.log(env)
-console.log(config)
 
 let databases = Object.keys(config.databases)
 
