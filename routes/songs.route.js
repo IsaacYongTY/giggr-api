@@ -137,7 +137,7 @@ router.post('/spotify', async (req, res) => {
         // await models.song.create(saveData)
         res.status(200).json({result: trackInfo})
 
-    } catch (err) {
+    } catch (err) {g""
         res.status(400).json({err})
     }
 })
