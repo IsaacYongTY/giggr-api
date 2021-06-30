@@ -266,6 +266,7 @@ async function csvDataToSongCols(database, data) {
         let {
             title,
             romTitle,
+            userId,
             artist,
             artistId,
             key,
@@ -293,6 +294,7 @@ async function csvDataToSongCols(database, data) {
 
         return {
             title,
+            userId,
             romTitle,
             artistId,
             languageId,

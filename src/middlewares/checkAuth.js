@@ -4,11 +4,10 @@ const checkAuth = async (req, res, next) => {
 
     try {
 
-        console.log(req.headers)
         const tokenString = req.headers["x-auth-token"]
         console.log(tokenString)
         if(!tokenString) {
-            res.status(403).send({error : "No token string is provided"})
+            return res.status(403).send({error : "No token string is provided"})
         }
         const token = tokenString.split(" ")[1]
 

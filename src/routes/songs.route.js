@@ -1,3 +1,5 @@
+import {getOrBulkCreateDbItems} from "../lib/utils/database-functions";
+import { Op } from "sequelize";
 const router = require('express').Router()
 const db = require('../models')
 const fs = require('fs')
@@ -214,23 +216,104 @@ router.post('/composer/:id', async (req, res) => {
 
 
 router.post('/csv', upload.single('file'), async (req, res) => {
+    let data = await csvToData(req.file.path)
+    console.log(data)
+    const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
+    const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
 
-    try {
-        let data = await csvToData(req.file.path)
-        const songData = await Promise.all( await csvDataToSongCols('database1', data))
-        const response = await models.song.bulkCreate(songData)
+    let delimiter = /[,、]/g
 
-        fs.unlink(req.file.path, (err) => {
-            if(err) console.log(err)
-            else {
-                console.log(`${req.file.path} is deleted`)
-                res.status(200).json({message: "success"})
-            }
-        })
+    const composersNameArray = data.map(song => song.composers.split(delimiter)).flat().filter(composer => Boolean(composer))
+    const songwritersNameArray = data.map(song => song.songwriters.split(delimiter)).flat().filter(songwriter => Boolean(songwriter))
+    const arrangersNameArray = data.map(song => song.arrangers.split(delimiter)).flat().filter(arranger => Boolean(arranger))
 
-    } catch (error) {
-        res.status(400).json({error})
-    }
+    const allDbArtists = await getOrBulkCreateDbItems('database1', 'musician', artistsNameArray)
+    const allDbComposers = await getOrBulkCreateDbItems('database1', 'musician', composersNameArray)
+    const allDbSongwriters = await getOrBulkCreateDbItems('database1', 'musician', songwritersNameArray)
+    const allDbArrangers = await getOrBulkCreateDbItems('database1', 'musician', arrangersNameArray)
+    const allDbLanguages = await getOrBulkCreateDbItems('database1', 'language', languagesNameArray)
+
+    data = data.map(song => (
+        {
+            ...song,
+            userId: req.user.id,
+            artistId: allDbArtists.findIndex(dbArtist => dbArtist.name === song.artist) > -1
+                ?
+                allDbArtists.find(dbArtist => dbArtist.name === song.artist).id
+                :
+                null,
+            languageId: allDbLanguages.find(dbLanguage => dbLanguage.name === song.language)
+                ?
+                allDbLanguages.find(dbLanguage => dbLanguage.name === song.language).id
+                :
+                null,
+        }
+    ))
+
+    const saveData = await Promise.all( await csvDataToSongCols('database1', data))
+
+    let songs = await models.song.bulkCreate(saveData)
+
+
+    const promiseArray = saveData.map(async (element, index) => {
+
+        if(element.songwriters) {
+            console.log('still wroks')
+            console.log(element)
+            let options = element.songwriters.split(delimiter).map(songwriter => ({name: songwriter }))
+            let foundSongwriters = await models.musician.findAll({ where:
+                    {   [Op.or]: options}})
+            await songs[index].setSongwriters(foundSongwriters)
+        }
+
+
+        if(element.composers) {
+            const options = element.composers.split(delimiter).map(composer => ({name: composer}))
+            const foundComposers = await models.musician.findAll({ where:
+                    {   [Op.or]: options}})
+            await songs[index].setComposers(foundComposers)
+
+        }
+
+        if(element.arrangers) {
+            console.log('element')
+            console.log(element.arrangers)
+            const options = element.arrangers.split(delimiter).map(arranger => ({name: arranger}))
+            let foundArrangers = await models.musician.findAll({ where:
+                    {   [Op.or]: options}})
+            await songs[index].setArrangers(foundArrangers)
+        }
+
+    })
+
+
+    await Promise.all(promiseArray)
+
+    fs.unlink(req.file.path, (err) => {
+        if(err) console.log(err)
+        else {
+            console.log(`${req.file.path} is deleted`)
+            res.status(200).json({message: "success"})
+        }
+    })
+
+
+    // try {
+    //     let data = await csvToData(req.file.path)
+    //     const songData = await Promise.all( await csvDataToSongCols('database1', data))
+    //     const response = await models.song.bulkCreate(songData)
+    //
+    //     fs.unlink(req.file.path, (err) => {
+    //         if(err) console.log(err)
+    //         else {
+    //             console.log(`${req.file.path} is deleted`)
+    //             res.status(200).json({message: "success"})
+    //         }
+    //     })
+    //
+    // } catch (error) {
+    //     res.status(400).json({error})
+    // }
 })
 
 module.exports = router
