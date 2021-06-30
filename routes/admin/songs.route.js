@@ -9,7 +9,7 @@ const authChecker = require('../../middlewares/checkAuth')
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/utils/database-functions")
 const { getAudioFeatures, csvToData } = require('../../lib/library')
 const convertDurationMinSecToMs = require('../../lib/utils/convert-duration-min-sec-to-ms')
-const {getOrBulkCreateDbItems } = require("../../lib/utils/database-functions");
+const {getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../../lib/utils/database-functions");
 
 router.get('/', async(req, res) => {
     console.log(Object.keys(db))
@@ -34,12 +34,14 @@ router.get('/', async(req, res) => {
 
 router.delete('/:id', authChecker, async(req, res) => {
     try {
+
         const song = await models.song.findByPk(req.params.id)
 
         await song.destroy()
 
         res.status(200).json({message: `Song ${song.title} is deleted from database`})
     } catch (error) {
+        console.log(error)
         res.status(400).json({error})
     }
 })
@@ -61,22 +63,7 @@ router.post('/', async (req, res) => {
 
         let [ song, isSongCreated ] = await models.song.findOrCreate(options)
 
-        let dbComposers, dbSongwriters, dbArrangers;
-
-        if(composers) {
-            dbComposers = await bulkFindOrCreateMusicians('master', composers)
-            await song.setComposers(dbComposers)
-        }
-
-        if(songwriters) {
-            dbSongwriters = await bulkFindOrCreateMusicians('master', songwriters)
-            await song.setSongwriters(dbSongwriters)
-        }
-
-        if(arrangers) {
-            dbArrangers = await bulkFindOrCreateMusicians('master', arrangers)
-            await song.setArrangers(dbArrangers)
-        }
+        await createItemsRelatedToSong('master', song, req.body)
 
         if(isSongCreated) {
             res.status(201).json({result: song, message: "Song created successfully"})

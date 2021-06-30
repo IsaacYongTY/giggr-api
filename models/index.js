@@ -47,19 +47,22 @@ fs
 
       db.master[model.name] = model;
     });
-
+console.log(db.database1)
 Object.keys(db.database1.models).forEach(modelName => {
   if (db.database1[modelName].associate) {
     db.database1[modelName].associate(db.database1);
   }
 });
 
+console.log(db.database1.models)
 Object.keys(db.master.models).forEach(modelName => {
 
   if (db.master[modelName].associate) {
     db.master[modelName].associate(db.master);
   }
 });
+
+console.log(db.master.models)
 
 
 

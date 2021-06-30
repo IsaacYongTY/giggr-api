@@ -103,30 +103,34 @@ module.exports = (sequelize, DataTypes) => {
         // Song.hasOne(models.key)
         Song.belongsTo(models.language)
         Song.belongsTo(models.musician, {as: "artist"})
-        Song.belongsToMany(models.setlist, { through: "setlists_songs", foreignKey: "songId", timestamps: false})
-        Song.belongsToMany(models.genre, { through: "songs_genres", foreignKey: "songId", timestamps: false})
-        Song.belongsToMany(models.mood, { through: "songs_moods", foreignKey: "songId", timestamps: false})
-        Song.belongsToMany(models.tag, { through: "songs_tags", foreignKey: "songId", timestamps: false})
+        Song.belongsToMany(models.setlist, { through: "setlists_songs", timestamps: false, onDelete: "cascade"})
+        Song.belongsToMany(models.genre, { through: "songs_genres", timestamps: false, onDelete: "cascade"})
+        Song.belongsToMany(models.mood, { through: "songs_moods", timestamps: false, onDelete: "cascade"})
+        Song.belongsToMany(models.tag, { through: "songs_tags", timestamps: false, onDelete: "cascade"})
         Song.belongsToMany(models.musician, {
             as: "songwriters",
-            through: "songwriters_songs",
+            through: "songs_songwriters",
             foreignKey: "songId",
             otherKey: "songwriterId",
-            timestamps: false
+            timestamps: false,
+            onDelete: "cascade"
+
         })
         Song.belongsToMany(models.musician, {
             as: "composers",
-            through: "composers_songs",
+            through: "songs_composers",
             foreignKey: "songId",
             otherKey: "composerId",
-            timestamps: false
+            timestamps: false,
+            onDelete: "cascade"
         })
         Song.belongsToMany(models.musician, {
             as: "arrangers",
-            through: "arrangers_songs",
+            through: "songs_arrangers",
             foreignKey: "songId",
             otherKey: "arrangerId",
-            timestamps: false
+            timestamps: false,
+            onDelete: "cascade"
         })
 
     }
