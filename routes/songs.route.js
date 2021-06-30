@@ -172,7 +172,6 @@ router.patch('/:id', async (req, res) => {
         song.artistId = dbMusician.id
         song.durationMs = convertDurationMinSecToMs(durationMinSec)
 
-
         if(language) {
             let options = {
                 defaults: language.toLowerCase(),
@@ -209,7 +208,6 @@ router.patch('/:id', async (req, res) => {
 
         if(req.body.tags) {
             const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
-
             await song.setTags(dbTags.map(tag => tag.id))
         }
 
@@ -228,10 +226,9 @@ router.patch('/:id', async (req, res) => {
 
             }
         }
-        console.log('after save')
-        console.log(song)
+
         await song.save()
-        console.log(song)
+
         res.status(200).json({message: "Edit successful", song: song})
 
     } catch (error) {
