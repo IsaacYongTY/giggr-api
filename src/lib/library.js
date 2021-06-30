@@ -29,6 +29,7 @@ const spotifyApi = new SpotifyWebApi({
 const getAudioFeatures = async(trackId) => {
 
     try {
+        console.log('working')
         const code = await spotifyApi.clientCredentialsGrant()
 
         await spotifyApi.setAccessToken(code.body.access_token)

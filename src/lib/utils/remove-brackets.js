@@ -1,4 +1,4 @@
-const removeBrackets = (input) => {
+function removeBrackets(input) {
     const removeIndex = input.search(/\(|（|-/g)
 
     return input.slice(0, removeIndex > -1 ? removeIndex : input.length).trim()

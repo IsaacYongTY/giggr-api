@@ -105,9 +105,9 @@ router.post('/', async (req, res) => {
 
 router.post('/spotify', async (req, res) => {
     try {
-
+        console.log('inin')
         const trackInfo = await getAudioFeatures(req.query.trackId)
-
+        console.log(trackInfo)
         // await models.song.create(saveData)
         res.status(200).json({result: trackInfo})
 

@@ -1,3 +1,5 @@
+import {Request, Response} from "express";
+
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -34,14 +36,15 @@ app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))
 //     res.sendFile(path.join(__dirname, 'client/build/index.html'))
 // })
 //
-console.log('new test migrate behaviour')
-app.get('/test', (req, res) => {
+
+
+app.get('/test', (req : Request, res : Response) => {
     console.log('got this route')
     res.send({message: "You accessed this route successfully"})
 })
 
 
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
     res.status(400).send({ message: "Not Found"})
 })
 
