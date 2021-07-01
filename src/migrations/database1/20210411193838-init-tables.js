@@ -154,6 +154,14 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      }
     })
 
     await queryInterface.createTable('moods', {

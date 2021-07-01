@@ -7,7 +7,7 @@ const upload = multer({dest: "uploads/"})
 const authChecker = require('../../middlewares/checkAuth')
 
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/utils/database-functions")
-import { csvToData } from '../../lib/library'
+import { parseCsvToRawData } from '../../lib/library'
 import convertDurationMinSecToMs from '../../lib/utils/convert-duration-min-sec-to-ms'
 const {getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../../lib/utils/database-functions");
 
@@ -157,7 +157,7 @@ router.patch('/:id', async (req, res) => {
 })
 
 router.post('/csv', upload.single('file'), async(req, res) => {
-    let data = await csvToData(req.file.path)
+    let data = await parseCsvToRawData(req.file.path)
     const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
     const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
 

@@ -39,7 +39,6 @@ app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))
 
 
 app.get('/test', (req : Request, res : Response) => {
-    console.log('got this route')
     res.send({message: "You accessed this route successfully"})
 })
 

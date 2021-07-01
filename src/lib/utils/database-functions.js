@@ -203,7 +203,6 @@ async function getOrCreateLanguage(database, language) {
 }
 
 
-
 async function userInputToSongCols(database, data, user){
 
     let {
@@ -261,107 +260,10 @@ async function userInputToSongCols(database, data, user){
 
 }
 
-interface CsvSongCol {
-        title: string
-        userId: number
-        romTitle: string
-        artistId: number,
-        languageId: number,
-        tempo: number
-        timeSignature : string,
-        initialism: string,
-        durationMs: number
-        spotifyLink: string
-        youtubeLink: string
-        otherLink: string
-        key: number,
-        myKey: number,
-        mode: number,
-        energy : number,
-        danceability: number,
-        valence: number,
-        acousticness: number,
-        instrumentalness: number,
-        dateReleased: string,
-        composers: string[],
-        songwriters: string[],
-        arrangers: string[],
-        genres: string[],
-        moods: string[],
-        tags: string[],
-}
-
-function csvDataToSongCols(database: string, data: any) : CsvSongCol[] {
-
-    return data.map((row: any) => {
-
-        let {
-            title,
-            romTitle,
-            userId,
-            artist,
-            artistId,
-            key,
-            myKey,
-            tempo,
-            durationMinSec,
-            durationMs,
-            timeSignature,
-            initialism,
-            language,
-            languageId,
-            spotifyLink,
-            youtubeLink,
-            otherLink,
-            energy,
-            danceability,
-            valence,
-            acousticness,
-            instrumentalness,
-            dateReleased,
-            composers,
-            songwriters,
-            arrangers,
-            genres,
-            moods,
-            tags
-        } = row || {}
-
-        return {
-            title,
-            userId,
-            romTitle,
-            artistId,
-            languageId,
-            tempo: tempo || 0,
-            timeSignature,
-            initialism,
-            durationMs: durationMinSec ? convertDurationMinSecToMs(durationMinSec) : 0,
-            spotifyLink: spotifyLink || "",
-            youtubeLink: youtubeLink || "",
-            otherLink: otherLink || "",
-            key: key ? convertKeyToKeyModeInt(key)[0] : null,
-            myKey: myKey ? convertKeyToKeyModeInt(myKey)[0] : null,
-            mode: key ? convertKeyToKeyModeInt(key)[1] : null,
-            energy,
-            danceability,
-            valence,
-            acousticness,
-            instrumentalness,
-            dateReleased,
-            composers: convertCommaSeparatedStringToArray(composers),
-            songwriters: convertCommaSeparatedStringToArray(songwriters),
-            arrangers: convertCommaSeparatedStringToArray(arrangers),
-            genres: convertCommaSeparatedStringToArray(genres),
-            moods: convertCommaSeparatedStringToArray(moods),
-            tags: convertCommaSeparatedStringToArray(tags),
-
-        }
-    })
-}
 
 
-export async function getOrBulkCreateDbItems(database: string, modelName: string, nameArray: string[]) {
+
+async function getOrBulkCreateDbItems(database, modelName, nameArray, userId) {
     const models = db[database].models
 
     let dbItems = await models[modelName].findAll({
@@ -373,11 +275,12 @@ export async function getOrBulkCreateDbItems(database: string, modelName: string
 
     const newItems = nameArray
         .filter(item => dbItems.findIndex(dbItem => dbItem.name === item ) === -1)
-        .map(item => ({ name: item }))
+        .map(item => ({ name: item, userId: userId }))
 
     let createdNewItems = [];
 
     if(newItems.length) {
+        console.log(newItems)
         createdNewItems = await models[modelName].bulkCreate(newItems)
     }
 
@@ -439,11 +342,11 @@ async function createItemsRelatedToSong(database, song, formData) {
 module.exports = {
     getSongs,
     getMusicians,
+    getOrBulkCreateDbItems,
     getLanguages,
     getOrCreateArtist,
     getOrCreateLanguage,
     userInputToSongCols,
-    csvDataToSongCols,
     bulkFindOrCreateMusicians,
     getDatabaseSongs,
     createItemsRelatedToSong

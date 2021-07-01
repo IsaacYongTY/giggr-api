@@ -9,17 +9,15 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
-console.log(env)
-
 let databases = Object.keys(config.databases)
 
 for (let i = 0; i < databases.length; i++) {
   let database = databases[i]
   let dbPath = config.databases[database]
   if (config.use_env_variable) {
-    db[database] = new Sequelize(process.env[config.use_env_variable], dbPath);
+      db[database] = new Sequelize(process.env[config.use_env_variable], dbPath);
   } else {
-    db[database] = new Sequelize(dbPath.database, dbPath.username, dbPath.password, dbPath);
+      db[database] = new Sequelize(dbPath.database, dbPath.username, dbPath.password, dbPath);
   }
 }
 
@@ -29,37 +27,34 @@ fs
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach(file => {
-    // const model = require(path.join(__dirname, file));
-    const model = require(path.join(__dirname + '/database1', file))(db.database1, Sequelize.DataTypes);
-    db.database1[model.name] = model;
-
-    // console.log(db)
+      // const model = require(path.join(__dirname, file));
+      const model = require(path.join(__dirname + '/database1', file))(db.database1, Sequelize.DataTypes);
+      db.database1[model.name] = model;
   });
 
 fs
     .readdirSync(__dirname + '/master')
     .filter(file => {
-      return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+        return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
     })
     .forEach(file => {
       // const model = require(path.join(__dirname, file));
-      const model = require(path.join(__dirname + '/master', file))(db.master, Sequelize.DataTypes);
+        const model = require(path.join(__dirname + '/master', file))(db.master, Sequelize.DataTypes);
 
-      db.master[model.name] = model;
+        db.master[model.name] = model;
     });
-console.log(db.database1)
+
 Object.keys(db.database1.models).forEach(modelName => {
-  if (db.database1[modelName].associate) {
-    db.database1[modelName].associate(db.database1);
-  }
+    if (db.database1[modelName].associate) {
+        db.database1[modelName].associate(db.database1);
+    }
 });
 
-console.log(db.database1.models)
 Object.keys(db.master.models).forEach(modelName => {
 
-  if (db.master[modelName].associate) {
-    db.master[modelName].associate(db.master);
-  }
+    if (db.master[modelName].associate) {
+        db.master[modelName].associate(db.master);
+    }
 });
 
 console.log(db.master.models)

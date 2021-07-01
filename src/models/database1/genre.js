@@ -9,7 +9,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    }
   }, {
     timestamps: false,
     underscored: true
@@ -17,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Genre.associate = models => {
     Genre.belongsToMany(models.song, { through: "songs_genres", timestamps: false, onDelete: "cascade" })
+    Genre.belongsTo(models.user)
   }
   return Genre
 }

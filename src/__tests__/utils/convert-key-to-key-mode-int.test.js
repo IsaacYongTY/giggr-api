@@ -1,4 +1,4 @@
-const convertKeyToKeyModeInt = require('../../lib/utils/convert-key-to-key-mode-int')
+import convertKeyToKeyModeInt from '../../lib/utils/convert-key-to-key-mode-int'
 
 describe("convertKeyToKeyModeInt", () => {
     it("should convert key to key and mode", () => {
@@ -11,9 +11,9 @@ describe("convertKeyToKeyModeInt", () => {
         expect(convertKeyToKeyModeInt('F#m')).toStrictEqual([6,0])
         expect(convertKeyToKeyModeInt('G#m')).toStrictEqual([8,0])
     })
-    it("should return error if the input is invalid",() => {
-        expect(convertKeyToKeyModeInt('')).toStrictEqual(undefined)
-        expect(convertKeyToKeyModeInt('Cmaj7')).toStrictEqual(undefined)
-        expect(convertKeyToKeyModeInt('Cmaj7m')).toStrictEqual(undefined)
+    it("should return [-1,-1] if the input is invalid",() => {
+        expect(convertKeyToKeyModeInt('')).toStrictEqual([-1,-1])
+        expect(convertKeyToKeyModeInt('Cmaj7')).toStrictEqual([-1,-1])
+        expect(convertKeyToKeyModeInt('Cmaj7m')).toStrictEqual([-1,-1])
     })
 })

@@ -1,22 +1,22 @@
 import db from "../../models"
 
 
-interface Musician {
+interface Categories {
     [key : string] : any,
     name: string,
-    romName: string,
-    enName: string
+    id: number,
+    userId: number
 }
 
 // @ts-ignore
 const models = db.database1.models
 
-export default async function findDbMusiciansWithNameArray(musiciansNameArray : string[]) : Promise<Musician[]> {
-    let promiseArr = musiciansNameArray.map(async musicianName => {
-        if(!musicianName) {
+export default async function findDbCategoriesWithNameArray(categoriesNameArray : string[], modelName: string) : Promise<Categories[]> {
+    let promiseArr = categoriesNameArray.map(async categoryName => {
+        if(!categoryName) {
             return
         }
-        return await models.musician.findOne({ where: { name: musicianName}})
+        return await models[modelName].findOne({ where: { name: categoryName}})
     })
     return await Promise.all(promiseArr)
 }

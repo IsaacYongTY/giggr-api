@@ -85,11 +85,11 @@ export async function getAudioFeatures(trackId : string) {
     }
 }
 
-export function addGenresToDatabase(genresString : string) {
-    return genresString.split(',').map(genre => genre.trim())
-}
 
-export function csvToData(csvFile : any) {
+interface CsvRawSong {
+    title: string
+}
+export function parseCsvToRawData(csvFile : any) : Promise<CsvRawSong[]>{
 
     return new Promise((resolve, reject) => {
         let data : any[] = []
@@ -106,8 +106,6 @@ export function csvToData(csvFile : any) {
                 if(row.title) {
                     data.push(row)
                 }
-
-
 
             })
             .on('end', async () => {
