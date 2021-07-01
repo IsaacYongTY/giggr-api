@@ -1,4 +1,4 @@
-const convertDurationMinSecToMs = require('../../lib/utils/convert-duration-min-sec-to-ms');
+import convertDurationMinSecToMs from '../../lib/utils/convert-duration-min-sec-to-ms';
 
 describe("convertMinSecToMs", () => {
     it("should convert mm:ss format to ms", () => {
@@ -10,9 +10,9 @@ describe("convertMinSecToMs", () => {
     })
 
     it("should return undefined if wrong format is provided", () => {
-        expect(convertDurationMinSecToMs("3:60")).toEqual(undefined)
-        expect(convertDurationMinSecToMs("100:60")).toEqual(undefined)
-        expect(convertDurationMinSecToMs("300")).toEqual(undefined)
-        expect(convertDurationMinSecToMs("3:7")).toEqual(undefined)
+        expect(convertDurationMinSecToMs("3:60")).toEqual(-1)
+        expect(convertDurationMinSecToMs("100:60")).toEqual(-1)
+        expect(convertDurationMinSecToMs("300")).toEqual(-1)
+        expect(convertDurationMinSecToMs("3:7")).toEqual(-1)
     })
 })

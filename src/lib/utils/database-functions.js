@@ -1,3 +1,4 @@
+import convertNestedArraysToStringArray from "./convert-nested-arrays-to-string-array";
 
 const db = require('../../models')
 const { Op } = require('sequelize')
@@ -5,6 +6,7 @@ const Sequelize = require('sequelize')
 
 import convertKeyToKeyModeInt from './convert-key-to-key-mode-int';
 import convertDurationMinSecToMs from "./convert-duration-min-sec-to-ms";
+import convertCommaSeparatedStringToArray from "./convert-comma-separated-string-to-array";
 
 
 async function getSongs(database, number, category, order, user) {
@@ -259,9 +261,39 @@ async function userInputToSongCols(database, data, user){
 
 }
 
-async function csvDataToSongCols(database, data) {
+interface CsvSongCol {
+        title: string
+        userId: number
+        romTitle: string
+        artistId: number,
+        languageId: number,
+        tempo: number
+        timeSignature : string,
+        initialism: string,
+        durationMs: number
+        spotifyLink: string
+        youtubeLink: string
+        otherLink: string
+        key: number,
+        myKey: number,
+        mode: number,
+        energy : number,
+        danceability: number,
+        valence: number,
+        acousticness: number,
+        instrumentalness: number,
+        dateReleased: string,
+        composers: string[],
+        songwriters: string[],
+        arrangers: string[],
+        genres: string[],
+        moods: string[],
+        tags: string[],
+}
 
-    return data.map(async (row) => {
+function csvDataToSongCols(database: string, data: any) : CsvSongCol[] {
+
+    return data.map((row: any) => {
 
         let {
             title,
@@ -289,7 +321,10 @@ async function csvDataToSongCols(database, data) {
             dateReleased,
             composers,
             songwriters,
-            arrangers
+            arrangers,
+            genres,
+            moods,
+            tags
         } = row || {}
 
         return {
@@ -301,10 +336,10 @@ async function csvDataToSongCols(database, data) {
             tempo: tempo || 0,
             timeSignature,
             initialism,
-            durationMs: durationMinSec ? convertDurationMinSecToMs(durationMinSec) : null,
-            spotifyLink,
-            youtubeLink,
-            otherLink,
+            durationMs: durationMinSec ? convertDurationMinSecToMs(durationMinSec) : 0,
+            spotifyLink: spotifyLink || "",
+            youtubeLink: youtubeLink || "",
+            otherLink: otherLink || "",
             key: key ? convertKeyToKeyModeInt(key)[0] : null,
             myKey: myKey ? convertKeyToKeyModeInt(myKey)[0] : null,
             mode: key ? convertKeyToKeyModeInt(key)[1] : null,
@@ -314,15 +349,19 @@ async function csvDataToSongCols(database, data) {
             acousticness,
             instrumentalness,
             dateReleased,
-            composers,
-            songwriters,
-            arrangers
+            composers: convertCommaSeparatedStringToArray(composers),
+            songwriters: convertCommaSeparatedStringToArray(songwriters),
+            arrangers: convertCommaSeparatedStringToArray(arrangers),
+            genres: convertCommaSeparatedStringToArray(genres),
+            moods: convertCommaSeparatedStringToArray(moods),
+            tags: convertCommaSeparatedStringToArray(tags),
+
         }
     })
 }
 
 
-async function getOrBulkCreateDbItems(database, modelName, nameArray) {
+export async function getOrBulkCreateDbItems(database: string, modelName: string, nameArray: string[]) {
     const models = db[database].models
 
     let dbItems = await models[modelName].findAll({
@@ -405,7 +444,6 @@ module.exports = {
     getOrCreateLanguage,
     userInputToSongCols,
     csvDataToSongCols,
-    getOrBulkCreateDbItems,
     bulkFindOrCreateMusicians,
     getDatabaseSongs,
     createItemsRelatedToSong

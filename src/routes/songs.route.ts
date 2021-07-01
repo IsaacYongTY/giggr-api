@@ -10,6 +10,7 @@ const upload = multer({dest: "uploads/"})
 const { getSongs, csvDataToSongCols, userInputToSongCols, createItemsRelatedToSong } = require("../lib/utils/database-functions")
 import { getAudioFeatures, csvToData } from '../lib/library'
 import convertDurationMinSecToMs from '../lib/utils/convert-duration-min-sec-to-ms'
+import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays-to-string-array";
 
 router.get('/', async(req, res) => {
 
@@ -107,10 +108,7 @@ router.post('/', async (req, res) => {
 
 router.post('/spotify', async (req, res) => {
     try {
-        console.log('inin')
         const trackInfo = await getAudioFeatures(req.query.trackId)
-        console.log(trackInfo)
-        // await models.song.create(saveData)
         res.status(200).json({result: trackInfo})
 
     } catch (err) {
@@ -157,7 +155,6 @@ router.patch('/:id', async (req, res) => {
         for(const props in otherData) {
             if(otherData[props] !== undefined) {
                 song[props] = otherData[props]
-
             }
         }
 
@@ -187,7 +184,6 @@ router.delete('/:id', async(req, res) => {
 router.post('/spotify', async (req, res) => {
     try {
         const trackInfo = await getAudioFeatures(req.query.trackId)
-        console.log(trackInfo)
         res.status(200).json({result: trackInfo})
 
     } catch (err) {
@@ -195,38 +191,38 @@ router.post('/spotify', async (req, res) => {
     }
 
 })
-
-router.post('/composer/:id', async (req, res) => {
-    try {
-        console.log(req.body)
-        console.log(req.params.id)
-
-        let { composerIdArray } = req.body || {}
-        const song = await models.song.findByPk(req.params.id)
-
-        await song.addComposers(composerIdArray, { as: "composers"})
-
-        res.status(200).json({message: "added successfully"})
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({error})
-    }
-})
+//
+// router.post('/composer/:id', async (req, res) => {
+//     try {
+//         console.log(req.body)
+//         console.log(req.params.id)
+//
+//         let { composerIdArray } = req.body || {}
+//         const song = await models.song.findByPk(req.params.id)
+//
+//         await song.addComposers(composerIdArray, { as: "composers"})
+//
+//         res.status(200).json({message: "added successfully"})
+//     } catch (error) {
+//         console.log(error)
+//         res.status(400).json({error})
+//     }
+// })
 
 
 
 router.post('/csv', upload.single('file'), async (req, res) => {
     let data = await csvToData(req.file.path)
     console.log(data)
-    const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
-    const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
 
-    let delimiter = /[,、]/g
-
-    const composersNameArray = data.map(song => song.composers.split(delimiter)).flat().filter(composer => Boolean(composer))
-    const songwritersNameArray = data.map(song => song.songwriters.split(delimiter)).flat().filter(songwriter => Boolean(songwriter))
-    const arrangersNameArray = data.map(song => song.arrangers.split(delimiter)).flat().filter(arranger => Boolean(arranger))
-
+    const artistsNameArray = convertNestedArraysToStringArray(data.map(song => song.artist))
+    const languagesNameArray = convertNestedArraysToStringArray(data.map(song => song.language))
+    const composersNameArray = convertNestedArraysToStringArray(data.map(song => song.composers))
+    const songwritersNameArray = convertNestedArraysToStringArray(data.map(song => song.songwriters))
+    const arrangersNameArray = convertNestedArraysToStringArray(data.map(song => song.arrangers))
+    console.log(composersNameArray)
+    console.log(songwritersNameArray)
+    console.log(arrangersNameArray)
     const allDbArtists = await getOrBulkCreateDbItems('database1', 'musician', artistsNameArray)
     const allDbComposers = await getOrBulkCreateDbItems('database1', 'musician', composersNameArray)
     const allDbSongwriters = await getOrBulkCreateDbItems('database1', 'musician', songwritersNameArray)
@@ -255,32 +251,57 @@ router.post('/csv', upload.single('file'), async (req, res) => {
     let songs = await models.song.bulkCreate(saveData)
 
 
-    const promiseArray = saveData.map(async (element, index) => {
+    const promiseArray = saveData.map(async (row, index) => {
 
-        if(element.songwriters) {
-            console.log('still wroks')
-            console.log(element)
-            let options = element.songwriters.split(delimiter).map(songwriter => ({name: songwriter }))
-            let foundSongwriters = await models.musician.findAll({ where:
-                    {   [Op.or]: options}})
+        if(row.songwriters) {
+
+            let promiseArr = row.songwriters.map(async songwriter => {
+                if(!songwriter) {
+                    return
+                }
+                return await models.musician.findOne({ where: { name: songwriter}})
+            })
+
+            let foundSongwriters = await Promise.all(promiseArr)
+
+            if(!foundSongwriters) {
+                return
+            }
             await songs[index].setSongwriters(foundSongwriters)
         }
 
 
-        if(element.composers) {
-            const options = element.composers.split(delimiter).map(composer => ({name: composer}))
-            const foundComposers = await models.musician.findAll({ where:
-                    {   [Op.or]: options}})
+        if(row.composers) {
+            let promiseArr = row.composers.map(async composer => {
+                if(!composer) {
+                    return
+                }
+                return await models.musician.findOne({ where: { name: composer}})
+            })
+
+            let foundComposers = await Promise.all(promiseArr)
+
+            if(!foundComposers) {
+                return
+            }
             await songs[index].setComposers(foundComposers)
 
         }
 
-        if(element.arrangers) {
-            console.log('element')
-            console.log(element.arrangers)
-            const options = element.arrangers.split(delimiter).map(arranger => ({name: arranger}))
-            let foundArrangers = await models.musician.findAll({ where:
-                    {   [Op.or]: options}})
+        if(row.arrangers) {
+
+            let promiseArr = row.arrangers.map(async arranger => {
+                if(!arranger) {
+                    return
+                }
+                return await models.musician.findOne({ where: { name: arranger}})
+            })
+
+            let foundArrangers = await Promise.all(promiseArr)
+
+            if(!foundArrangers) {
+                return
+            }
             await songs[index].setArrangers(foundArrangers)
         }
 
@@ -297,23 +318,6 @@ router.post('/csv', upload.single('file'), async (req, res) => {
         }
     })
 
-
-    // try {
-    //     let data = await csvToData(req.file.path)
-    //     const songData = await Promise.all( await csvDataToSongCols('database1', data))
-    //     const response = await models.song.bulkCreate(songData)
-    //
-    //     fs.unlink(req.file.path, (err) => {
-    //         if(err) console.log(err)
-    //         else {
-    //             console.log(`${req.file.path} is deleted`)
-    //             res.status(200).json({message: "success"})
-    //         }
-    //     })
-    //
-    // } catch (error) {
-    //     res.status(400).json({error})
-    // }
 })
 
 module.exports = router
