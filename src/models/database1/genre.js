@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   const Genre = sequelize.define('genre', {
 
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(30),
       allowNull: false
     },
     userId: {
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Genre.associate = models => {
-    Genre.belongsToMany(models.song, { through: "songs_genres", timestamps: false, onDelete: "cascade" })
+    Genre.belongsToMany(models.song, { through: "songs_genres", timestamps: false})
     Genre.belongsTo(models.user)
   }
   return Genre

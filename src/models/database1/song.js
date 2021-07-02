@@ -5,20 +5,19 @@ module.exports = (sequelize, DataTypes) => {
     const Song = sequelize.define('song', {
 
         title: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(50),
+          allowNull: false
+        },
+        artistId: {
+          type: DataTypes.INTEGER,
           allowNull: false
         },
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-
-        artistId: {
-          type: DataTypes.INTEGER,
-          allowNull: false
-        },
         romTitle: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(50)
         },
         key: {
           type: DataTypes.INTEGER,
@@ -37,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.INTEGER,
         },
         timeSignature: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(5),
           defaultValue: '4/4'
         },
         verified: {
@@ -49,16 +48,16 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.INTEGER
         },
         initialism: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(20)
         },
         spotifyLink: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(100)
         },
         youtubeLink: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(100)
         },
         otherLink: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(100)
         },
         energy: {
           type: DataTypes.FLOAT,
@@ -75,17 +74,20 @@ module.exports = (sequelize, DataTypes) => {
         instrumentalness: {
             type: DataTypes.FLOAT
         },
-        // tags: {
-        //   type: DataTypes.STRING
-        // },
         dateReleased: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(10)
         },
         status: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(20)
         },
         performStatus: {
-          type: DataTypes.STRING
+          type: DataTypes.STRING(20)
+        },
+        remarks: {
+            type: DataTypes.STRING(255)
+        },
+        rating: {
+            type: DataTypes.INTEGER
         }
       }, {
         underscored: true
@@ -97,14 +99,10 @@ module.exports = (sequelize, DataTypes) => {
     Song.associate = models => {
 
         Song.belongsTo(models.user)
-        // Song.belongsTo(models.Artist)
-        // Song.belongsToMany(models.genre, { through: 'songs_genres', foreignKey: 'songId',})
-        // Song.belongsToMany(models.user, { as: 'song', through: 'songs_users', foreignKey: 'user_id',})
-        // Song.hasOne(models.key)
         Song.belongsTo(models.language)
         Song.belongsTo(models.musician, {as: "artist"})
         Song.belongsToMany(models.setlist, { through: "setlists_songs", timestamps: false, onDelete: "cascade"})
-        Song.belongsToMany(models.genre, { through: "songs_genres", timestamps: false, onDelete: "cascade"})
+        Song.belongsToMany(models.genre, { through: "songs_genres", timestamps: false })
         Song.belongsToMany(models.mood, { through: "songs_moods", timestamps: false, onDelete: "cascade"})
         Song.belongsToMany(models.tag, { through: "songs_tags", timestamps: false, onDelete: "cascade"})
         Song.belongsToMany(models.musician, {

@@ -6,28 +6,32 @@ module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('user', {
 
         firstName: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(50)
         },
         lastName: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(50)
         },
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(50),
             allowNull: false,
             unique: true
         },
         password: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
             allowNull: false
         },
         tierId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER(50),
             defaultValue: 1,
-            // references: {
-            //     models: "tiers",
-            //     foreignKey: "tier_id"
-            // }
+            references: {
+                models: "tiers",
+                key: "id"
+            }
         },
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     }, {
         underscored: true
     })
@@ -38,6 +42,12 @@ module.exports = (sequelize, DataTypes) => {
         User.belongsTo(models.tier)
         User.hasMany(models.gig)
         User.hasMany(models.song)
+        User.hasMany(models.genre)
+        User.hasMany(models.mood)
+        User.hasMany(models.tag)
+        User.hasMany(models.musician)
+        User.hasMany(models.song)
+        User.hasMany(models.language)
         // User.belongsToMany(models.song, { as: 'song', through: 'songs_users', foreignKey: 'song_id',})
     }
 

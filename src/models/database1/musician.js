@@ -4,10 +4,17 @@ module.exports = (sequelize, DataTypes) => {
 
   const Musician = sequelize.define('musician', {
 
-    name: DataTypes.STRING,
-    romName: DataTypes.STRING,
-    enName: DataTypes.STRING,
-
+    name: DataTypes.STRING(50),
+    romName: DataTypes.STRING(50),
+    spotifyName: DataTypes.STRING(50),
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    },
   }, {
     timestamps: false,
     underscored: true
@@ -15,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Musician.associate = models => {
     Musician.hasMany(models.song, {foreignKey: "artistId"})
+    Musician.belongsTo(models.user)
     Musician.belongsToMany(models.song, {
       through: "songs_songwriters",
       foreignKey: "songwriterId",
@@ -38,7 +46,13 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       onDelete: "cascade"
     })
-    Musician.belongsToMany(models.role, { through: "roles_musicians", foreignKey: "musicianId", otherKey: "roleId", timestamps: false, onDelete: "cascade" })
+    Musician.belongsToMany(models.role, {
+      through: "roles_musicians",
+      foreignKey: "musicianId",
+      otherKey: "roleId",
+      timestamps: false,
+      onDelete: "cascade"
+    })
   }
 
   return Musician

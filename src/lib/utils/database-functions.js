@@ -193,13 +193,24 @@ async function getLanguages(database,number,category,order) {
         return error
     }
 }
-async function getOrCreateArtist(database, artist) {
-    return await db[database].models.musician.findOrCreate({where: { name: artist}})
+async function getOrCreateArtist(database, artist,user) {
+    console.log(user.id)
+    return await db[database].models.musician.findOrCreate({
+        defaults: {
+            name: artist,
+            userId: user.id
+        },
+        where: { name: artist}})
 
 }
 
-async function getOrCreateLanguage(database, language) {
-    return await db[database].models.language.findOrCreate({where: { name: language.toLowerCase()}})
+async function getOrCreateLanguage(database, language, user) {
+    return await db[database].models.language.findOrCreate({
+        defaults: {
+            name: language,
+            userId: user.id
+        },
+        where: { name: language.toLowerCase()}})
 }
 
 
@@ -227,10 +238,10 @@ async function userInputToSongCols(database, data, user){
         language,
         languageId,
     } = data || {}
+    console.log(user)
+    const [dbArtist] = await getOrCreateArtist(database, artist, user)
 
-    const [dbArtist] = await getOrCreateArtist(database, artist)
-
-    const [dbLanguage] = await getOrCreateLanguage(database, language)
+    const [dbLanguage] = await getOrCreateLanguage(database, language, user)
 
     console.log('here')
     console.log(user)
@@ -288,7 +299,7 @@ async function getOrBulkCreateDbItems(database, modelName, nameArray, userId) {
 }
 
 
-async function bulkFindOrCreateMusicians(database, musicians) {
+async function bulkFindOrCreateMusicians(database, musicians, user) {
 
     if(!musicians || !musicians.length) {
         return []
@@ -296,43 +307,45 @@ async function bulkFindOrCreateMusicians(database, musicians) {
 
     return await Promise.all(musicians.map(async musician =>
         await db[database].models.musician.findOrCreate({
-            defaults: {name: musician},
+            defaults: {name: musician, userId: user.id},
             where: {name: musician}
         })
     ))
 }
 
-async function createItemsRelatedToSong(database, song, formData) {
+async function createItemsRelatedToSong(database, song, formData, userId) {
     let { composers, songwriters, arrangers, genres, moods, tags } = formData || {}
+    console.log('hgere')
+    console.log(userId)
     if(composers && composers.length ) {
-        const dbComposers = await bulkFindOrCreateMusicians(database, composers)
+        const dbComposers = await bulkFindOrCreateMusicians(database, composers, userId)
         await song.setComposers(dbComposers.map(element => element[0]))
     }
 
     if(songwriters && songwriters.length) {
-        const dbSongwriters = await bulkFindOrCreateMusicians(database, songwriters)
+        const dbSongwriters = await bulkFindOrCreateMusicians(database, songwriters, userId)
         await song.setSongwriters(dbSongwriters.map(element => element[0]))
     }
 
     if(arrangers && arrangers.length) {
-        const dbArrangers = await bulkFindOrCreateMusicians(database, arrangers)
+        const dbArrangers = await bulkFindOrCreateMusicians(database, arrangers, userId)
         await song.setArrangers(dbArrangers.map(element => element[0]))
     }
 
     if(genres && genres.length) {
-        const dbGenres = await getOrBulkCreateDbItems(database, 'genre', genres)
+        const dbGenres = await getOrBulkCreateDbItems(database, 'genre', genres, userId)
         const dbGenresIdArray = dbGenres.map(element => element.id)
         await song.setGenres(dbGenresIdArray)
     }
 
     if(moods && moods.length) {
-        const dbMoods = await getOrBulkCreateDbItems(database, 'mood', moods)
+        const dbMoods = await getOrBulkCreateDbItems(database, 'mood', moods, userId)
         const dbMoodsIdArray = dbMoods.map(element => element.id)
         await song.setMoods(dbMoodsIdArray)
     }
     console.log(tags)
     if(tags && tags.length) {
-        const dbTags = await getOrBulkCreateDbItems(database, 'tag', tags)
+        const dbTags = await getOrBulkCreateDbItems(database, 'tag', tags, userId)
         console.log(dbTags)
         const dbTagsIdArray = dbTags.map(element => element.id)
         await song.setTags(dbTagsIdArray)

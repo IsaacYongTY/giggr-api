@@ -92,8 +92,9 @@ router.get('/:id', async(req: RequestWithUser, res: Response) => {
 router.post('/', async (req : RequestWithUser, res: Response) => {
     try {
         console.log(req.body)
+        console.log(req.user)
         let saveData = await userInputToSongCols('database1', req.body, req.user)
-
+        console.log('here')
         let options = {
             defaults: saveData,
             where: {}
@@ -108,7 +109,8 @@ router.post('/', async (req : RequestWithUser, res: Response) => {
 
         let [song] = await models.song.findOrCreate(options)
 
-        await createItemsRelatedToSong('database1', song, req.body)
+        console.log(song)
+        await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
         res.status(200).json({result: song})
     } catch (error) {
@@ -208,7 +210,7 @@ router.patch('/:id', async (req : RequestWithUser, res: Response) => {
         }
         console.log(req.body)
 
-        await createItemsRelatedToSong('database1', song, req.body)
+        await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
         let otherData : any = {
             title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink

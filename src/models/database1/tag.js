@@ -5,10 +5,17 @@ module.exports = (sequelize, DataTypes) => {
   const Tag = sequelize.define('tag', {
 
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(30),
       allowNull: false
     },
-
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    },
   }, {
     timestamps: false,
     underscored: true
@@ -16,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Tag.associate = models => {
     Tag.belongsToMany(models.song, { through: "songs_tags", timestamps: false, onDelete: "cascade"})
+    Tag.belongsTo(models.user)
   }
 
   return Tag

@@ -1,8 +1,9 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    console.log('start')
 
-    await queryInterface.createTable('languages', {
+    await queryInterface.createTable('tiers',{
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,18 +15,6 @@ module.exports = {
       },
     })
 
-    await queryInterface.createTable('tiers',{
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING
-      },
-    })
-
     await queryInterface.createTable('users', {
       id: {
         allowNull: false,
@@ -34,27 +23,31 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       first_name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50)
       },
       last_name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50)
       },
       email: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: false,
         unique: true
       },
       password: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       tier_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER(50),
         defaultValue: 1,
-        // references: {
-        //   model: "tiers",
-        //   foreignKey: "tier_id"
-        // }
+        references: {
+          model: "tiers",
+          key: "id"
+        }
+      },
+      is_admin: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       created_at: {
         allowNull: false,
@@ -66,7 +59,25 @@ module.exports = {
       }
     });
 
-
+    await queryInterface.createTable('languages', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING(20)
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+    })
 
     await queryInterface.createTable('gigs', {
       id: {
@@ -85,26 +96,30 @@ module.exports = {
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
       },
       date: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
         allowNull: false
       },
       time: {
-        type: Sequelize.DATE,
+        type: Sequelize.TIME,
       },
       venue: {
         type: Sequelize.STRING(100)
       },
       pay: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT(5,2)
       },
       is_repeat: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
       frequency: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20)
       },
       created_at: {
         allowNull: false,
@@ -125,14 +140,22 @@ module.exports = {
       },
       title: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100)
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       user_id: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        userId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+        },
       },
       created_at: {
         allowNull: false,
@@ -152,7 +175,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(30)
       },
       user_id: {
         type: Sequelize.INTEGER,
@@ -166,13 +189,21 @@ module.exports = {
 
     await queryInterface.createTable('moods', {
       id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+        primaryKey: true
       },
       name: {
         type: Sequelize.STRING(30)
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
       },
     })
 
@@ -184,7 +215,15 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING(50)
+        type: Sequelize.STRING(30)
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
       },
     })
 
@@ -197,13 +236,21 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50),
       },
       rom_name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50)
       },
-      en_name: {
-        type: Sequelize.STRING
+      spotify_name: {
+        type: Sequelize.STRING(50),
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
       },
 
     });
@@ -229,7 +276,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: false
       },
       artist_id: {
@@ -239,7 +286,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       rom_title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50)
       },
       key: {
         type: Sequelize.INTEGER,
@@ -257,7 +304,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       time_signature: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(5),
         defaultValue: '4/4'
       },
       verified: {
@@ -268,16 +315,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       initialism: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20)
       },
       spotify_link: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100)
       },
       youtube_link: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100)
       },
       other_link: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100)
       },
       energy: {
         type: Sequelize.FLOAT,
@@ -295,13 +342,19 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       date_released: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(10)
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20)
       },
       perform_status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20)
+      },
+      remarks: {
+        type: Sequelize.STRING(255)
+      },
+      rating: {
+        type: Sequelize.INTEGER
       },
       created_at: {
         allowNull: false,
@@ -328,9 +381,9 @@ module.exports = {
 
     await queryInterface.dropTable('gigs');
 
+    await queryInterface.dropTable('languages')
     await queryInterface.dropTable('users');
     await queryInterface.dropTable('tiers');
-    await queryInterface.dropTable('languages')
 
 
   }

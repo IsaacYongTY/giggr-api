@@ -6,8 +6,16 @@ module.exports = (sequelize, DataTypes) => {
   const Language = sequelize.define('language', {
 
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
     },
 
   }, {
@@ -17,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Language.associate = models => {
     Language.hasMany(models.song)
+    Language.belongsTo(models.user)
   }
   return Language
 }
