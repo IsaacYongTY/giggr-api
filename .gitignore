@@ -6,3 +6,4 @@ build/
 
 coverage
 sonar-project.properties
+.scannerwork/

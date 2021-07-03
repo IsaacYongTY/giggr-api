@@ -5,7 +5,7 @@ const db = require('../models')
 const fs = require('fs')
 const models = require('../models').database1.models
 const multer = require('multer')
-const upload = multer({dest: "uploads/"})
+const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const { getSongs, userInputToSongCols, createItemsRelatedToSong } = require("../lib/utils/database-functions")
 
 import findDbMusiciansWithNameArray from "../lib/database-utils/find-db-musicians-with-name-array";

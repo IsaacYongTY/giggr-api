@@ -35,7 +35,6 @@
     "testEnvironment": "jest-environment-node",
     "verbose": true,
     "preset": "ts-jest",
-
     "transform": {
       "^.+\\.(ts|js)x?$": "ts-jest"
     }
@@ -59,6 +58,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "flash": "^1.1.0",
+    "helmet": "^4.6.0",
     "hyphen": "^1.6.4",
     "jsonwebtoken": "^8.5.1",
     "jwt-sign": "^0.1.0",

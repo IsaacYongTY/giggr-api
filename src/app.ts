@@ -1,12 +1,14 @@
 import {Request, Response} from "express";
-
+const helmet = require("helmet")
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const checkAuth = require("./middlewares/checkAuth");
 
+const app = express();
+
+app.user(helmet.hidePoweredBy)
 app.use(express.json())
 app.use(cors({
     httpOnly: true,
