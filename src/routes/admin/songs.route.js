@@ -3,7 +3,7 @@ const db = require('../../models')
 const fs = require('fs')
 const models = require('../../models').database1.models
 const multer = require('multer')
-const upload = multer({dest: "uploads/"})
+const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const authChecker = require('../../middlewares/checkAuth')
 
 const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/utils/database-functions")

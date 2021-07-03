@@ -18,7 +18,8 @@ router.post('/signup', async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 id: user.id,
-                tierId: user.tierId
+                tierId: user.tierId,
+                isAdmin: user.isAdmin
             }
         }
 
@@ -49,12 +50,15 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', passport.authenticate('local'),(req,res) => {
 
+    console.log(req.user)
+    console.log('authh')
     let payload = {
         user: {
             firstName: req.user.firstName,
             lastName: req.user.lastName,
             id: req.user.id,
-            tierId: req.user.tierId
+            tierId: req.user.tierId,
+            isAdmin: req.user.isAdmin
         }
     }
 

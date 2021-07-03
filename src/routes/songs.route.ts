@@ -4,8 +4,8 @@ const router = require('express').Router()
 const db = require('../models')
 const fs = require('fs')
 const models = require('../models').database1.models
-import multer from 'multer'
-const upload = multer({dest: "uploads/"})
+const multer = require('multer')
+const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const { getSongs, userInputToSongCols, createItemsRelatedToSong } = require("../lib/utils/database-functions")
 
 import findDbMusiciansWithNameArray from "../lib/database-utils/find-db-musicians-with-name-array";
@@ -15,7 +15,6 @@ import { getAudioFeatures, parseCsvToRawData } from '../lib/library'
 import convertDurationMinSecToMs from '../lib/utils/convert-duration-min-sec-to-ms'
 import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays-to-string-array";
 import { Request, Response } from "express";
-import ErrnoException = NodeJS.ErrnoException;
 
 interface RequestWithUser extends Request {
     user: {
@@ -29,13 +28,7 @@ router.get('/', async(req : RequestWithUser, res: Response) => {
 
         const songs = await getSongs('database1', number, category, order, req.user)
 
-        const genres = await models.genre.findAll()
-        const moods = await models.mood.findAll()
-        const tags = await models.tag.findAll()
-        const languages = await models.language.findAll()
-        console.log('wo')
-        console.log(songs)
-        res.status(200).json({songs, languages, genres, moods, tags })
+        res.status(200).json({ songs })
 
     } catch (error) {
         console.log(error)
@@ -339,7 +332,7 @@ router.post('/csv', upload.single('file'), async (req: RequestWithFileUser, res:
 
     await Promise.all(promiseArray)
 
-    fs.unlink(req.file.path, (err: ErrnoException) => {
+    fs.unlink(req.file.path, (err: any) => {
         if(err) console.log(err)
         else {
             console.log(`${req.file.path} is deleted`)

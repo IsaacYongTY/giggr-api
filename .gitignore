@@ -3,3 +3,7 @@ node_modules/
 .env
 uploads
 build/
+
+coverage
+sonar-project.properties
+.scannerwork/
