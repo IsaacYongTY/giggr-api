@@ -12,7 +12,7 @@
     "dev": "concurrently --raw yarn:dev:*",
     "dev:build": "rimraf build && tsc -w",
     "dev:run": "cross-env NODE_ENV=development nodemon -r dotenv/config build/index",
-    "test": "yarn jest --watch",
+    "test": "yarn jest --watchAll",
     "test:ci": "yarn jest --silent",
     "db:migrate": "cross-env NODE_ENV=development sequelize-cli db:create",
     "db:database1:reset:dangerous": "yarn run sequelize:database1:migrate:undo:all && yarn run sequelize:database1:migrate",
@@ -34,14 +34,17 @@
   "jest": {
     "testEnvironment": "jest-environment-node",
     "verbose": true,
-    "preset": "ts-jest/presets/js-with-ts"
+    "preset": "ts-jest",
+
+    "transform": {
+      "^.+\\.(ts|js)x?$": "ts-jest"
+    }
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.17.12",
-    "babel-jest": "^27.0.6",
     "bcrypt": "^5.0.1",
     "chinese-to-pinyin": "^1.3.1",
     "concurrently": "^6.2.0",
@@ -68,9 +71,7 @@
     "rimraf": "^3.0.2",
     "sequelize": "^6.6.2",
     "sequelize-cli": "^6.2.0",
-    "spotify-web-api-node": "^5.0.2",
-    "supertest": "^6.1.3",
-    "ts-jest": "^27.0.3"
+    "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.7",
@@ -78,9 +79,12 @@
     "@types/multer": "^1.4.6",
     "@types/node": "^15.12.5",
     "@types/spotify-web-api-node": "^5.0.2",
+    "babel-jest": "^27.0.6",
     "cross-env": "^7.0.3",
     "jest": "^27.0.6",
     "nodemon": "^2.0.7",
+    "supertest": "^6.1.3",
+    "ts-jest": "^27.0.3",
     "typescript": "^4.3.4"
   },
   "engines": {
