@@ -2,14 +2,14 @@ const router = require('express').Router()
 const db = require('../../models')
 const fs = require('fs')
 const models = require('../../models').database1.models
-const multer = require('multer')
-const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
+import multer from 'multer'
 const authChecker = require('../../middlewares/checkAuth')
-
-const { getSongs, csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/utils/database-functions")
+const { csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/database-functions")
 import { parseCsvToRawData } from '../../lib/library'
 import convertDurationMinSecToMs from '../../lib/utils/convert-duration-min-sec-to-ms'
-const {getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../../lib/utils/database-functions");
+const {getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../../lib/database-functions");
+
+const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 
 router.get('/', async(req, res) => {
     console.log(Object.keys(db))

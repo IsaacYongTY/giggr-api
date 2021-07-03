@@ -4,14 +4,15 @@ const router = require('express').Router()
 const db = require('../models')
 const fs = require('fs')
 const models = require('../models').database1.models
-const multer = require('multer')
+import multer from 'multer'
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
-const { getSongs, userInputToSongCols, createItemsRelatedToSong } = require("../lib/utils/database-functions")
-
+const { userInputToSongCols, createItemsRelatedToSong } = require("../lib/database-functions")
+import getSongs from "../lib/database-utils/get-songs";
 import findDbMusiciansWithNameArray from "../lib/database-utils/find-db-musicians-with-name-array";
-const { getOrBulkCreateDbItems } = require("../lib/utils/database-functions");
+const { getOrBulkCreateDbItems } = require("../lib/database-functions");
 import convertRawDataToSongCols from "../lib/database-utils/convert-raw-data-to-song-cols";
-import { getAudioFeatures, parseCsvToRawData } from '../lib/library'
+import getAudioFeatures from "../lib/utils/get-audio-features"
+import { parseCsvToRawData } from '../lib/library'
 import convertDurationMinSecToMs from '../lib/utils/convert-duration-min-sec-to-ms'
 import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays-to-string-array";
 import { Request, Response } from "express";
@@ -21,12 +22,18 @@ interface RequestWithUser extends Request {
         id: number
     }
 }
+
 router.get('/', async(req : RequestWithUser, res: Response) => {
 
     try {
-        let {number, category, order} = req.query
 
-        const songs = await getSongs('database1', number, category, order, req.user)
+        let queryObject = {
+            number: req.query.number as string,
+            category: req.query.category as string,
+            order: req.query.order as string,
+        }
+
+        const songs = await getSongs('database1', queryObject, req.user.id)
 
         res.status(200).json({ songs })
 
@@ -84,10 +91,9 @@ router.get('/:id', async(req: RequestWithUser, res: Response) => {
 
 router.post('/', async (req : RequestWithUser, res: Response) => {
     try {
-        console.log(req.body)
-        console.log(req.user)
+
         let saveData = await userInputToSongCols('database1', req.body, req.user)
-        console.log('here')
+
         let options = {
             defaults: saveData,
             where: {}
@@ -102,7 +108,6 @@ router.post('/', async (req : RequestWithUser, res: Response) => {
 
         let [song] = await models.song.findOrCreate(options)
 
-        console.log(song)
         await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
         res.status(200).json({result: song})
