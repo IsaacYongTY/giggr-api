@@ -1,25 +1,25 @@
+import {Request, Response} from "express";
+
 const models = require('../models').database1.models
 const router = require('express').Router()
-const { getSongs } = require('../lib/utils/database-functions')
-//
-// router.get('/', async (req, res) => {
-//
-//     const users = await models.user.findAll({
-//         include: [{
-//             model: models.tier
-//         }]
-//     })
-//     console.log(users)
-//     res.status(200).json({result: users })
-// })
+import getSongs from "../lib/database-utils/get-songs";
 
-router.get('/', async(req, res) => {
+interface RequestWithUser extends Request {
+    user: {
+        id: number
+    }
+}
+
+router.get('/', async(req: RequestWithUser, res: Response) => {
 
     try {
-        console.log('in here')
-        let {number, category, order} = req.query
+        let queryObject = {
+            number: req.query.number as string,
+            category: req.query.category as string,
+            order: req.query.order as string,
+        }
 
-        const songs = await getSongs('database1', number, category, order, req.user)
+        const songs = await getSongs('database1', queryObject, req.user.id)
 
         const musicians = await models.musician.findAll()
         const genres = await models.genre.findAll()

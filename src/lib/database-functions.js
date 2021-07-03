@@ -1,73 +1,9 @@
-import convertNestedArraysToStringArray from "./convert-nested-arrays-to-string-array";
 
-const db = require('../../models')
+const db = require('../models')
 const { Op } = require('sequelize')
 const Sequelize = require('sequelize')
 
-import convertKeyToKeyModeInt from './convert-key-to-key-mode-int';
-import convertDurationMinSecToMs from "./convert-duration-min-sec-to-ms";
-import convertCommaSeparatedStringToArray from "./convert-comma-separated-string-to-array";
 
-
-async function getSongs(database, number, category, order, user) {
-
-    const models = db[database].models
-
-    let options = {
-        where: { userId: user.id},
-        include: [{
-            model: models.musician,
-            as: "artist"
-        },
-        {
-            model: models.musician,
-            as: "composers",
-            attributes: ["id", "name"]
-        },
-        {
-            model: models.musician,
-            as: "songwriters",
-            attributes: ["id", "name"]
-        },
-            {
-            model: models.musician,
-            as: "arrangers",
-            attributes: ["id", "name"]
-        },
-            {
-            model: models.language,
-            attributes: ["id", "name"]
-        },
-            {
-            model: models.genre,
-            attributes: ["id", "name"]
-        }, {
-            model: models.mood,
-            attributes: ["id", "name"]
-        }, {
-            model: models.tag,
-            attributes: ["id", "name"]
-        }],
-    }
-
-    if (number) {
-        options.limit = number
-    }
-
-    if (category && order) {
-        options.order = [
-            [category, order]
-        ]
-    }
-    try {
-        console.log( models.song)
-       return await models.song.findAll(options)
-
-    } catch (error) {
-        console.log(error)
-        return error
-    }
-}
 
 async function getDatabaseSongs(number, category, order) {
 
@@ -353,7 +289,7 @@ async function createItemsRelatedToSong(database, song, formData, userId) {
 }
 
 module.exports = {
-    getSongs,
+
     getMusicians,
     getOrBulkCreateDbItems,
     getLanguages,

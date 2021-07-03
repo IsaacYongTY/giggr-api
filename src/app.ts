@@ -1,22 +1,20 @@
 import {Request, Response} from "express";
-const helmet = require("helmet")
-const express = require('express');
-const cors = require('cors');
-const passport = require('passport');
-const cookieParser = require('cookie-parser');
-const checkAuth = require("./middlewares/checkAuth");
+import helmet from "helmet"
+import express from "express";
+import cors from "cors";
+import passport from "passport";
+import cookieParser from "cookie-parser";
+import checkAuth from "./middlewares/checkAuth";
 
 const app = express();
 
-app.user(helmet.hidePoweredBy)
+app.use(helmet.hidePoweredBy)
 app.use(express.json())
 app.use(cors({
-    httpOnly: true,
     credentials: true,
     origin: [/(https?:\/\/)(.+)?-isaacyongty\.vercel\.app/, /(https?:\/\/)(.+\.)?getgiggr\.com/, /(http:\/\/localhost:)\d+/]
 }))
 
-console.log('working')
 app.set("trust proxy", 1)
 
 app.use(passport.initialize())
@@ -32,13 +30,6 @@ app.use('/api/v1/gigs', require('./routes/gigs.route'))
 app.use('/api/v1/setlists', require('./routes/setlists.route'))
 app.use('/api/v1/admin', checkAuth, require('./routes/admin/admin.route'))
 app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))
-
-
-// app.use('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'client/build/index.html'))
-// })
-//
-
 
 app.get('/test', (req : Request, res : Response) => {
     res.send({message: "You accessed this route successfully"})
