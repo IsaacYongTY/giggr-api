@@ -281,9 +281,17 @@ module.exports = {
       },
       artist_id: {
         type: Sequelize.INTEGER,
+        references: {
+          model: "musicians",
+          key: "id"
+        }
       },
       user_id: {
         type: Sequelize.INTEGER,
+        references: {
+          model: "users",
+          key: "id"
+        }
       },
       rom_title: {
         type: Sequelize.STRING(50)
@@ -342,7 +350,7 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       date_released: {
-        type: Sequelize.STRING(10)
+        type: Sequelize.STRING(50)
       },
       status: {
         type: Sequelize.STRING(20)

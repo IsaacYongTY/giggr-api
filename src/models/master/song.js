@@ -5,15 +5,19 @@ module.exports = (sequelize, DataTypes) => {
     const Song = sequelize.define('song', {
 
         title: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
-        artistId: {
-          type: DataTypes.INTEGER,
-          allowNull: false
+            type: DataTypes.STRING(50),
+            allowNull: false
         },
         romTitle: {
-          type: DataTypes.STRING
+            type: DataTypes.STRING(50)
+        },
+        artistId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        contributor_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
         key: {
           type: DataTypes.INTEGER,
@@ -22,47 +26,47 @@ module.exports = (sequelize, DataTypes) => {
             type:DataTypes.INTEGER
         },
         tempo: {
-          type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER,
         },
         durationMs: {
-          type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER,
         },
         timeSignature: {
-          type: DataTypes.STRING,
-          defaultValue: '4/4'
+            type: DataTypes.STRING(5),
+            defaultValue: '4/4'
         },
         languageId: {
-          type: DataTypes.INTEGER
+             type: DataTypes.INTEGER
         },
         initialism: {
-          type: DataTypes.STRING
+            type: DataTypes.STRING
         },
         spotifyLink: {
-          type: DataTypes.STRING
+            type: DataTypes.STRING(100)
         },
         youtubeLink: {
-          type: DataTypes.STRING
+            type: DataTypes.STRING(100)
         },
         otherLink: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER(100)
         },
         energy: {
-          type: DataTypes.FLOAT,
+            type: DataTypes.FLOAT,
         },
         danceability: {
-          type: DataTypes.FLOAT
+            type: DataTypes.FLOAT
         },
         valence: {
-          type: DataTypes.FLOAT
+            type: DataTypes.FLOAT
         },
         acousticness: {
-          type: DataTypes.FLOAT
+            type: DataTypes.FLOAT
         },
         instrumentalness: {
             type: DataTypes.FLOAT
         },
         dateReleased: {
-          type: DataTypes.STRING
+            type: DataTypes.STRING(50)
         },
         verified: {
             type: DataTypes.BOOLEAN,
@@ -80,26 +84,19 @@ module.exports = (sequelize, DataTypes) => {
         Song.belongsToMany(models.tag, { through: "songs_tags", timestamps: false})
 
         Song.belongsToMany(models.musician, {
-
             as: "songwriters",
             through: "songs_songwriters",
-
             timestamps: false,
-            onDelete: "cascade"
         })
         Song.belongsToMany(models.musician, {
             as: "composers",
             through: "songs_composers",
-
             timestamps: false,
-            onDelete: "cascade"
         })
         Song.belongsToMany(models.musician, {
             as: "arrangers",
             through: "songs_arrangers",
-
             timestamps: false,
-            onDelete: "cascade"
         })
 
     }

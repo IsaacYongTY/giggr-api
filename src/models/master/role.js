@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   const Role = sequelize.define('role', {
 
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       allowNull: false,
     },
 
@@ -16,7 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Role.associate = models => {
-    // Role.hasMany(models.musician)
+    Role.belongsToMany(models.musician, {
+      through: "roles_musicians",
+      timestamps: false,
+    })
   }
   return Role
 }

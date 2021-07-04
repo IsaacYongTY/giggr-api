@@ -2,12 +2,19 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
+
+    await queryInterface.createTable('languages',{
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING(20)
+      },
+    })
+
     await queryInterface.createTable('genres',{
       id: {
         allowNull: false,
@@ -40,33 +47,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING(50)
+        type: Sequelize.STRING(30)
       },
     })
 
-    await queryInterface.createTable('languages',{
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING(20)
-      },
-    })
-
-    await queryInterface.createTable('roles',{
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING(20)
-      },
-    })
 
     await queryInterface.createTable('musicians', {
       id: {
@@ -81,10 +65,22 @@ module.exports = {
       rom_name: {
         type: Sequelize.STRING
       },
-      en_name: {
+      spotify_name: {
         type: Sequelize.STRING
       },
     });
+
+    await queryInterface.createTable('roles',{
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING(20)
+      },
+    })
 
     await queryInterface.createTable('songs', {
       id: {
@@ -94,14 +90,21 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: false
       },
       artist_id: {
         type: Sequelize.INTEGER,
+        references: {
+          model: "musicians",
+          key: "id"
+        }
+      },
+      contributor_id: {
+        type: Sequelize.INTEGER,
       },
       rom_title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50)
       },
       key: {
         type: Sequelize.INTEGER,
@@ -116,7 +119,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       time_signature: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(5),
         defaultValue: '4/4'
       },
       language_id: {
@@ -150,7 +153,7 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       date_released: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
       },
       verified: {
         type: Sequelize.BOOLEAN,
@@ -168,107 +171,7 @@ module.exports = {
       },
     })
 
-    await queryInterface.createTable("songs_moods", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      mood_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      song_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      }
-    })
 
-    await queryInterface.createTable("songs_genres", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      genre_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      song_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      }
-    })
-
-    await queryInterface.createTable("songs_tags", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      tag_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      song_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      }
-    })
-
-    await queryInterface.createTable("songwriters_songs", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      songwriter_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      song_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      }
-    })
-
-    await queryInterface.createTable("composers_songs", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      composer_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      song_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      }
-    })
-
-    await queryInterface.createTable("arrangers_songs", {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      arranger_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      song_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      }
-    })
 },
 
   down: async (queryInterface, Sequelize) => {
@@ -278,19 +181,14 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable("arrangers_songs")
-    await queryInterface.dropTable("composers_songs")
-    await queryInterface.dropTable("songwriters_songs")
-    await queryInterface.dropTable("songs_tags")
-    await queryInterface.dropTable("songs_genres")
-    await queryInterface.dropTable("songs_moods")
+
     await queryInterface.dropTable("songs")
-    await queryInterface.dropTable("musicians")
-    await queryInterface.dropTable("languages")
     await queryInterface.dropTable("roles")
+    await queryInterface.dropTable("musicians")
     await queryInterface.dropTable("tags")
     await queryInterface.dropTable("moods")
     await queryInterface.dropTable("genres")
+    await queryInterface.dropTable("languages")
 
   }
 };

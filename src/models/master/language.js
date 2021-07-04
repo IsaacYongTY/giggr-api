@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   const Language = sequelize.define('language', {
 
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       allowNull: false
     },
 

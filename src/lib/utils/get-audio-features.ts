@@ -1,6 +1,6 @@
 import convertTempo from "./convert-tempo";
 import getRomTitle from "./get-rom-title";
-
+import { getDataFromSpotify } from "./get-data-from-spotify";
 // @ts-ignore
 import containsChinese from 'contains-chinese'
 
@@ -20,7 +20,7 @@ interface TrackData {
     artist: string;
     spotifyLink: string;
     verified: boolean;
-    tempo: string;
+    tempo: number;
     language: string;
     timeSignature: string;
     mode: number;
@@ -37,10 +37,7 @@ interface TrackData {
 }
 
 
-const spotifyApi = new SpotifyWebApi({
-    clientId: process.env.SPOTIFY_CLIENT_ID,
-    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-})
+
 
 export function addChineseTrackInfo(trackData : TrackData) {
     trackData.romTitle = getRomTitle(trackData.title)
@@ -57,19 +54,18 @@ export function addEnglishTrackInfo(trackData: TrackData) {
     return trackData
 }
 
-export default async function getAudioFeatures(trackId: string) {
+
+export default async function getAudioFeatures(
+    data : SpotifyApi.AudioFeaturesResponse,
+    trackInfo: SpotifyApi.SingleTrackResponse
+) {
 
     try {
-        const code = await spotifyApi.clientCredentialsGrant()
-        await spotifyApi.setAccessToken(code.body.access_token)
-
-        let data = await spotifyApi.getAudioFeaturesForTrack(trackId)
-        const trackInfo = await spotifyApi.getTrack(trackId)
 
         let { key, mode, tempo, time_signature, duration_ms, energy,
-            danceability, valence, acousticness, instrumentalness } = data.body
+            danceability, valence, acousticness, instrumentalness } = data
 
-        let { artists, name, album, external_urls: { spotify } } = trackInfo.body
+        let { artists, name, album, external_urls: { spotify } } = trackInfo
 
         let processedTrackData = {
             title: name,

@@ -7,11 +7,12 @@ import getSongs from "../lib/database-utils/get-songs";
 import findDbMusiciansWithNameArray from "../lib/database-utils/find-db-musicians-with-name-array";
 import findDbCategoriesWithNameArray from "../lib/database-utils/find-db-categories-with-name-array";
 import convertRawDataToSongCols from "../lib/database-utils/convert-raw-data-to-song-cols";
-import getAudioFeatures from "../lib/utils/get-audio-features"
+import processRawSpotifyTrackData from "../lib/utils/get-audio-features"
 import parseCsvToRawData from "../lib/utils/parse-csv-to-raw-data";
 import convertDurationMinSecToMs from '../lib/utils/convert-duration-min-sec-to-ms'
 import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays-to-string-array";
 import { Request, Response } from "express";
+import {getDataFromSpotify} from "../lib/utils/get-data-from-spotify";
 
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
@@ -126,8 +127,9 @@ router.post('/spotify', async (req : RequestWithUser, res: Response) => {
         if(!trackId) {
             return res.status(400).json({error: "No track id provided"})
         }
+        const { audioFeatures, singleTrack } = await getDataFromSpotify(trackId)
+        const trackInfo = await processRawSpotifyTrackData(audioFeatures, singleTrack)
 
-        const trackInfo = await getAudioFeatures(trackId)
         res.status(200).json({result: trackInfo})
 
     } catch (err) {

@@ -4,8 +4,8 @@ module.exports = (sequelize, DataTypes) => {
 
   const Tag = sequelize.define('tag', {
 
-    title: {
-      type: DataTypes.STRING,
+    name: {
+      type: DataTypes.STRING(30),
       allowNull: false
     },
 
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Tag.associate = models => {
-    Tag.belongsToMany(models.song, { through: "songs_tags", foreignKey: "tagId", timestamps: false})
+    Tag.belongsToMany(models.song, { through: "songs_tags", timestamps: false})
 
   }
 

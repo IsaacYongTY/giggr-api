@@ -4,5 +4,5 @@ export default function convertTempo(spotifyTempo : number, spotifyTime : number
     spotifyTempo = spotifyTempo * 2 / spotifyTime
   }
   
-  return `${Math.round(spotifyTempo)}`
+  return Math.round(spotifyTempo)
 }

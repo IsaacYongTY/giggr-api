@@ -75,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT
         },
         dateReleased: {
-          type: DataTypes.STRING(10)
+          type: DataTypes.STRING(50)
         },
         status: {
           type: DataTypes.STRING(20)
