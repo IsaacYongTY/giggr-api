@@ -1,10 +1,8 @@
 const models = require('../models').database1.models
 const db = require('../models')
 const router = require('express').Router()
-const authChecker = require("../middlewares/checkAuth")
 
-router.get('/', authChecker, async (req, res) => {
-
+router.get('/', async (req, res) => {
     const options = {
         where: {},
         order: [
@@ -24,7 +22,7 @@ router.get('/', authChecker, async (req, res) => {
         res.status(400).json({error})
     }
 })
-router.post('/', authChecker, async (req, res) => {
+router.post('/', async (req, res) => {
 
     try {
 
