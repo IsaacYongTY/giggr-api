@@ -1,21 +1,19 @@
-import fs from "fs"
-import csv from 'csv-parser'
-
-// @ts-ignore
-import containsChinese from 'contains-chinese'
+import fs from "fs";
+import csv from "csv-parser";
 
 interface CsvRawSong {
     title: string
 }
-export function parseCsvToRawData(csvFile : any) : Promise<CsvRawSong[]>{
+
+export default function parseCsvToRawData(csvFile : any) : Promise<CsvRawSong[]>{
 
     return new Promise((resolve, reject) => {
         let data : any[] = []
 
         fs.createReadStream(csvFile)
             .pipe(csv({
-                mapHeaders: ({ header, index}) => header.trim(),
-                mapValues: ({ header, index, value}) => value.trim(),
+                    mapHeaders: ({ header, index}) => header.trim(),
+                    mapValues: ({ header, index, value}) => value.trim(),
 
                 })
             )

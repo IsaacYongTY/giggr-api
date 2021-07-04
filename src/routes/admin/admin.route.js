@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const db = require('../../models')
-const { getLanguages, getMusicians } = require("../../lib/database-functions");
+import getLanguages from "../../lib/database-utils/get-languages";
+import getMusicians from "../../lib/database-utils/get-musicians";
 
 router.get('/musicians', async(req, res) => {
 
