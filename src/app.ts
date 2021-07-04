@@ -8,7 +8,7 @@ import checkAuth from "./middlewares/checkAuth";
 
 const app = express();
 
-app.use(helmet.hidePoweredBy)
+app.use(helmet.hidePoweredBy())
 app.use(express.json())
 app.use(cors({
     credentials: true,
@@ -26,7 +26,7 @@ app.use('/api/v1/songs', checkAuth, require('./routes/songs.route'))
 app.use('/api/v1/musicians', require('./routes/musicians.route'))
 app.use('/api/v1/languages', require('./routes/languages.route'))
 app.use('/api/v1/users', checkAuth, require('./routes/users.route'))
-app.use('/api/v1/gigs', require('./routes/gigs.route'))
+app.use('/api/v1/gigs', checkAuth, require('./routes/gigs.route'))
 app.use('/api/v1/setlists', require('./routes/setlists.route'))
 app.use('/api/v1/admin', checkAuth, require('./routes/admin/admin.route'))
 app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))

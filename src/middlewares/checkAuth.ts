@@ -16,7 +16,6 @@ export default async function checkAuth(req: Request, res: Response, next: () =>
         const token = tokenString.split(" ")[1]
 
         if(!token) {
-            console.log('in here')
             res.status(403).send({ error: "token is not correct"})
         }
 

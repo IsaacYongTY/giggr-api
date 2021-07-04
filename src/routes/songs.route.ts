@@ -33,6 +33,7 @@ router.get('/', async(req : RequestWithUser, res: Response) => {
             order: req.query.order as string,
         }
 
+        console.log('in')
         const songs = await getSongs('database1', queryObject, req.user.id)
 
         res.status(200).json({ songs })

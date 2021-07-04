@@ -7,44 +7,71 @@ import containsChinese from 'contains-chinese'
 import SpotifyWebApi from 'spotify-web-api-node'
 import removeBrackets from './remove-brackets'
 
-const getInitialism = (input : string) =>
+export const getInitialism = (input : string) =>
     removeBrackets(input).
     split(' ').
     reduce((acc, word) => acc + word[0].toLowerCase(), '')
 
-const convertTime = (spotifyTime : string | number) => `${spotifyTime}/4`
+export const convertTime = (spotifyTime : string | number) => `${spotifyTime}/4`
+
+
+interface TrackData {
+    title: string;
+    artist: string;
+    spotifyLink: string;
+    verified: boolean;
+    tempo: string;
+    language: string;
+    timeSignature: string;
+    mode: number;
+    initialism: string;
+    danceability: number;
+    energy: number
+    instrumentalness: number;
+    acousticness: number;
+    valence: number;
+    dateReleased: string;
+    durationMs: number;
+    key: number;
+    romTitle: string;
+}
+
 
 const spotifyApi = new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
 })
 
-export default async function getAudioFeatures(trackId : string) {
+export function addChineseTrackInfo(trackData : TrackData) {
+    trackData.romTitle = getRomTitle(trackData.title)
+    trackData.language = 'mandarin'
+    trackData.initialism = getInitialism(trackData.romTitle)
+
+    return trackData
+}
+
+export function addEnglishTrackInfo(trackData: TrackData) {
+    trackData.language = 'english'
+    trackData.initialism = getInitialism(trackData.title)
+
+    return trackData
+}
+
+export default async function getAudioFeatures(trackId: string) {
 
     try {
         const code = await spotifyApi.clientCredentialsGrant()
-
         await spotifyApi.setAccessToken(code.body.access_token)
 
         let data = await spotifyApi.getAudioFeaturesForTrack(trackId)
         const trackInfo = await spotifyApi.getTrack(trackId)
 
-        let {
-            key,
-            mode,
-            tempo,
-            time_signature,
-            duration_ms,
-            energy,
-            danceability,
-            valence,
-            acousticness,
-            instrumentalness,
-        } = data.body
+        let { key, mode, tempo, time_signature, duration_ms, energy,
+            danceability, valence, acousticness, instrumentalness } = data.body
+
         let { artists, name, album, external_urls: { spotify } } = trackInfo.body
 
-
-        const processedTrackData = {
+        let processedTrackData = {
             title: name,
             artist: artists[0].name,
             key,
@@ -65,21 +92,15 @@ export default async function getAudioFeatures(trackId : string) {
             initialism: ""
         };
 
-        const isChinese = containsChinese(processedTrackData.title)
+        const isChinese: boolean = containsChinese(processedTrackData.title)
 
-        if (isChinese) {
-            processedTrackData.romTitle = getRomTitle(processedTrackData.title)
-            processedTrackData.language = 'mandarin'
-            processedTrackData.initialism = getInitialism(processedTrackData.romTitle)
-        } else {
-            processedTrackData.language = 'english'
-            processedTrackData.initialism = getInitialism(processedTrackData.title)
-        }
+        processedTrackData = isChinese ? addChineseTrackInfo(processedTrackData) : addEnglishTrackInfo(processedTrackData)
 
         console.log(processedTrackData)
         return processedTrackData
 
-    } catch (e) {
-        return e
+    } catch (error) {
+        console.log(error)
+        return error
     }
 }
