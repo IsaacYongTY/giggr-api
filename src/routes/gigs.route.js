@@ -3,7 +3,6 @@ const db = require('../models')
 const router = require('express').Router()
 
 router.get('/', async (req, res) => {
-    console.log('asdf')
     const options = {
         where: {},
         order: [
