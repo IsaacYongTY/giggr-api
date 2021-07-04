@@ -1,8 +1,7 @@
 const router = require('express').Router()
 const models = require('../models').database1.models
 
-const { getMusicians } = require("../lib/database-functions")
-
+import getMusicians from "../lib/database-utils/get-musicians";
 
 router.get('/', async(req, res) => {
 

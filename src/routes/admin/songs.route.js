@@ -1,15 +1,17 @@
-const router = require('express').Router()
-const db = require('../../models')
-const fs = require('fs')
-const models = require('../../models').database1.models
+import fs from 'fs'
 import multer from 'multer'
-const authChecker = require('../../middlewares/checkAuth')
-const { csvDataToSongCols, userInputToSongCols, bulkFindOrCreateMusicians, getDatabaseSongs } = require("../../lib/database-functions")
-import { parseCsvToRawData } from '../../lib/library'
+import parseCsvToRawData from "../../lib/utils/parse-csv-to-raw-data";
 import convertDurationMinSecToMs from '../../lib/utils/convert-duration-min-sec-to-ms'
-const {getOrBulkCreateDbItems, createItemsRelatedToSong } = require("../../lib/database-functions");
+import findOrBulkCreateDbItems from "../../lib/database-utils/find-or-bulk-create-db-items";
+import createItemsRelatedToSong from "../../lib/database-utils/create-items-related-to-songs";
+import userInputToSongCols from "../../lib/database-utils/user-input-to-song-cols";
+import findOrBulkCreateMusicians from "../../lib/database-utils/find-or-bulk-create-musicians";
+import getDatabaseSongs from "../../lib/database-utils/get-database-songs";
 
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
+const router = require('express').Router()
+const db = require('../../models')
+const models = require('../../models').database1.models
 
 router.get('/', async(req, res) => {
     console.log(Object.keys(db))
@@ -17,7 +19,7 @@ router.get('/', async(req, res) => {
 
         let { number, category, order } = req.query
 
-        const songs = await getDatabaseSongs(number,category,order)
+        const songs = await getDatabaseSongs(req.query)
         const genres = await models.genre.findAll()
         const moods = await models.mood.findAll()
         const tags = await models.tag.findAll()
@@ -30,7 +32,7 @@ router.get('/', async(req, res) => {
     }
 })
 
-router.delete('/:id', authChecker, async(req, res) => {
+router.delete('/:id', async(req, res) => {
     try {
 
         const song = await models.song.findByPk(req.params.id)
@@ -105,33 +107,32 @@ router.patch('/:id', async (req, res) => {
 
             song.languageId = dbLanguage.id
         }
-        console.log(req.body)
 
-        const dbComposers = await bulkFindOrCreateMusicians('master', composers)
+        const dbComposers = await findOrBulkCreateMusicians('master', composers)
         const dbComposersIdArray = dbComposers.map(element => element[0])
         await song.setComposers(dbComposersIdArray)
 
-        const dbSongwriters = await bulkFindOrCreateMusicians('master', songwriters)
+        const dbSongwriters = await findOrBulkCreateMusicians('master', songwriters)
         const dbSongwritersIdArray = dbSongwriters.map(element => element[0])
         await song.setSongwriters(dbSongwritersIdArray)
 
-        const dbArrangers = await bulkFindOrCreateMusicians('master', arrangers)
+        const dbArrangers = await findOrBulkCreateMusicians('master', arrangers)
         const dbArrangersIdArray = dbArrangers.map(element => element[0])
         await song.setArrangers(dbArrangersIdArray)
 
         if(req.body.genres) {
-            const dbGenres = await getOrBulkCreateDbItems('database1', 'genre', req.body.genres)
+            const dbGenres = await findOrBulkCreateDbItems('database1', 'genre', req.body.genres)
             await song.setGenres(dbGenres.map(genre => genre.id))
         }
 
         if(req.body.tags) {
-            const dbTags = await getOrBulkCreateDbItems('database1', 'tag', req.body.tags)
+            const dbTags = await findOrBulkCreateDbItems('database1', 'tag', req.body.tags)
 
             await song.setTags(dbTags.map(tag => tag.id))
         }
 
         if(req.body.moods) {
-            const dbMoods = await getOrBulkCreateDbItems('database1', 'mood', req.body.moods)
+            const dbMoods = await findOrBulkCreateDbItems('database1', 'mood', req.body.moods)
             await song.setMoods(dbMoods.map(mood => mood.id))
         }
 
@@ -157,71 +158,7 @@ router.patch('/:id', async (req, res) => {
 })
 
 router.post('/csv', upload.single('file'), async(req, res) => {
-    let data = await parseCsvToRawData(req.file.path)
-    const artistsNameArray = Array.from(new Set(data.map(song => song.artist).filter(artist => Boolean(artist))))
-    const languagesNameArray = Array.from(new Set(data.map(song => song.language).filter(language => Boolean(language))))
 
-    const allDbArtists = await getOrBulkCreateDbItems('master', 'musician', artistsNameArray)
-    const allDbLanguages = await getOrBulkCreateDbItems('master', 'language', languagesNameArray)
-
-    data = data.map(song => (
-        {
-            ...song,
-            artistId: allDbArtists.findIndex(dbArtist => dbArtist.name === song.artist) > -1
-                ?
-                allDbArtists.find(dbArtist => dbArtist.name === song.artist).id
-                :
-                null,
-            languageId: allDbLanguages.find(dbLanguage => dbLanguage.name === song.language)
-                ?
-                allDbLanguages.find(dbLanguage => dbLanguage.name === song.language).id
-                :
-                null,
-        }
-    ))
-
-    const saveData = await Promise.all( await csvDataToSongCols('master', data))
-
-    let songs = await models.song.bulkCreate(saveData)
-
-    let delimiter = /[,、]/g
-    const promiseArray = saveData.map(async (element, index) => {
-
-        if(element.songwriters) {
-            let options = element.songwriters.split(delimiter).map(songwriter => ({name: songwriter }))
-            let foundSongwriters = await models.musician.findAll({ where:
-                    {   [Op.or]: options}})
-            await songs[index].setSongwriters(foundSongwriters)
-        }
-
-
-        if(element.composers) {
-            const options = element.composers.split(delimiter).map(composer => ({name: composer}))
-            const foundComposers = await models.musician.findAll({ where:
-                    {   [Op.or]: options}})
-            await songs[index].setComposers(foundComposers)
-
-        }
-
-        if(element.arrangers) {
-            const options = element.arrangers.split(delimiter).map(arranger => ({name: arranger}))
-            let foundArrangers = await models.musician.findAll({ where:
-                    {   [Op.or]: options}})
-            await songs[index].setArrangers(foundArrangers)
-        }
-
-    })
-
-
-    await Promise.all(promiseArray)
-
-    fs.unlink(req.file.path, (err) => {
-        if(err) console.log(err)
-        else {
-            console.log(`${req.file.path} is deleted`)
-            res.status(200).json({message: "success"})
-        }
-    })
 })
 
 

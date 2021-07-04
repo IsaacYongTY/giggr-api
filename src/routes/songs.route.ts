@@ -1,21 +1,22 @@
-import findDbCategoriesWithNameArray from "../lib/database-utils/find-db-categories-with-name-array";
-
-const router = require('express').Router()
-const db = require('../models')
-const fs = require('fs')
-const models = require('../models').database1.models
+import fs from 'fs'
 import multer from 'multer'
-const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
-const { userInputToSongCols, createItemsRelatedToSong } = require("../lib/database-functions")
+import userInputToSongCols from "../lib/database-utils/user-input-to-song-cols";
+import findOrBulkCreateDbItems from "../lib/database-utils/find-or-bulk-create-db-items";
+import createItemsRelatedToSong from "../lib/database-utils/create-items-related-to-songs";
 import getSongs from "../lib/database-utils/get-songs";
 import findDbMusiciansWithNameArray from "../lib/database-utils/find-db-musicians-with-name-array";
-const { getOrBulkCreateDbItems } = require("../lib/database-functions");
+import findDbCategoriesWithNameArray from "../lib/database-utils/find-db-categories-with-name-array";
 import convertRawDataToSongCols from "../lib/database-utils/convert-raw-data-to-song-cols";
 import getAudioFeatures from "../lib/utils/get-audio-features"
-import { parseCsvToRawData } from '../lib/library'
+import parseCsvToRawData from "../lib/utils/parse-csv-to-raw-data";
 import convertDurationMinSecToMs from '../lib/utils/convert-duration-min-sec-to-ms'
 import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays-to-string-array";
 import { Request, Response } from "express";
+
+const router = require('express').Router()
+const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
+const db = require('../models')
+const models = require('../models').database1.models
 
 interface RequestWithUser extends Request {
     user: {
@@ -261,28 +262,28 @@ router.post('/csv', upload.single('file'), async (req: RequestWithFileUser, res:
     let rawData : any = await parseCsvToRawData(req.file.path)
 
     const artistsNameArray = convertNestedArraysToStringArray(rawData.map((song: any) => song.artist))
-    await getOrBulkCreateDbItems('database1', 'musician', artistsNameArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'musician', artistsNameArray, req.user.id)
 
     const languagesNameArray = convertNestedArraysToStringArray(rawData.map((song: any) => song.language))
-    await getOrBulkCreateDbItems('database1', 'language', languagesNameArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'language', languagesNameArray, req.user.id)
 
     const composersNameArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.composers))
-    await getOrBulkCreateDbItems('database1', 'musician', composersNameArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'musician', composersNameArray, req.user.id)
 
     const songwritersNameArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.songwriters))
-    await getOrBulkCreateDbItems('database1', 'musician', songwritersNameArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'musician', songwritersNameArray, req.user.id)
 
     const arrangersNameArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.arrangers))
-    await getOrBulkCreateDbItems('database1', 'musician', arrangersNameArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'musician', arrangersNameArray, req.user.id)
 
     const genresStringArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.genres))
-    await getOrBulkCreateDbItems('database1', 'genre', genresStringArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'genre', genresStringArray, req.user.id)
 
     const moodsStringArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.moods))
-    await getOrBulkCreateDbItems('database1', 'mood', moodsStringArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'mood', moodsStringArray, req.user.id)
 
     const tagsStringArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.tags))
-    await getOrBulkCreateDbItems('database1', 'tag', tagsStringArray, req.user.id)
+    await findOrBulkCreateDbItems('database1', 'tag', tagsStringArray, req.user.id)
 
 
     const saveData = await Promise.all( await convertRawDataToSongCols('database1', rawData, req.user.id))
