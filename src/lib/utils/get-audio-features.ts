@@ -1,14 +1,12 @@
-import convertTempo from "./convert-tempo";
+import roundTempo from "./round-tempo";
 import getRomTitle from "./get-rom-title";
-import { getDataFromSpotify } from "./get-data-from-spotify";
+
 // @ts-ignore
 import containsChinese from 'contains-chinese'
-
-import SpotifyWebApi from 'spotify-web-api-node'
-import removeBrackets from './remove-brackets'
+import removeBracketsAndSuffixes from './remove-brackets-and-suffixes'
 
 export const getInitialism = (input : string) =>
-    removeBrackets(input).
+    removeBracketsAndSuffixes(input).
     split(' ').
     reduce((acc, word) => acc + word[0].toLowerCase(), '')
 
@@ -39,7 +37,7 @@ interface TrackData {
 
 
 
-export function addChineseTrackInfo(trackData : TrackData) {
+export function addMandarinTrackInfo(trackData : TrackData) {
     trackData.romTitle = getRomTitle(trackData.title)
     trackData.language = 'mandarin'
     trackData.initialism = getInitialism(trackData.romTitle)
@@ -61,7 +59,7 @@ export default async function getAudioFeatures(
 ) {
 
     try {
-
+        console.log(data)
         let { key, mode, tempo, time_signature, duration_ms, energy,
             danceability, valence, acousticness, instrumentalness } = data
 
@@ -72,7 +70,7 @@ export default async function getAudioFeatures(
             artist: artists[0].name,
             key,
             mode,
-            tempo: convertTempo(tempo, time_signature),
+            tempo: roundTempo(tempo),
             spotifyLink: spotify,
             durationMs: duration_ms,
             timeSignature: convertTime(time_signature),
@@ -90,7 +88,7 @@ export default async function getAudioFeatures(
 
         const isChinese: boolean = containsChinese(processedTrackData.title)
 
-        processedTrackData = isChinese ? addChineseTrackInfo(processedTrackData) : addEnglishTrackInfo(processedTrackData)
+        processedTrackData = isChinese ? addMandarinTrackInfo(processedTrackData) : addEnglishTrackInfo(processedTrackData)
 
         console.log(processedTrackData)
         return processedTrackData

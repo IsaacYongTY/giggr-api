@@ -1,4 +1,9 @@
-import processRawSpotifyTrackData, {  convertTime, addChineseTrackInfo, addEnglishTrackInfo } from "../../lib/utils/get-audio-features"
+import processRawSpotifyTrackData, {
+    convertTime,
+    addMandarinTrackInfo,
+    addEnglishTrackInfo,
+    getInitialism
+} from "../../lib/utils/get-audio-features"
 
 const mockEnglishSongSingleTrack : SpotifyApi.SingleTrackResponse = {
     "album": {
@@ -372,4 +377,126 @@ describe("getAudioFeature", () => {
             initialism: "bkncgn",
         })
     })
+
+    describe("addChineseTrackInfo", () => {
+        const mockMandarinTrackData = {
+            title: "不可能錯過你",
+            artist: "Leehom Wang",
+            key: 1,
+            mode: 1,
+            tempo: 140,
+            spotifyLink: "https://open.spotify.com/track/5DzyBiFROeZiUWA4Mnehvh",
+            durationMs: 296973,
+            timeSignature: "4/4",
+            energy: 0.783,
+            danceability: 0.568,
+            valence: 0.78,
+            acousticness: 0.0347,
+            instrumentalness: 0,
+            verified: false,
+            dateReleased: "1999-06-22",
+            romTitle: "",
+            language: "",
+            initialism: "",
+
+        }
+
+        it("should add romanized title, default language as Mandarin and initialism from romTitle", () => {
+
+            expect(addMandarinTrackInfo(mockMandarinTrackData)).toStrictEqual({
+                title: "不可能錯過你",
+                artist: "Leehom Wang",
+                key: 1,
+                mode: 1,
+                tempo: 140,
+                spotifyLink: "https://open.spotify.com/track/5DzyBiFROeZiUWA4Mnehvh",
+                durationMs: 296973,
+                timeSignature: "4/4",
+                energy: 0.783,
+                danceability: 0.568,
+                valence: 0.78,
+                acousticness: 0.0347,
+                instrumentalness: 0,
+                verified: false,
+                dateReleased: "1999-06-22",
+                romTitle: "Bu Ke Neng Cuo Guo Ni",
+                language: "mandarin",
+                initialism: "bkncgn",
+            })
+        })
+    })
+
+    describe("addEnglishTrackInfo", () => {
+
+        const mockEnglishTrackData = {
+            title: "Cut To The Feeling",
+            artist: "Carly Rae Jepsen",
+            key: 5,
+            mode: 0,
+            tempo: 98,
+            spotifyLink: "https://open.spotify.com/track/11dFghVXANMlKmJXsNCbNl",
+            durationMs: 255349,
+            timeSignature: "4/4",
+            energy: 0.578,
+            danceability: 0.735,
+            valence: 0.624,
+            acousticness: 0.514,
+            instrumentalness: 0.0902,
+            verified: false,
+            dateReleased: "2017-05-26",
+            romTitle: "",
+            language: "",
+            initialism: ""
+        }
+
+        it("should add default language as English and initialism from title", () => {
+            expect(addEnglishTrackInfo(mockEnglishTrackData)).toStrictEqual({
+                title: "Cut To The Feeling",
+                artist: "Carly Rae Jepsen",
+                key: 5,
+                mode: 0,
+                tempo: 98,
+                spotifyLink: "https://open.spotify.com/track/11dFghVXANMlKmJXsNCbNl",
+                durationMs: 255349,
+                timeSignature: "4/4",
+                energy: 0.578,
+                danceability: 0.735,
+                valence: 0.624,
+                acousticness: 0.514,
+                instrumentalness: 0.0902,
+                verified: false,
+                dateReleased: "2017-05-26",
+                romTitle: "",
+                language: "english",
+                initialism: "cttf"
+            })
+        })
+    })
+
+    describe("getInitialism", () => {
+        it("should return the initials of the song title in latin alphabets", () => {
+            expect(getInitialism("Li Bai")).toBe("lb")
+            expect(getInitialism("Livin' on a Prayer")).toBe("loap")
+            expect(getInitialism("Never Gonna Give You Up")).toBe("nggyu")
+        })
+
+        it("should ignore the content inside any brackets", () => {
+            expect(getInitialism("Master of Puppets (2002 Remastered Version)")).toBe("mop")
+            expect(getInitialism("Master of Puppets (2002 Remastered Version)")).toBe("mop")
+            expect(getInitialism("Ru Guo Yu Zhi Hou 《Demo Version》")).toBe("rgyzh")
+            expect(getInitialism("Have I Told You Lately [2050 Anniversary Edition]")).toBe("hityl")
+            expect(getInitialism("24k Magic - feat. Lil Doug")).toBe("2m")
+        })
+
+    })
+
+    describe("convertTime", () => {
+        it("should add on /4 to the number provided", () => {
+            expect(convertTime(4)).toBe("4/4")
+            expect(convertTime(3)).toBe("3/4")
+            expect(convertTime("2")).toBe("2/4")
+            expect(convertTime("2")).toBe("2/4")
+        })
+    })
 })
+

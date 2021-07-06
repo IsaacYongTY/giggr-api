@@ -1,5 +1,8 @@
-export default function removeBrackets(input : string) {
-    const removeIndex = input.search(/[(（\-\[{]/g)
+export default function removeBracketsAndSuffixes(input : string) {
 
-    return input.slice(0, removeIndex > -1 ? removeIndex : input.length).trim()
+    const invalidCharactersRegex = /[(（\-\[{《]/g
+    const removeIndex = input.search(invalidCharactersRegex)
+
+    if(removeIndex === -1) return input
+    return input.slice(0, removeIndex).trim()
 }
