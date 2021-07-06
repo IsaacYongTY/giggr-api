@@ -211,7 +211,8 @@ router.patch('/:id', async (req : RequestWithUser, res: Response) => {
             song.languageId = dbLanguage.id
         }
         console.log(req.body)
-
+        console.log(req.user)
+        console.log(req.user.id)
         await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
         let otherData : any = {
