@@ -13,6 +13,7 @@ import convertDurationMinSecToMs from '../lib/utils/convert-duration-min-sec-to-
 import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays-to-string-array";
 import { Request, Response } from "express";
 import {getDataFromSpotify} from "../lib/utils/get-data-from-spotify";
+import {Op} from "sequelize";
 
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
@@ -95,25 +96,40 @@ router.get('/:id', async(req: RequestWithUser, res: Response) => {
 router.post('/', async (req : RequestWithUser, res: Response) => {
     try {
 
-        let saveData = await userInputToSongCols('database1', req.body, req.user)
-
-        let options = {
+        let saveData = await userInputToSongCols('database1', req.body, req.user.id)
+        console.log('save data')
+        console.log(saveData)
+        interface SequelizeOption {
+            defaults: any,
+            where?: any
+        }
+        let options : SequelizeOption = {
             defaults: saveData,
-            where: {}
         }
 
         if(saveData.spotifyLink) {
             options.where = {
-                userId: req.user.id,
-                spotifyLink: saveData.spotifyLink
+                [Op.and]: [ {
+                    userId: req.user.id
+                }, {
+                    spotifyLink: saveData.spotifyLink
+                }]
+
             }
+
+            let [song, created] = await models.song.findOrCreate(options)
+            console.log('found or creted song')
+            console.log(song)
+            console.log(created)
+            await createItemsRelatedToSong('database1', song, req.body, req.user.id)
+
+            return res.status(200).json({result: song})
         }
 
-        let [song] = await models.song.findOrCreate(options)
-
-        await createItemsRelatedToSong('database1', song, req.body, req.user.id)
-
+        let song = await models.song.create(saveData)
         res.status(200).json({result: song})
+
+
     } catch (error) {
         console.log(error)
         res.status(400).json({error})

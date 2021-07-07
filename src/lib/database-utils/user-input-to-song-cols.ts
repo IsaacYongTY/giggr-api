@@ -2,7 +2,7 @@ import findOrCreateArtist from "./find-or-create-artist";
 import findOrCreateLanguage from "./find-or-create-language";
 
 
-export default async function userInputToSongCols(database: string, data: any, user: any){
+export default async function userInputToSongCols(database: string, data: any, userId: number){
 
     let {
         title,
@@ -27,12 +27,12 @@ export default async function userInputToSongCols(database: string, data: any, u
         languageId,
     } = data || {}
 
-    const [dbArtist] = await findOrCreateArtist(database, artist, user)
-    const [dbLanguage] = await findOrCreateLanguage(database, language, user)
+    const [dbArtist] = await findOrCreateArtist(database, artist, userId)
+    const [dbLanguage] = await findOrCreateLanguage(database, language, userId)
 
     return {
         title,
-        userId: user.id,
+        userId: userId,
         artistId: dbArtist.id,
         key,
         mode,
