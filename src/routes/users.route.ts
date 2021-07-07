@@ -26,8 +26,7 @@ router.get('/', async(req: RequestWithUser, res: Response) => {
         const moods = await models.mood.findAll()
         const tags = await models.tag.findAll()
         const languages = await models.language.findAll()
-        console.log('wo')
-        console.log(songs)
+
         res.status(200).json({songs, musicians, languages, genres, moods, tags })
 
     } catch (error) {
