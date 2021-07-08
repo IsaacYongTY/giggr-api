@@ -195,15 +195,14 @@ interface Song {
     tags: [],
     performStatus?: string,
     status?: string,
-    // enName: string,
 
 }
-router.patch('/:id', async (req : RequestWithUser, res: Response) => {
+router.put('/:id', async (req : RequestWithUser, res: Response) => {
 
     try {
 
-        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers,
-            initialism, songwriters, arrangers, spotifyLink, youtubeLink, otherLink } = req.body || {}
+        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language,
+            initialism, spotifyLink, youtubeLink, otherLink, dateReleased } = req.body || {}
 
         let song : Song = await models.song.findByPk(req.params.id)
 
@@ -226,13 +225,11 @@ router.patch('/:id', async (req : RequestWithUser, res: Response) => {
 
             song.languageId = dbLanguage.id
         }
-        console.log(req.body)
-        console.log(req.user)
-        console.log(req.user.id)
+
         await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
         let otherData : any = {
-            title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink
+            title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink, dateReleased
         }
 
         for(const props in otherData) {
