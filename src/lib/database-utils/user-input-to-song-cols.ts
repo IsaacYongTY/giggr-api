@@ -1,5 +1,6 @@
 import findOrCreateArtist from "./find-or-create-artist";
 import findOrCreateLanguage from "./find-or-create-language";
+import convertDurationMinSecToMs from "../utils/convert-duration-min-sec-to-ms";
 
 
 export default async function userInputToSongCols(database: string, data: any, userId: number){
@@ -12,7 +13,9 @@ export default async function userInputToSongCols(database: string, data: any, u
         mode,
         tempo,
         spotifyLink,
-        durationMs,
+        youtubeLink,
+        otherLink,
+        durationMinSec,
         timeSignature,
         energy,
         danceability,
@@ -30,6 +33,8 @@ export default async function userInputToSongCols(database: string, data: any, u
     const [dbArtist] = await findOrCreateArtist(database, artist, userId)
     const [dbLanguage] = await findOrCreateLanguage(database, language, userId)
 
+    const durationMs = convertDurationMinSecToMs(durationMinSec)
+
     return {
         title,
         userId: userId,
@@ -41,6 +46,8 @@ export default async function userInputToSongCols(database: string, data: any, u
         timeSignature,
         languageId: dbLanguage.id,
         spotifyLink,
+        youtubeLink,
+        otherLink,
         energy,
         danceability,
         valence,
