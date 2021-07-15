@@ -83,7 +83,7 @@ router.patch('/:id', async (req, res) => {
     try {
 
         let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language, composers,
-            initialism, songwriters, arrangers, spotifyLink, youtubeLink, otherLink } = req.body || {}
+            initialism, songwriters, arrangers, spotifyLink, youtubeLink, otherLink, status } = req.body || {}
 
         let song = await db.master.models.song.findByPk(req.params.id)
 

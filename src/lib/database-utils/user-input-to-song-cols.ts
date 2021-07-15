@@ -28,6 +28,7 @@ export default async function userInputToSongCols(database: string, data: any, u
         initialism,
         language,
         languageId,
+        status
     } = data || {}
 
     const [dbArtist] = await findOrCreateArtist(database, artist, userId)
@@ -57,6 +58,7 @@ export default async function userInputToSongCols(database: string, data: any, u
         dateReleased,
         romTitle,
         initialism,
+        status
 
     }
 
