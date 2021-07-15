@@ -21,11 +21,11 @@ router.get('/', async(req: RequestWithUser, res: Response) => {
 
         const songs = await getSongs('database1', queryObject, req.user.id)
 
-        const musicians = await models.musician.findAll()
-        const genres = await models.genre.findAll()
-        const moods = await models.mood.findAll()
-        const tags = await models.tag.findAll()
-        const languages = await models.language.findAll()
+        const musicians = await models.musician.findAll({ where: { userId: req.user.id}})
+        const genres = await models.genre.findAll({ where: { userId: req.user.id}})
+        const moods = await models.mood.findAll({ where: { userId: req.user.id}})
+        const tags = await models.tag.findAll({ where: { userId: req.user.id}})
+        const languages = await models.language.findAll({ where: { userId: req.user.id}})
 
         res.status(200).json({songs, musicians, languages, genres, moods, tags })
 

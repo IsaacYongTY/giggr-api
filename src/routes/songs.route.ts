@@ -14,6 +14,7 @@ import convertNestedArraysToStringArray from "../lib/utils/convert-nested-arrays
 import { Request, Response } from "express";
 import {getDataFromSpotify} from "../lib/utils/get-data-from-spotify";
 import {Op} from "sequelize";
+import removeDuplicateFromStringArray from "../lib/utils/remove-duplicates-from-string-array";
 
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
@@ -278,27 +279,29 @@ router.post('/csv', upload.single('file'), async (req: RequestWithFileUser, res:
     let rawData : any = await parseCsvToRawData(req.file.path)
 
     const artistsNameArray = convertNestedArraysToStringArray(rawData.map((song: any) => song.artist))
-    await findOrBulkCreateDbItems('database1', 'musician', artistsNameArray, req.user.id)
+    const uniqueArtistsNameArray = removeDuplicateFromStringArray(artistsNameArray)
+    await findOrBulkCreateDbItems('database1', 'musician', uniqueArtistsNameArray, req.user.id)
 
     const languagesNameArray = convertNestedArraysToStringArray(rawData.map((song: any) => song.language))
-    await findOrBulkCreateDbItems('database1', 'language', languagesNameArray, req.user.id)
+    const uniqueLanguagesNameArray = removeDuplicateFromStringArray(languagesNameArray)
+    await findOrBulkCreateDbItems('database1', 'language', uniqueLanguagesNameArray, req.user.id)
 
-    const composersNameArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.composers))
+    const composersNameArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.composers)))
     await findOrBulkCreateDbItems('database1', 'musician', composersNameArray, req.user.id)
 
-    const songwritersNameArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.songwriters))
+    const songwritersNameArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.songwriters)))
     await findOrBulkCreateDbItems('database1', 'musician', songwritersNameArray, req.user.id)
 
-    const arrangersNameArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.arrangers))
+    const arrangersNameArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.arrangers)))
     await findOrBulkCreateDbItems('database1', 'musician', arrangersNameArray, req.user.id)
 
-    const genresStringArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.genres))
+    const genresStringArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.genres)))
     await findOrBulkCreateDbItems('database1', 'genre', genresStringArray, req.user.id)
 
-    const moodsStringArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.moods))
+    const moodsStringArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.moods)))
     await findOrBulkCreateDbItems('database1', 'mood', moodsStringArray, req.user.id)
 
-    const tagsStringArray = convertNestedArraysToStringArray(rawData.map((song: Song) => song.tags))
+    const tagsStringArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.tags)))
     await findOrBulkCreateDbItems('database1', 'tag', tagsStringArray, req.user.id)
 
 
