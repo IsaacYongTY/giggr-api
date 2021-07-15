@@ -201,8 +201,8 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
 
     try {
 
-        let { title, romTitle, artist, key, mode, durationMinSec, tempo, timeSignature, language,
-            initialism, spotifyLink, youtubeLink, otherLink, dateReleased } = req.body || {}
+        let { title, romTitle, artist, key, myKey, mode, durationMinSec, tempo, timeSignature, language,
+            initialism, spotifyLink, youtubeLink, otherLink, dateReleased, status } = req.body || {}
 
         let song : Song = await models.song.findByPk(req.params.id)
 
@@ -229,7 +229,7 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
         await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
         let otherData : any = {
-            title, romTitle, tempo, timeSignature, initialism, key, mode, spotifyLink, youtubeLink, otherLink, dateReleased
+            title, romTitle, tempo, timeSignature, initialism, key, myKey, mode, spotifyLink, youtubeLink, otherLink, dateReleased, status
         }
 
         for(const props in otherData) {
