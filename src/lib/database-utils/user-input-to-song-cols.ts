@@ -34,6 +34,8 @@ export default async function userInputToSongCols(database: string, data: any, u
     const [dbArtist] = await findOrCreateArtist(database, artist, userId)
     const [dbLanguage] = await findOrCreateLanguage(database, language, userId)
 
+    console.log('here')
+    console.log(dbLanguage)
     const durationMs = convertDurationMinSecToMs(durationMinSec)
 
     return {
