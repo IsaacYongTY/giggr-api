@@ -49,6 +49,7 @@ router.delete('/:id', async(req, res) => {
 router.post('/', async (req, res) => {
     try {
         let { composers, songwriters, arrangers } = req.body || {}
+        console.log(req.body)
         let saveData = await userInputToSongCols('master', req.body, req.user)
 
         let options = {

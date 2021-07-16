@@ -98,8 +98,7 @@ router.post('/', async (req : RequestWithUser, res: Response) => {
     try {
 
         let saveData = await userInputToSongCols('database1', req.body, req.user.id)
-        console.log('save data')
-        console.log(saveData)
+
         interface SequelizeOption {
             defaults: any,
             where?: any
@@ -119,9 +118,7 @@ router.post('/', async (req : RequestWithUser, res: Response) => {
             }
 
             let [song, created] = await models.song.findOrCreate(options)
-            console.log('found or creted song')
-            console.log(song)
-            console.log(created)
+
             await createItemsRelatedToSong('database1', song, req.body, req.user.id)
 
             return res.status(200).json({result: song})
@@ -205,11 +202,12 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
         let { title, romTitle, artist, key, myKey, mode, durationMinSec, tempo, timeSignature, language,
             initialism, spotifyLink, youtubeLink, otherLink, dateReleased, status } = req.body || {}
 
+        console.log(req.body)
         let song : Song = await models.song.findByPk(req.params.id)
 
         let musicianOptions = {
-            defaults: artist,
-            where: { name: artist }
+            defaults: { name: artist, userId: req.user.id },
+            where: { name: artist, userId: req.user.id }
         }
 
         let [ dbMusician ] = await models.musician.findOrCreate(musicianOptions)
@@ -219,8 +217,8 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
 
         if(language) {
             let options = {
-                defaults: language.toLowerCase(),
-                where: { name: language.toLowerCase() }
+                defaults: { name: language, userId: req.user.id },
+                where: { name: language, userId: req.user.id }
             }
             const [dbLanguage, created] = await models.language.findOrCreate(options)
 
