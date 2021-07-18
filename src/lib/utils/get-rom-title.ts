@@ -6,7 +6,7 @@ export const capitalizeString = (romTitle : string) => romTitle.split(' ').map((
 
 export default function getRomTitle(title : string) {
     title = removeBracketsAndSuffixes(title)
-    let romTitle = chineseToPinyin(title, {removeTone: true})
+    let romTitle = chineseToPinyin(title, {removeTone: true, removeSpace: true})
     return capitalizeString(romTitle).replace(/,/g, ' ')
 
 }

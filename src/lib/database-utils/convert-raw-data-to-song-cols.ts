@@ -66,6 +66,14 @@ export default function convertRawDataToSongCols(database: string, data: any, us
             tags
         } = row || {}
 
+        let finalDurationMs = 0;
+
+        if(durationMs) {
+            finalDurationMs = durationMs
+        } else if (durationMinSec) {
+            finalDurationMs = convertDurationMinSecToMs(durationMinSec)
+        }
+
         return {
             title,
             userId,
@@ -76,7 +84,7 @@ export default function convertRawDataToSongCols(database: string, data: any, us
             language,
             timeSignature,
             initialism,
-            durationMs: durationMinSec ? convertDurationMinSecToMs(durationMinSec) : 0,
+            durationMs: finalDurationMs,
             spotifyLink: spotifyLink || "",
             youtubeLink: youtubeLink || "",
             otherLink: otherLink || "",

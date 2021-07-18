@@ -10,6 +10,7 @@ export default async function userInputToSongCols(database: string, data: any, u
         artist,
         artistId,
         key,
+        myKey,
         mode,
         tempo,
         spotifyLink,
@@ -36,13 +37,14 @@ export default async function userInputToSongCols(database: string, data: any, u
 
     console.log('here')
     console.log(dbLanguage)
-    const durationMs = convertDurationMinSecToMs(durationMinSec)
+    const durationMs = durationMinSec ? convertDurationMinSecToMs(durationMinSec) : null
 
     return {
         title,
         userId: userId,
         artistId: dbArtist.id,
         key,
+        myKey,
         mode,
         tempo,
         durationMs,

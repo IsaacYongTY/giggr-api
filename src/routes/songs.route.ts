@@ -269,9 +269,10 @@ interface RequestWithFileUser extends Request{
 }
 
 router.post('/csv', upload.single('file'), async (req: RequestWithFileUser, res: Response) => {
-
-    if(!req.file.path) {
-        return
+    // console.log(req)
+    // console.log(req.body.file[0])
+    if(!req.file?.path) {
+        return res.status(400).json({error: "File path doesn't exist"})
     }
 
     let rawData : any = await parseCsvToRawData(req.file.path)
