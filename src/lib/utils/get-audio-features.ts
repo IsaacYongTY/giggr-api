@@ -3,12 +3,8 @@ import getRomTitle from "./get-rom-title";
 
 // @ts-ignore
 import containsChinese from 'contains-chinese'
-import removeBracketsAndSuffixes from './remove-brackets-and-suffixes'
+import getInitialism from "./get-initialism";
 
-export const getInitialism = (input : string) =>
-    removeBracketsAndSuffixes(input).
-    split(' ').
-    reduce((acc, word) => acc + word[0].toLowerCase(), '')
 
 export const convertTime = (spotifyTime : string | number) => `${spotifyTime}/4`
 
