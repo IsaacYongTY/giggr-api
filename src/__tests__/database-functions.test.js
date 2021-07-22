@@ -1,4 +1,4 @@
-// const { getSongs, getOrCreateArtist, getOrCreateLanguage, userInputToSongCols, csvDataToSongCols} =  require('../lib/database-functions')
+// const { getSongs, getOrCreateArtist, getOrCreateLanguage, userInputToSongCols, csvDataToSongCols} =  require('../lib/database-utils')
 
 
 describe('getOrCreateArtist', () => {

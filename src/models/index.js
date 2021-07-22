@@ -57,7 +57,6 @@ Object.keys(db.master.models).forEach(modelName => {
     }
 });
 
-console.log(db.master.models)
 
 
 

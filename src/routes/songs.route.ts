@@ -263,11 +263,11 @@ router.delete('/:id', async(req: RequestWithUser, res: Response) => {
 
 router.delete("/", async (req : RequestWithUser, res: Response) => {
     console.log('hitting it')
-
+    console.log(req.body)
     try {
         let response = await axios.get("https://jsonplaceholder.typicode.com/todos/1")
         console.log(response)
-        res.status(200).json({message: "working"})
+        res.status(200).json(req.body)
     } catch(err) {
         console.log("here")
         res.status(400).json({error: "something went wrong"})
