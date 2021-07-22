@@ -40,4 +40,4 @@ app.use((req: Request, res: Response) => {
     res.status(400).send({ message: "Not Found"})
 })
 
-module.exports = app
+export default app

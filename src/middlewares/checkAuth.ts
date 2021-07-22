@@ -16,7 +16,7 @@ export default async function checkAuth(req: Request, res: Response, next: () =>
         const token = tokenString.split(" ")[1]
 
         if(!token) {
-            res.status(403).send({ error: "token is not correct"})
+            return res.status(403).send({ error: "token is not correct"})
         }
 
         const decoded = jwt.verify(token, process.env.SESSION_SECRET)
