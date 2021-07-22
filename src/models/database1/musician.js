@@ -15,6 +15,22 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       },
     },
+    isArtist: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isComposer: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isSongwriter: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isArranger: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     timestamps: false,
     underscored: true

@@ -15,7 +15,8 @@ import { Request, Response } from "express";
 import {getDataFromSpotify} from "../lib/utils/get-data-from-spotify";
 import {Op} from "sequelize";
 import removeDuplicateFromStringArray from "../lib/utils/remove-duplicates-from-string-array";
-
+import { dummyFunction } from "../lib/mock-functions"
+import axios from "axios"
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const db = require('../models')
@@ -258,6 +259,20 @@ router.delete('/:id', async(req: RequestWithUser, res: Response) => {
         console.log(error)
         res.status(400).json({error})
     }
+})
+
+router.delete("/", async (req : RequestWithUser, res: Response) => {
+    console.log('hitting it')
+
+    try {
+        let response = await axios.get("https://jsonplaceholder.typicode.com/todos/1")
+        console.log(response)
+        res.status(200).json({message: "working"})
+    } catch(err) {
+        console.log("here")
+        res.status(400).json({error: "something went wrong"})
+    }
+
 })
 
 
