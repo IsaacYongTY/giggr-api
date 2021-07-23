@@ -40,8 +40,8 @@ app.use('/api/v1/languages', require('./routes/languages.route'))
 app.use('/api/v1/users', checkAuth, require('./routes/users.route'))
 app.use('/api/v1/gigs', checkAuth, require('./routes/gigs.route'))
 app.use('/api/v1/setlists', require('./routes/setlists.route'))
-app.use('/api/v1/admin', checkAuth, require('./routes/admin/admin.route'))
-app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))
+// app.use('/api/v1/admin', checkAuth, require('./routes/admin/admin.route'))
+// app.use('/api/v1/admin/songs', checkAuth, require('./routes/admin/songs.route'))
 
 app.get('/test', (req : Request, res : Response) => {
     res.send({message: "You accessed this route successfully"})

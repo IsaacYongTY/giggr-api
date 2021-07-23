@@ -1,9 +1,10 @@
 import findOrCreateArtist from "./find-or-create-artist";
 import findOrCreateLanguage from "./find-or-create-language";
 import convertDurationMinSecToMs from "../utils/convert-duration-min-sec-to-ms";
+import setMusicianRole from "./set-musician-role";
 
 
-export default async function userInputToSongCols(database: string, data: any, userId: number){
+export default async function userInputToSongCols(data: any, userId: number){
 
     let {
         title,
@@ -32,8 +33,15 @@ export default async function userInputToSongCols(database: string, data: any, u
         status
     } = data || {}
 
-    const [dbArtist] = await findOrCreateArtist(database, artist, userId)
-    const [dbLanguage] = await findOrCreateLanguage(database, language, userId)
+    const [dbArtist, created] = await findOrCreateArtist(artist, userId)
+
+    let artistWithRole;
+    if(!created) {
+        artistWithRole = setMusicianRole(dbArtist, "artist")
+        await artistWithRole.save()
+        console.log(artistWithRole)
+    }
+    const [dbLanguage] = await findOrCreateLanguage(language, userId)
 
 
     const durationMs = durationMinSec ? convertDurationMinSecToMs(durationMinSec) : null

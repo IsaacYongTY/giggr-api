@@ -19,7 +19,7 @@ router.get('/', async(req: RequestWithUser, res: Response) => {
             order: req.query.order as string,
         }
 
-        const songs = await getSongs('database1', queryObject, req.user.id)
+        const songs = await getSongs(queryObject, req.user.id)
 
         const musicians = await models.musician.findAll({ where: { userId: req.user.id}})
         const genres = await models.genre.findAll({ where: { userId: req.user.id}})

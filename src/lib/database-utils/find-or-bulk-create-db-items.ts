@@ -1,8 +1,8 @@
 const db = require('../../models')
 const { Op } = require('sequelize')
 
-export default async function findOrBulkCreateDbItems(database: string, modelName: string, nameArray: string[], userId: number) {
-    const models = db[database].models
+export default async function findOrBulkCreateDbItems(modelName: string, nameArray: string[], userId: number) {
+    const models = db.database1.models
 
     let dbItems = await models[modelName].findAll({
         where: {

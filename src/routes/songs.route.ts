@@ -15,9 +15,8 @@ import { Request, Response } from "express";
 import {getDataFromSpotify} from "../lib/utils/get-data-from-spotify";
 import {Op} from "sequelize";
 import removeDuplicateFromStringArray from "../lib/utils/remove-duplicates-from-string-array";
-import { dummyFunction } from "../lib/mock-functions"
-import axios from "axios"
 import bulkDeleteSongsFromDatabase from "../lib/database-utils/bulk-delete-songs-from-database";
+import Song from "../lib/types/Song";
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const db = require('../models')
@@ -40,7 +39,7 @@ router.get('/', async(req : RequestWithUser, res: Response) => {
         }
 
         console.log('in')
-        const songs = await getSongs('database1', queryObject, req.user.id)
+        const songs = await getSongs(queryObject, req.user.id)
 
         res.status(200).json({ songs })
 
@@ -99,7 +98,7 @@ router.get('/:id', async(req: RequestWithUser, res: Response) => {
 router.post('/', async (req : RequestWithUser, res: Response) => {
     try {
 
-        let saveData = await userInputToSongCols('database1', req.body, req.user.id)
+        let saveData = await userInputToSongCols(req.body, req.user.id)
 
         interface SequelizeOption {
             defaults: any,
@@ -121,7 +120,7 @@ router.post('/', async (req : RequestWithUser, res: Response) => {
 
             let [song, created] = await models.song.findOrCreate(options)
 
-            await createItemsRelatedToSong('database1', song, req.body, req.user.id)
+            await createItemsRelatedToSong(song, req.body, req.user.id)
 
             return res.status(200).json({result: song})
         }
@@ -153,50 +152,8 @@ router.post('/spotify', async (req : RequestWithUser, res: Response) => {
     }
 })
 
-interface Musician {
-    [key : string] : any,
-    name: string,
-    romName: string,
-    enName: string
-}
 
-interface Song {
-    [key: string] : any,
-    id: number,
-    title: string,
-    romTitle: string,
-    artist: Musician
-    artistId: number,
-    tempo: number,
-    createdAt: Date,
-    updatedAt: Date,
-    dateReleased: Date,
-    durationMinSec: string,
-    durationMs: number,
-    timeSignature: string,
-    initialism: string,
-    key: number,
-    myKey?: string,
-    languageId: number,
-    mode: number,
 
-    spotifyLink: string,
-    youtubeLink: string,
-    otherLink: string,
-
-    acousticness: number,
-    valence: number,
-    instrumentalness: number,
-    danceability: number,
-    energy: number,
-    verified: boolean,
-    mood: [],
-    genre: [],
-    tags: [],
-    performStatus?: string,
-    status?: string,
-
-}
 router.put('/:id', async (req : RequestWithUser, res: Response) => {
 
     try {
@@ -227,7 +184,7 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
             song.languageId = dbLanguage.id
         }
 
-        await createItemsRelatedToSong('database1', song, req.body, req.user.id)
+        await createItemsRelatedToSong(song, req.body, req.user.id)
 
         let otherData : any = {
             title, romTitle, tempo, timeSignature, initialism, key, myKey, mode, spotifyLink, youtubeLink, otherLink, dateReleased, status
@@ -252,12 +209,10 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
 
 router.delete("/", async (req : RequestWithUser, res: Response) => {
 
-    console.log(req.body)
-    console.log("in")
+    const { idArray } : { idArray : any[] } = req.body || {}
+    const isArrayAllNumbers = idArray?.every(id => typeof id === "number" )
+
     try {
-        const { idArray } : { idArray : any[] } = req.body || {}
-        const isArrayAllNumbers = idArray?.every(id => typeof id === "number" )
-        console.log(isArrayAllNumbers)
         if(!isArrayAllNumbers) {
             res.status(400).json({ error: "All elements in the array must be a number!" })
             return
@@ -307,29 +262,33 @@ router.post('/csv', upload.single('file'), async (req: RequestWithFileUser, res:
 
     const artistsNameArray = convertNestedArraysToStringArray(rawData.map((song: any) => song.artist))
     const uniqueArtistsNameArray = removeDuplicateFromStringArray(artistsNameArray)
-    await findOrBulkCreateDbItems('database1', 'musician', uniqueArtistsNameArray, req.user.id)
+    await findOrBulkCreateDbItems('musician', uniqueArtistsNameArray, req.user.id)
 
     const languagesNameArray = convertNestedArraysToStringArray(rawData.map((song: any) => song.language))
     const uniqueLanguagesNameArray = removeDuplicateFromStringArray(languagesNameArray)
-    await findOrBulkCreateDbItems('database1', 'language', uniqueLanguagesNameArray, req.user.id)
+    await findOrBulkCreateDbItems('language', uniqueLanguagesNameArray, req.user.id)
 
-    const composersNameArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.composers)))
-    await findOrBulkCreateDbItems('database1', 'musician', composersNameArray, req.user.id)
+    const composersNameArray = removeDuplicateFromStringArray(
+        convertNestedArraysToStringArray(
+            rawData.map((song: Song) => song.composers)
+        )
+    )
+    await findOrBulkCreateDbItems('musician', composersNameArray, req.user.id)
 
     const songwritersNameArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.songwriters)))
-    await findOrBulkCreateDbItems('database1', 'musician', songwritersNameArray, req.user.id)
+    await findOrBulkCreateDbItems('musician', songwritersNameArray, req.user.id)
 
     const arrangersNameArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.arrangers)))
-    await findOrBulkCreateDbItems('database1', 'musician', arrangersNameArray, req.user.id)
+    await findOrBulkCreateDbItems('musician', arrangersNameArray, req.user.id)
 
     const genresStringArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.genres)))
-    await findOrBulkCreateDbItems('database1', 'genre', genresStringArray, req.user.id)
+    await findOrBulkCreateDbItems('genre', genresStringArray, req.user.id)
 
     const moodsStringArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.moods)))
-    await findOrBulkCreateDbItems('database1', 'mood', moodsStringArray, req.user.id)
+    await findOrBulkCreateDbItems('mood', moodsStringArray, req.user.id)
 
     const tagsStringArray = removeDuplicateFromStringArray(convertNestedArraysToStringArray(rawData.map((song: Song) => song.tags)))
-    await findOrBulkCreateDbItems('database1', 'tag', tagsStringArray, req.user.id)
+    await findOrBulkCreateDbItems('tag', tagsStringArray, req.user.id)
 
 
     const saveData = await Promise.all( await convertRawDataToSongCols('database1', rawData, req.user.id))
