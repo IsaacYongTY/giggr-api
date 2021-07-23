@@ -10,10 +10,10 @@ describe("bulkDeleteSongsFromDatabase", () => {
         testDb = await initializeTestDatabase()
     })
 
-    it("should return the original id array", () => {
-        // expect(bulkDeleteSongsFromDatabase([1,2,3,4])).toStrictEqual([1,2,3,4])
-        // expect(bulkDeleteSongsFromDatabase([])).toStrictEqual([])
-    })
+    // it("should return the original id array", () => {
+    //     // expect(bulkDeleteSongsFromDatabase([1,2,3,4])).toStrictEqual([1,2,3,4])
+    //     // expect(bulkDeleteSongsFromDatabase([])).toStrictEqual([])
+    // })
 
     it("should remove the songs in database that the ids are in the array", async () => {
         await bulkDeleteSongsFromDatabase([1,2])
@@ -30,7 +30,4 @@ describe("bulkDeleteSongsFromDatabase", () => {
         expect(songsInDatabase.length).toBe(3)
     })
 
-    afterAll(async () => {
-        await testDb.database1.close()
-    })
 })
