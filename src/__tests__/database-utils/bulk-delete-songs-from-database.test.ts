@@ -2,7 +2,7 @@ import bulkDeleteSongsFromDatabase from "../../lib/database-utils/bulk-delete-so
 import initializeTestDatabase from "../../lib/database-utils/initialize-test-database";
 
 describe("bulkDeleteSongsFromDatabase", () => {
-    // jest.setTimeout(20000)
+    jest.setTimeout(15000)
     let testDb : any
 
     beforeAll(async () => {
