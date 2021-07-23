@@ -17,6 +17,7 @@ import {Op} from "sequelize";
 import removeDuplicateFromStringArray from "../lib/utils/remove-duplicates-from-string-array";
 import { dummyFunction } from "../lib/mock-functions"
 import axios from "axios"
+import bulkDeleteSongsFromDatabase from "../lib/database-utils/bulk-delete-songs-from-database";
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const db = require('../models')
@@ -262,12 +263,18 @@ router.delete('/:id', async(req: RequestWithUser, res: Response) => {
 })
 
 router.delete("/", async (req : RequestWithUser, res: Response) => {
-    console.log('hitting it')
-    console.log(req.body)
+
     try {
-        let response = await axios.get("https://jsonplaceholder.typicode.com/todos/1")
-        console.log(response)
-        res.status(200).json(req.body)
+        const { idArray } : { idArray : any[] } = req.body || {}
+        const isArrayAllNumbers = idArray?.every(id => typeof id === "number" )
+
+        if(!isArrayAllNumbers) {
+            res.status(400).json({ error: "All elements in the array must be a number!" })
+            return
+        }
+
+        await bulkDeleteSongsFromDatabase(idArray)
+        res.status(200).json({idArray})
     } catch(err) {
         console.log("here")
         res.status(400).json({error: "something went wrong"})
