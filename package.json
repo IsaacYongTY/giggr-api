@@ -13,7 +13,7 @@
     "dev:build": "rimraf build && tsc -w",
     "dev:run": "cross-env NODE_ENV=development nodemon -r dotenv/config build/index",
     "test": "yarn jest --watchAll --runInBand --debug --detectOpenHandles",
-    "test:ci": "yarn jest --verbose --runInBand --debug",
+    "test:ci": "yarn jest --debug",
     "db:migrate": "cross-env NODE_ENV=development sequelize-cli db:create",
     "db:database1:reset:dangerous": "yarn run sequelize:database1:migrate:undo:all && yarn run sequelize:database1:migrate",
     "db:master:reset:dangerous": "yarn run sequelize:master:migrate:undo:all && yarn run sequelize:master:migrate",
