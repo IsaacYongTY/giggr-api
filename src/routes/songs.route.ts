@@ -249,6 +249,31 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
     }
 })
 
+
+router.delete("/", async (req : RequestWithUser, res: Response) => {
+
+    console.log(req.body)
+    console.log("in")
+    try {
+        const { idArray } : { idArray : any[] } = req.body || {}
+        const isArrayAllNumbers = idArray?.every(id => typeof id === "number" )
+        console.log(isArrayAllNumbers)
+        if(!isArrayAllNumbers) {
+            res.status(400).json({ error: "All elements in the array must be a number!" })
+            return
+        }
+
+        await bulkDeleteSongsFromDatabase(idArray)
+        res.status(200).json({idArray})
+    } catch(err) {
+        console.log(err)
+        res.status(400).json({error: "something went wrong"})
+    }
+
+})
+
+
+
 router.delete('/:id', async(req: RequestWithUser, res: Response) => {
     try {
         const song = await models.song.findByPk(req.params.id)
@@ -262,25 +287,6 @@ router.delete('/:id', async(req: RequestWithUser, res: Response) => {
     }
 })
 
-router.delete("/", async (req : RequestWithUser, res: Response) => {
-
-    try {
-        const { idArray } : { idArray : any[] } = req.body || {}
-        const isArrayAllNumbers = idArray?.every(id => typeof id === "number" )
-
-        if(!isArrayAllNumbers) {
-            res.status(400).json({ error: "All elements in the array must be a number!" })
-            return
-        }
-
-        await bulkDeleteSongsFromDatabase(idArray)
-        res.status(200).json({idArray})
-    } catch(err) {
-        console.log("here")
-        res.status(400).json({error: "something went wrong"})
-    }
-
-})
 
 
 interface RequestWithFileUser extends Request{

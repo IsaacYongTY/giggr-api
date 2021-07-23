@@ -30,7 +30,7 @@ module.exports = {
         "password": process.env.TEST_DB_PASSWORD,
         "database": process.env.TEST_DB,
         "host": process.env.TEST_HOST,
-        "port": 5432,
+        "port": process.env.TEST_PORT,
         "dialect": "postgres",
         "logging": false
       },
