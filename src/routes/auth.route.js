@@ -50,8 +50,6 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', passport.authenticate('local'),(req,res) => {
 
-    console.log(req.user)
-    console.log('authh')
     let payload = {
         user: {
             firstName: req.user.firstName,
@@ -68,11 +66,10 @@ router.post('/login', passport.authenticate('local'),(req,res) => {
 
         // res.cookie('x-auth-token', `Bearer ${token}`)
 
-        res.status(200).send(
-            {
-                message: "successfully logged in",
-                token
-            })
+        res.status(200).send({
+            message: "successfully logged in",
+            token
+        })
     })
 })
 

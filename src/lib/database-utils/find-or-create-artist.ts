@@ -1,13 +1,14 @@
 const db = require('../../models')
 
-export default async function findOrCreateArtist(database: string, artist: any, userId: number) {
+export default async function findOrCreateArtist(artist: any, userId: number) {
     console.log(userId)
-    return await db[database].models.musician.findOrCreate({
+    return await db.database1.models.musician.findOrCreate({
         defaults: {
             name: artist,
-            userId: userId
+            userId: userId,
+            isArtist: true
         },
-        where: { name: artist}})
+        where: { name: artist, userId}})
 
 }
 

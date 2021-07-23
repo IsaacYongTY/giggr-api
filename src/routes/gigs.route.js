@@ -35,7 +35,12 @@ router.post('/', async (req, res) => {
             cleanedTime = req.body.time.split('T')[1]
         }
 
-        let saveData = {...req.body, userId: req.user.id, date: cleanedDate, time: cleanedTime}
+        let saveData = {
+            ...req.body,
+            userId: req.user.id,
+            date: cleanedDate,
+            time: cleanedTime
+        }
 
         let response = await models.gig.create(saveData)
         console.log(response)

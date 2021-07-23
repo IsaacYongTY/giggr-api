@@ -14,11 +14,11 @@ interface SequelizeOption {
     include: any[]
 }
 
-export default async function getSongs(database: string, query: RequestQuery, userId: number) {
+export default async function getSongs(query: RequestQuery, userId: number) {
 
     let { number, category, order } = query
     // @ts-ignore
-    const models = db[database].models
+    const models = db.database1.models
 
     let options : SequelizeOption = {
         where: { userId: userId},

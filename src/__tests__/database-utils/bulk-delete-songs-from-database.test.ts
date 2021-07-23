@@ -1,33 +1,31 @@
 import bulkDeleteSongsFromDatabase from "../../lib/database-utils/bulk-delete-songs-from-database";
 import initializeTestDatabase from "../../lib/database-utils/initialize-test-database";
+import db from "../../models"
 
 describe("bulkDeleteSongsFromDatabase", () => {
 
-    let testDb : any
+    let testDb : any = db
 
     beforeAll(async () => {
-
-        testDb = await initializeTestDatabase()
+        await initializeTestDatabase()
     })
-
-    // it("should return the original id array", () => {
-    //     // expect(bulkDeleteSongsFromDatabase([1,2,3,4])).toStrictEqual([1,2,3,4])
-    //     // expect(bulkDeleteSongsFromDatabase([])).toStrictEqual([])
-    // })
 
     it("should remove the songs in database that the ids are in the array", async () => {
         await bulkDeleteSongsFromDatabase([1,2])
 
-        let songsInDatabase = await testDb.database1.models.song.findAll({})
-        console.log(songsInDatabase)
+        let songsInDatabase = await testDb.database1.models.song.findAll({ where: { userId: 1 }})
         expect(songsInDatabase.length).toBe(3)
-
     })
 
     it("should not alter anything if the id provided is not in the database", async () => {
         await bulkDeleteSongsFromDatabase([7])
-        let songsInDatabase = await testDb.database1.models.song.findAll({})
+
+        let songsInDatabase = await testDb.database1.models.song.findAll({ where: { userId: 1 }})
         expect(songsInDatabase.length).toBe(3)
+    })
+
+    afterAll(async () => {
+        await testDb.database1.close()
     })
 
 })
