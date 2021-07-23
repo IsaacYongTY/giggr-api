@@ -3,8 +3,11 @@ import initializeTestDatabase from "../../lib/database-utils/initialize-test-dat
 import db from "../../models"
 
 describe("getSongs", () => {
-    jest.setTimeout(20000)
+    jest.setTimeout(10000)
     let testDb: any = db
+
+    console.log(process.env.TEST_DB)
+    console.log(process.env.TEST_HOST)
     beforeAll(async () => {
 
         await initializeTestDatabase()
