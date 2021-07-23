@@ -7,7 +7,19 @@ import cookieParser from "cookie-parser";
 import checkAuth from "./middlewares/checkAuth";
 
 const app = express();
+console.log(process.env.NODE_ENV)
 
+if(process.env.NODE_ENV === 'test') {
+    console.log("test")
+}
+
+if(process.env.NODE_ENV === 'production') {
+    console.log("production")
+}
+
+if(process.env.NODE_ENV === 'development') {
+    console.log("developemnt")
+}
 app.use(helmet.hidePoweredBy())
 app.use(express.json())
 app.use(cors({
@@ -40,4 +52,4 @@ app.use((req: Request, res: Response) => {
     res.status(400).send({ message: "Not Found"})
 })
 
-module.exports = app
+export default app

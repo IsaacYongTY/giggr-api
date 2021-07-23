@@ -15,6 +15,22 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       },
     },
+    isArtist: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isComposer: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isSongwriter: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isArranger: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     timestamps: false,
     underscored: true
@@ -46,13 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       onDelete: "cascade"
     })
-    Musician.belongsToMany(models.role, {
-      through: "roles_musicians",
-      foreignKey: "musicianId",
-      otherKey: "roleId",
-      timestamps: false,
-      onDelete: "cascade"
-    })
+
   }
 
   return Musician

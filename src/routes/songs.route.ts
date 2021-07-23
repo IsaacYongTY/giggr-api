@@ -15,7 +15,9 @@ import { Request, Response } from "express";
 import {getDataFromSpotify} from "../lib/utils/get-data-from-spotify";
 import {Op} from "sequelize";
 import removeDuplicateFromStringArray from "../lib/utils/remove-duplicates-from-string-array";
-
+import { dummyFunction } from "../lib/mock-functions"
+import axios from "axios"
+import bulkDeleteSongsFromDatabase from "../lib/database-utils/bulk-delete-songs-from-database";
 const router = require('express').Router()
 const upload = multer({dest: "uploads/", limits: { fileSize: 1024 * 1024}})
 const db = require('../models')
@@ -247,6 +249,31 @@ router.put('/:id', async (req : RequestWithUser, res: Response) => {
     }
 })
 
+
+router.delete("/", async (req : RequestWithUser, res: Response) => {
+
+    console.log(req.body)
+    console.log("in")
+    try {
+        const { idArray } : { idArray : any[] } = req.body || {}
+        const isArrayAllNumbers = idArray?.every(id => typeof id === "number" )
+        console.log(isArrayAllNumbers)
+        if(!isArrayAllNumbers) {
+            res.status(400).json({ error: "All elements in the array must be a number!" })
+            return
+        }
+
+        await bulkDeleteSongsFromDatabase(idArray)
+        res.status(200).json({idArray})
+    } catch(err) {
+        console.log(err)
+        res.status(400).json({error: "something went wrong"})
+    }
+
+})
+
+
+
 router.delete('/:id', async(req: RequestWithUser, res: Response) => {
     try {
         const song = await models.song.findByPk(req.params.id)
@@ -259,6 +286,7 @@ router.delete('/:id', async(req: RequestWithUser, res: Response) => {
         res.status(400).json({error})
     }
 })
+
 
 
 interface RequestWithFileUser extends Request{
