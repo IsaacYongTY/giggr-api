@@ -40,6 +40,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+      env:
+        TEST_DB: '${{ secret.TEST_DB}}'
+        TEST_DB_PASSWORD: '${{ secret.TEST_DB_PASSWORD}}'
+        TEST_DB_USERNAME: '${{ secret.TEST_DB_USERNAME}}'
+        TEST_HOST: '${{ secret.TEST_HOST}}'
+        TEST_PORT: '${{ secret.TEST_PORT}}'
     - run: yarn install --frozen-lockfile
     - run: yarn run build
     - run: yarn test:ci
