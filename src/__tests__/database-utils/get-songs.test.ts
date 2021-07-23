@@ -3,7 +3,7 @@ import initializeTestDatabase from "../../lib/database-utils/initialize-test-dat
 import db from "../../models"
 
 describe("getSongs", () => {
-    jest.setTimeout(10000)
+    jest.setTimeout(20000)
     let testDb: any = db
 
     console.log(process.env.TEST_DB)
@@ -19,7 +19,7 @@ describe("getSongs", () => {
 
     })
 
-    afterAll(async () => {
-        await testDb.database1.close()
-    })
+    // afterAll(async () => {
+    //     await testDb.database1.close()
+    // })
 })

@@ -30,7 +30,7 @@ describe("bulkDeleteSongsFromDatabase", () => {
         expect(songsInDatabase.length).toBe(3)
     })
 
-    afterAll(async () => {
-        await testDb.database1.close()
-    })
+    // afterAll(async () => {
+    //     await testDb.database1.close()
+    // })
 })

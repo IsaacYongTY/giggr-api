@@ -1,6 +1,6 @@
 import db from "../../models"
 
-export default async function initializeTestDatabase() {
+export default async function  initializeTestDatabase() {
     let testDb : any = db
 
     await testDb.database1.sync({force: true})
