@@ -4,20 +4,20 @@ import db from "../../models"
 
 describe("getSongs", () => {
     // jest.setTimeout(20000)
-    // let testDb: any
-    //
-    // beforeAll(async () => {
-    //
-    //     testDb = await initializeTestDatabase()
-    // })
+    let testDb: any
+
+    beforeAll(async () => {
+
+        testDb = await initializeTestDatabase()
+    })
 
     it("should return songs from the database", async () => {
-        // let res = await getSongs("database1", { number: "10", category: "title", order: "ASC"}, 1)
-        // expect(res.length).toBe(5)
+        let res = await getSongs("database1", { number: "10", category: "title", order: "ASC"}, 1)
+        expect(res.length).toBe(5)
 
     })
 
-    // afterAll(async () => {
-    //     await testDb.database1.close()
-    // })
+    afterAll(async () => {
+        await testDb.database1.close()
+    })
 })
