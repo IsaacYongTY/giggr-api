@@ -8,6 +8,10 @@ describe("getSongs", () => {
 
     console.log(process.env.TEST_DB)
     console.log(process.env.TEST_HOST)
+    console.log(process.env.NODE_ENV)
+
+    if(process.env.NODE_ENV === 'test')
+        console.log("testtttt")
     beforeAll(async () => {
 
         testDb = await initializeTestDatabase()
