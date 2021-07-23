@@ -8,13 +8,13 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
-env:
-  TEST_DB: ${{secrets.TEST_DB}}
-  TEST_DB_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
-  TEST_DB_USERNAME: ${{secrets.TEST_DB_USERNAME}}
-  TEST_HOST: ${{secrets.TEST_HOST}}
-  TEST_PORT: ${{secrets.TEST_PORT}}
+#
+#env:
+#  TEST_DB: ${{secrets.TEST_DB}}
+#  TEST_DB_PASSWORD: ${{secrets.TEST_DB_PASSWORD}}
+#  TEST_DB_USERNAME: ${{secrets.TEST_DB_USERNAME}}
+#  TEST_HOST: ${{secrets.TEST_HOST}}
+#  TEST_PORT: ${{secrets.TEST_PORT}}
 
 jobs:
   tsc:
@@ -38,20 +38,6 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
-    # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-#
-#    services:
-#      postgres:
-#        image: postgres:12
-#        env:
-#          POSTGRES_PASSWORD: postgres
-#        # Set health checks to wait until postgres has started
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
