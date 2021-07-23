@@ -1,4 +1,9 @@
 node_modules/
 .idea
 .env
-uploads
+src/uploads
+build/
+
+coverage
+sonar-project.properties
+.scannerwork/
