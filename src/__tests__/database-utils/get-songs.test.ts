@@ -4,13 +4,13 @@ import db from "../../models"
 
 describe("getSongs", () => {
     jest.setTimeout(20000)
-    let testDb: any = db
+    let testDb: any
 
     console.log(process.env.TEST_DB)
     console.log(process.env.TEST_HOST)
     beforeAll(async () => {
 
-        await initializeTestDatabase()
+        testDb = await initializeTestDatabase()
     })
 
     it("should return songs from the database", async () => {

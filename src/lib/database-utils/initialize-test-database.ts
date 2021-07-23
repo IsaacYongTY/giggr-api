@@ -18,4 +18,6 @@ export default async function  initializeTestDatabase() {
         { title: "Song 4", userId: 1, artistId: 1},
         { title: "Song 5", userId: 1, artistId: 1},
     ])
+
+    return testDb
 }

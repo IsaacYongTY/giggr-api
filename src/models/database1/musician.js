@@ -62,13 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       onDelete: "cascade"
     })
-    Musician.belongsToMany(models.role, {
-      through: "roles_musicians",
-      foreignKey: "musicianId",
-      otherKey: "roleId",
-      timestamps: false,
-      onDelete: "cascade"
-    })
+
   }
 
   return Musician

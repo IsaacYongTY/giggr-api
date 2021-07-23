@@ -1,13 +1,13 @@
 import bulkDeleteSongsFromDatabase from "../../lib/database-utils/bulk-delete-songs-from-database";
 import initializeTestDatabase from "../../lib/database-utils/initialize-test-database";
-import db from "../../models"
+
 describe("bulkDeleteSongsFromDatabase", () => {
     jest.setTimeout(20000)
-    let testDb : any = db
+    let testDb : any
 
     beforeAll(async () => {
 
-        await initializeTestDatabase()
+        testDb = await initializeTestDatabase()
     })
 
     it("should return the original id array", () => {
