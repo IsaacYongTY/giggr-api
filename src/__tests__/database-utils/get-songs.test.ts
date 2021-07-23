@@ -6,6 +6,7 @@ describe("getSongs", () => {
 
     let testDb: any = db
     beforeAll(async () => {
+        jest.setTimeout(20000)
         await initializeTestDatabase()
     })
 

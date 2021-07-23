@@ -15,6 +15,7 @@ describe("The song routes", () => {
 
     describe("The bulk delete songs route", () => {
         beforeEach(()=> {
+            jest.setTimeout(20000)
             jest.clearAllMocks()
         })
 
