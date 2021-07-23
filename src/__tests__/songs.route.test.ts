@@ -12,10 +12,10 @@ jest.mock('../middlewares/checkAuth', () => {
 })
 
 describe("The song routes", () => {
-
+    jest.setTimeout(20000)
     describe("The bulk delete songs route", () => {
         beforeEach(()=> {
-            jest.setTimeout(20000)
+
             jest.clearAllMocks()
         })
 
