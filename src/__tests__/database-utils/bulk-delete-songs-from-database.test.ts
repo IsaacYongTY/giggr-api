@@ -3,7 +3,7 @@ import initializeTestDatabase from "../../lib/database-utils/initialize-test-dat
 import db from "../../models"
 
 describe("bulkDeleteSongsFromDatabase", () => {
-
+    jest.setTimeout(20000)
     let testDb : any = db
 
     beforeAll(async () => {

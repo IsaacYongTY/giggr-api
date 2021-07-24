@@ -1,9 +1,7 @@
-import Musician from "../types/Musician";
-import setMusicianRole from "./set-musician-role";
 
 const db = require('../../models')
 
-export default async function findOrBulkCreateMusicians(musicians: string[], userId: number, role: string) {
+export default async function findOrBulkCreateMusicians(musicians: string[], userId: number) {
 
     if(!musicians || !musicians.length) {
         return []
@@ -17,11 +15,7 @@ export default async function findOrBulkCreateMusicians(musicians: string[], use
 
     const dbMusiciansWithBoolean = await Promise.all(promiseArray)
 
-    const dbMusicians = dbMusiciansWithBoolean.map(element => element[0])
+    return dbMusiciansWithBoolean.map(element => element[0])
 
-
-
-
-    return dbMusicians
 
 }
