@@ -32,7 +32,7 @@ interface CsvSongCol {
     tags: string[],
 }
 
-export default function convertRawDataToSongCols(database: string, data: any, userId: number) : CsvSongCol[] {
+export default function convertRawDataToSongCols(data: any, userId: number) : CsvSongCol[] {
 
     return data.map((row: any) => {
 

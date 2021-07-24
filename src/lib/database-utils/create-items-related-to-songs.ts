@@ -7,21 +7,21 @@ export default async function createItemsRelatedToSong(song: Song, formData: any
     let { composers, songwriters, arrangers, genres, moods, tags } = formData || {}
 
     if(composers && composers.length ) {
-        const dbComposers = await findOrBulkCreateMusicians(composers, userId, "composer")
+        const dbComposers = await findOrBulkCreateMusicians(composers, userId)
         const dbComposersWithRole = dbComposers.map(composer => setMusicianRole(composer, "composer"))
         await Promise.all(dbComposersWithRole.map(async composer => await composer.save()))
         await song.setComposers(dbComposers)
     }
 
     if(songwriters && songwriters.length) {
-        const dbSongwriters = await findOrBulkCreateMusicians(songwriters, userId, "songwriter")
+        const dbSongwriters = await findOrBulkCreateMusicians(songwriters, userId)
         const dbSongwritersWithRole = dbSongwriters.map(songwriter => setMusicianRole(songwriter, "songwriter"))
         await Promise.all(dbSongwritersWithRole.map(async songwriter => await songwriter.save()))
         await song.setSongwriters(dbSongwriters)
     }
 
     if(arrangers && arrangers.length) {
-        const dbArrangers = await findOrBulkCreateMusicians(arrangers, userId, "arranger")
+        const dbArrangers = await findOrBulkCreateMusicians(arrangers, userId)
         const dbArrangersWithRole = dbArrangers.map(arranger => setMusicianRole(arranger, "arranger"))
         await Promise.all(dbArrangersWithRole.map(async arranger => await arranger.save()))
         await song.setArrangers(dbArrangers)
