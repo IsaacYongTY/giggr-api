@@ -34,7 +34,8 @@ app.use(cookieParser())
 
 
 app.use('/api/v1/auth', require('./routes/auth.route'))
-app.use('/api/v1/songs', checkAuth, require('./routes/songs.route'))
+// temporarily disabled checkAuth while working on auth issue
+app.use('/api/v1/songs', require('./routes/songs.route'))
 app.use('/api/v1/musicians', require('./routes/musicians.route'))
 app.use('/api/v1/languages', require('./routes/languages.route'))
 app.use('/api/v1/users', checkAuth, require('./routes/users.route'))
