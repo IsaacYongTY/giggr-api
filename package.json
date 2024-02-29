@@ -7,8 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "yarn run sequelize:database1:migrate && yarn run sequelize:master:migrate && node build/index",
-    "start:backup": "node build/index",
+    "start": "node build/index",
+    "start:backup": "yarn run sequelize:database1:migrate && yarn run sequelize:master:migrate && node build/index",
     "build": "rimraf ./build && tsc",
     "dev": "concurrently --raw yarn:dev:*",
     "dev:build": "rimraf build && tsc -w",
